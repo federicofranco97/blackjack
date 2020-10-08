@@ -31,7 +31,7 @@ def deal(deck):
 
 # Vuelve a comenzar el juego
 def play_again():
-    again = raw_input("Do you want to play again? (Y/N) : ").lower()
+    again = raw_input("¿Quieres volver a jugar? (Y/N) : ").lower()
     if again == "y":
         dealer_hand = []
         player_hand = []
@@ -79,19 +79,19 @@ def clear():
 # Imprime los resultados de la mano
 def print_results(dealer_hand, player_hand):
     clear()
-    print("The dealer has a " + str(dealer_hand) + " for a total of " + str(total(dealer_hand)))
-    print("You have a " + str(player_hand) + " for a total of " + str(total(player_hand)))
+    print("La banca tiene " + str(dealer_hand) + " y un total de puntos de " + str(total(dealer_hand)))
+    print("Tu mano es " + str(player_hand) + " y sumas un total de puntos de  " + str(total(player_hand)))
 
 
 # Verifica si el jugador o el dealer tienen blackjack
 def blackjack(dealer_hand, player_hand):
     if total(player_hand) == 21:
         print_results(dealer_hand, player_hand)
-        print("Congratulations! You got a Blackjack!\n")
+        print("Felicitaciones! Conseguiste Blackjack!\n")
         play_again()
     elif total(dealer_hand) == 21:
         print_results(dealer_hand, player_hand)
-        print("Sorry, you lose. The dealer got a blackjack.\n")
+        print("Lo sentimos, perdiste. La banca obtuvo BlackJack.\n")
         play_again()
 
 
@@ -99,41 +99,41 @@ def blackjack(dealer_hand, player_hand):
 def score(dealer_hand, player_hand):
     if total(player_hand) == 21:
         print_results(dealer_hand, player_hand)
-        print("Congratulations! You got a Blackjack!\n")
+        print("Felicitaciones! Obtuviste Blackjack!\n")
     elif total(dealer_hand) == 21:
         print_results(dealer_hand, player_hand)
-        print("Sorry, you lose. The dealer got a blackjack.\n")
+        print("Lo sientimos, perdiste! La banca tuvo blackjack.\n")
     elif total(player_hand) > 21:
         print_results(dealer_hand, player_hand)
-        print("Sorry. You busted. You lose.\n")
+        print("Lo sentimos. Has superado el limite. Perdiste.\n")
     elif total(dealer_hand) > 21:
         print_results(dealer_hand, player_hand)
-        print("Dealer busts. You win!\n")
+        print("La banca supero el limite! Ganaste!\n")
     elif total(player_hand) < total(dealer_hand):
         print_results(dealer_hand, player_hand)
-        print("Sorry. Your score isn't higher than the dealer. You lose.\n")
+        print("Lo Sentimos. El puntaje de la banca es mayor al tuyo. Perdiste!\n")
     elif total(player_hand) > total(dealer_hand):
         print_results(dealer_hand, player_hand)
-        print("Congratulations. Your score is higher than the dealer. You win\n")
+        print("Felicitaciones! Tu puntaje es mayor al de la banca! Ganaste!\n")
 
 
 # Pide el ingreso de la cantidad de plata a apostar
 def getbet(currentBet):
-    bet = raw_input("How much do you want to raise you're current bet of " + str(currentBet) + ": ")
+    bet = raw_input("Cuanto quiere aumentar su apuesta de  " + str(currentBet) + ": ")
     try:
         int(bet)
     except ValueError:
         clear()
-        print("Please type a valid number")
+        print("Por favor ingrese un numero valido")
         getbet(currentBet)
     else:
         if int(bet) < 0:
             clear()
-            print("Please type a valid number")
+            print("Por favor ingrese un numero valido")
             getbet(currentBet)
         elif int(bet) > availableMoney:
             clear()
-            print("Your bet exceeds the amount of money you have available!")
+            print("Su apuesta excede el limite que tiene disponible!")
             getbet(currentBet)
         else:
             return int(bet)
@@ -141,17 +141,17 @@ def getbet(currentBet):
 
 # Pide la cantidad de jugadores que van a participar
 def countplayers():
-    playerstemp = raw_input("How many players are there?")
+    playerstemp = raw_input("Cuantos jugadores hay?")
     try:
         int(playerstemp)
     except ValueError:
         clear()
-        print("Please type a valid number")
+        print("Por favor ingrese un numero valido")
         countplayers()
     else:
         if int(playerstemp) <= 0:
             clear()
-            print("Please type a valid number")
+            print("Por favor ingrese un numero valido")
             countplayers()
         else:
             return int(playerstemp)
@@ -161,7 +161,7 @@ def countplayers():
 def game():
     choice = 0
     clear()
-    print("WELCOME TO BLACKJACK!\n")
+    print("BIENVENIDO A BLACKJACK!\n")
     # print(countplayers())
     # Inicia la apuesta inicial en 10 y asigno esa como la apuesta del jugador
     # Despues la apuesta minima va a venir del sv
@@ -172,10 +172,11 @@ def game():
     # Reparte la mano del jugador
     player_hand = deal(deck)
     while choice != "q":
-        print("The dealer is showing a " + str(dealer_hand[0]))
-        print("You have a " + str(player_hand) + " for a total of " + str(total(player_hand)))
+        print("El dealer tiene " + str(dealer_hand[0]))
+        print("Tu mano es " + str(player_hand) + " y suma en total " + str(total(player_hand)))
+        print("Tu apuesta es de "+str(bet))
         blackjack(dealer_hand, player_hand)
-        choice = raw_input("Do you want to [H]it, [S]tand, [R]aise or [Q]uit: ").lower()
+        choice = raw_input("Elegi la siguiente accion [H]it, [S]tand, [R]aise or [Q]uit: ").lower()
         clear()
         if choice == "h":
             hit(player_hand)
@@ -189,12 +190,12 @@ def game():
             score(dealer_hand, player_hand)
             play_again()
         elif choice == "q":
-            print("Bye!")
+            print("Adios!")
             exit()
         elif choice == "r":
             bet += getbet(bet)
         else:
-            print("Bye!")
+            print("Adios!")
             exit()
 
 
@@ -214,6 +215,6 @@ def connect():
 
 
 if __name__ == "__main__":
-    connect()
-    #game()
+    game()
+
 
