@@ -2,7 +2,7 @@ import socket
 
 users = {"fede": "test", "fede2": "test2"}
 
-HOST = '192.168.100.233'
+HOST = '192.168.100.7'
 PORT = 9999
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
