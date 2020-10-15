@@ -56,9 +56,16 @@ def total(hand):
             total += card
     return total
 
+def fillDeck():
+    deck = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14] * 4
+    random.shuffle(deck)
 
 # SOlicita una carta
 def hit(hand):
+    
+    if len(deck) == 0:
+        fillDeck()
+
     card = deck.pop()
     if card == 11: card = "J"
     if card == 12: card = "Q"
