@@ -1,3 +1,2 @@
 # blackjack
-El codigo de logica del blackjack esta en la clase main.py, las otras clases son de conexion entre cliente y sv
-habria que ir migrando las funciones de la clase main.py a cliente / server dependiendo de ccomo delegemos las funciones
+Link al Protocolo: https://docs.google.com/document/d/1gKIWynt0sV2WcYebHdjxFi1cMaofkF580j2esMGflro/edit?usp=sharing
