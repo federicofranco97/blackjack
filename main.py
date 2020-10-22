@@ -210,15 +210,7 @@ def login():
     username = raw_input("Por favor ingrese su nombre de usuario: ").lower()
 
 
-def connect():
-    host = '192.168.100.233'
-    port = 9999
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        sock.connect((host, port))
-    except Exception as e:
-        print("Cannot connect to the server:", e)
-    print("Connected")
+
 
 
 if __name__ == "__main__":
