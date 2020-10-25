@@ -2,11 +2,23 @@
 
 ## Requerimientos
 
-Tener instalado Python >= 3.7
+Tener instalado Python >= 3.7 y tener el CLI de git configurado con su usuario.
 
 ## Instalación
 
-Clonar el repositorio con el comando git clone. Las dependencias necesarias para correr ya vienen instaladas con python
+Clonar el repositorio con el comando git clone. 
+
+```
+git clone git@github.com:federicofranco97/blackjack.git
+```
+
+Luego moverse al branch **feature/entregable-uno**
+
+```
+git checkout feature/entregable-uno
+```
+
+Las dependencias necesarias para correr ya vienen instaladas con python
 
 ## Iniciar el servidor
 
