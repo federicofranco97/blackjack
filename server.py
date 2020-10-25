@@ -4,6 +4,7 @@ import threading
 from blackjack import Blackjack
 
 clientes = []
+
 """
     La clase usuario representa la relacion entre un nombre (identificador unico del usuario) y el socket asociado al mismo.
 """
@@ -13,7 +14,7 @@ class Usuario:
         self.socket = socket
 
     def enviarMensaje(self, mensaje):
-        self.socket.send(str(mensaje).encode())
+        self.socket.send(str(mensaje).encode() + "\n".encode())
 
 """
     La clase ejecutor esta implementada con un patron strategy. Los comandos a ejecutar implementan la misma interfaz
@@ -26,6 +27,7 @@ class Ejecutor:
             "soy": comIdentificarUsuario,
             "estadisticas": comObtenerEstadisticas,
             "ingresar": comJuegoComando,
+            "iniciar": comJuegoComando,
             "mensaje": comMensaje
         }
 
@@ -51,7 +53,9 @@ def comMensaje(nombreComando, argumentos, socket, juego, cliente):
 """
 def comJuegoComando(nombreComando, argumentos, socket, juego, cliente):
     if nombreComando == "ingresar":
-        juego.ingresarDinero(cliente.nombre, argumentos[0])
+        return juego.ingresarDinero(cliente.nombre, argumentos[0])
+    if nombreComando == "iniciar":
+        return juego.iniciarPartida(cliente.nombre,)
 
 """
     El comando <soy> es para que el usuario s eidentifique

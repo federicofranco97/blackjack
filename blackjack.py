@@ -35,13 +35,14 @@ class Blackjack():
     def __init__(self):
         self.jugadores = {}
         self.jugadoresActivos = {}
+        self.jugadoresEsperando = {}
         self.rondaActiva = False
         self.interrumpirTimer = False
         self.segundosTotales = 0
 
     def empezarTimer(self):
-        segundosRestantes = 10-self.segundosTotales
-        self.notificarJugadores("Empieza el juego en " + str(segundosRestantes) + "segundos+\n")
+        segundosRestantes = 30-self.segundosTotales
+        self.notificarJugadores("Empieza el juego en " + str(segundosRestantes) + "segundos")
         self.segundosTotales += 1
         if segundosRestantes > 0:
             Timer(1.0, self.empezarTimer).start()
@@ -58,12 +59,12 @@ class Blackjack():
 
     def agregarJugador(self, usuario):
         if usuario.nombre in self.jugadores:
-            raise NombreUsado("Nombre duplicado")
+            usuario.enviarMensaje("Ya existe un usuario con ese nombre")
         self.interrumpirTimer = True
         nuevoJugador = Jugador(usuario)
-        nuevoJugador.enviarMensaje("Bienvenido " + usuario.nombre + "\n")
+        nuevoJugador.enviarMensaje("Bienvenido " + usuario.nombre + "")
         self.jugadores[usuario.nombre] = nuevoJugador
-        self.notificarJugadores(usuario.nombre + " se unio al juego\n")
+        self.notificarJugadores(usuario.nombre + " se unio al juego")
 
     
     def obtenerEstadisticas(self):
@@ -72,10 +73,22 @@ class Blackjack():
 
     def ingresarDinero(self, usuario, monto):
         jugador = self.jugadores[usuario]
+        if int(monto) <= 0:
+            jugador.enviarMensaje("Debes ingresar un saldo positivo")
         if self.rondaActiva == False and jugador != None:
             jugador.dinero += int(monto)
-            jugador.enviarMensaje("Tu nuevo saldo es de " + str(jugador.dinero) + "\n")
+            jugador.enviarMensaje("Tu nuevo saldo es de " + str(jugador.dinero))
+
+    def iniciarPartida(self, usuario):
+        jugador = self.jugadores[usuario]
+        if self.rondaActiva == True:
+            if self.jugadoresActivos[usuario] != None:
+                jugador.enviarMensaje("Hay una ronda en curso, no te podes unir")
+            else:
+                jugador.enviarMensaje("Ya estás jugando en la ronda, y la partida ya esta iniciada")
+        else:
             self.empezarTimer()
+            
 
 
 
