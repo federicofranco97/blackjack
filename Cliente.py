@@ -10,8 +10,9 @@ hayJugadoresEnEspera = False
 hayPartidaEnCurso = True
 
 
+# Muestra el estado del servidor, si hay partidas en curso y si hay gente en espera
 def imprimirEstadoServidor():
-    if hayJugadoresEnEspera:
+    if hayPartidaEnCurso:
         print("Hay una partida en curso actualmente, al finalizar la ronda podra solicitar unirse a la misma")
     if not hayPartidaEnCurso and hayJugadoresEnEspera:
         print("No hay una partida iniciada, pero hay jugadores en la cola, la partida comenzara brevemente.")
@@ -22,23 +23,24 @@ def imprimirEstadoServidor():
 
 # Metodo de inicializacion, pide el nombre de usuario y realiza la conexion al sv
 def inicioCliente():
+    print("Bienvenido al servidor de BlackJack")
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.settimeout(200)
     # Se conecta con el servidor
     # host = '192.168.100.233'
-    # port = 9999
+    # port = 3039
     host = raw_input("Por favor ingresa la IP del servidor: ")
     port = raw_input("Por favor ingresa el puerto del servidor: ")
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
-        sock.connect((host, port))
+        sock.connect((host, int(port)))
     except Exception as e:
         print("Ocurrio un error al conectarse con el servidor:", e)
         return
     print("Conectado, bienvenido al servidor!")
-    name = raw_input("Bienvenido al servidor de BlackJack, por favor ingrese su nombre: ")
+    # name = raw_input("Por favor ingrese su nombre: ")
     # si se pudo conectar, envio el nombre del jugador
-    s.send(bytes(name, 'utf-8'))
+    # s.send(bytes(name, 'utf-8'))
     imprimirEstadoServidor()
     while 1:
         socket_list = [sys.stdin, s]
