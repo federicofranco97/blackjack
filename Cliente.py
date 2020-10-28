@@ -52,13 +52,17 @@ def inicioCliente():
         name = raw_input()
         sock.send(name.encode())
 
+    sock.settimeout(200)
     while 1:
-        data = sock.recv(4096)
-        if not data:
-            continue
-        else:
-            # Imprimo los msjs del servidor
-            print(str(data))
+        try:
+            data = sock.recv(4096)
+            if not data:
+                continue
+            else:
+                # Imprimo los msjs del servidor
+                print(str(data))
+        except socket.timeout:
+            print("Se perdio la conexion con el servidor")
 
     # while 1:
     #     socket_list = [socket.socket(), s]
