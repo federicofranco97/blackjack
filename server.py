@@ -12,6 +12,7 @@ class Usuario:
     def __init__(self, socket):
         self.nombre = None
         self.socket = socket
+        self.dinero = 0
 
     def enviarMensaje(self, mensaje):
         self.socket.send(str(mensaje).encode() + "\n".encode())
@@ -26,9 +27,12 @@ class Ejecutor:
         self.comandos = {
             "soy": comIdentificarUsuario,
             "estadisticas": comObtenerEstadisticas,
-            "ingresar": comJuegoComando,
+            "ingresar": comIngresarDinero,
             "iniciar": comJuegoComando,
-            "mensaje": comMensaje
+            "apostar": comJuegoComando,
+            "mensaje": comMensaje,
+            "pedir": comJuegoComando,
+            "plantarse": comJuegoComando
         }
 
     def ejecutar(self, comando, argumentos, socket, juego, cliente):
@@ -56,6 +60,12 @@ def comJuegoComando(nombreComando, argumentos, socket, juego, cliente):
         return juego.ingresarDinero(cliente.nombre, argumentos[0])
     if nombreComando == "iniciar":
         return juego.iniciarPartida(cliente.nombre,)
+    if nombreComando == "apostar":
+        return juego.apostar(cliente.nombre, argumentos[0])
+    if nombreComando == "pedir":
+        return juego.pedir(cliente.nombre)
+    if nombreComando == "plantarse":
+        return juego.plantarse(cliente.nombre)
 
 """
     El comando <soy> es para que el usuario s eidentifique
@@ -63,9 +73,21 @@ def comJuegoComando(nombreComando, argumentos, socket, juego, cliente):
 def comIdentificarUsuario(nombreComando, argumentos, socket, juego, cliente):
     if (cliente.nombre == None):
         cliente.nombre = argumentos[0]
-        juego.agregarJugador(cliente)
+        cliente.enviarMensaje("Debes ingresar un saldo para iniciar")
     else:
         socket.send("Ya te conozco. Te llamas " + cliente.nombre + ", no " + argumentos[0] + "\n")
+
+"""
+    El comando <ingresar> es para ingresar dinero a la cuenta
+"""
+def comIngresarDinero(nombreComando, argumentos, socket, juego, cliente):
+    monto = int(argumentos[0])
+    if monto <= 0:
+        cliente.enviarMensaje("Tienes que ingresar un monto mayor a 0")
+    else:
+        cliente.dinero += monto
+        cliente.enviarMensaje("Tu nuevo saldo es de " + str(cliente.dinero))
+        juego.agregarJugador(cliente)
 
 """
     El comando estadisticas se utiliza para obtener las estadisticas del juego
@@ -103,7 +125,7 @@ def inicializarCliente(cliente, bg):
 """
 
 def iniciarServidor():
-    puerto = 3030
+    puerto = 3031
     blackGame = Blackjack()
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(("",puerto))
