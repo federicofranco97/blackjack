@@ -87,7 +87,7 @@ def crearMensajeLog(mensaje):
 def inicializarCliente(cliente, bg):
     usuario = Usuario(cliente)
     clientes.append(usuario)
-    usuario.enviarMensaje("Bienvenido al juego. Ingresa tu nombre con el comando soy <nombre>.\n")
+    usuario.enviarMensaje("Bienvenido al juego. Ingresa tu nombre con el comando soy <nombre>.")
     ejecutor = Ejecutor()
     while True:
         mensajeRecibido = cliente.recv(1024)
@@ -103,15 +103,16 @@ def inicializarCliente(cliente, bg):
 """
 
 def iniciarServidor():
-    puerto = 3030
+    puerto = 3039
     blackGame = Blackjack()
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.bind(("",puerto))
+    sock.bind(("192.168.100.7",puerto))
     print(crearMensajeLog("Socket bindeado"))
     sock.listen(5)
     print(crearMensajeLog("Socket escuchando"))
     while True:
         cliente, direccionCliente = sock.accept()
+        print(cliente)
         print(crearMensajeLog("Nuevo jugador desde: " + direccionCliente[0]))
         start_new_thread(inicializarCliente, (cliente, blackGame))
     sock.close()

@@ -41,24 +41,42 @@ def inicioCliente():
     # name = raw_input("Por favor ingrese su nombre: ")
     # si se pudo conectar, envio el nombre del jugador
     # s.send(bytes(name, 'utf-8'))
-    imprimirEstadoServidor()
+    # imprimirEstadoServidor()
+    data = sock.recv(4096)
+    if not data:
+        print('Ocurrio un error de conexion con el servidor!!')
+        sys.exit()
+    else:
+        # Primera respuesta del servidor (Ingresa tu nombre)
+        print(str(data),":")
+        name = raw_input()
+        sock.send(name.encode())
+
     while 1:
-        socket_list = [sys.stdin, s]
-        # Obtenemos la lista de socket disponibles
-        rList, wList, error_list = select.select(socket_list, [], [])
-        for sock in rList:
-            # Mensaje entrante del servidor, si no hay datos, se informa la desconexion y se cierra el cliente
-            if sock == s:
-                data = sock.recv(4096)
-                if not data:
-                    print('No se pudo conectar con el servidor!!')
-                    sys.exit()
-                else:
-                    sys.stdout.write(data)
-            # El usuario envia un mensaje al servidor
-            else:
-                msg = sys.stdin.readline()
-                s.send(msg)
+        data = sock.recv(4096)
+        if not data:
+            continue
+        else:
+            # Imprimo los msjs del servidor
+            print(str(data))
+
+    # while 1:
+    #     socket_list = [socket.socket(), s]
+    #     # Obtenemos la lista de socket disponibles
+    #     rList, wList, error_list = select.select(socket_list, [], [])
+    #     for sock in rList:
+    #         # Mensaje entrante del servidor, si no hay datos, se informa la desconexion y se cierra el cliente
+    #         if sock == s:
+    #             data = sock.recv(4096)
+    #             if not data:
+    #                 print('No se pudo conectar con el servidor!!')
+    #                 sys.exit()
+    #             else:
+    #                 sys.stdout.write(data)
+    #         # El usuario envia un mensaje al servidor
+    #         else:
+    #             msg = sys.stdin.readline()
+    #             s.send(msg)
 
 
 if __name__ == "__main__":
