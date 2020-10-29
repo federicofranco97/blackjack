@@ -36,9 +36,10 @@ class Blackjack():
         for i in range(len(self.jugadoresActivos)):
             if self.jugadoresActivos[i] == usuario:
                 del self.jugadoresActivos[i]
-        if self.jugadorActual.usuario.nombre == usuario:
-            self.jugadorActualIndice = self.jugadorActualIndice-1
-            self.rotarJugador()
+        if not self.jugadorActual == None:
+            if self.jugadorActual.usuario.nombre == usuario:
+                self.jugadorActualIndice = self.jugadorActualIndice-1
+                self.rotarJugador()
         self.notificarJugadores("el usuario " + usuario + " abandono la sala")
 
 
