@@ -38,9 +38,9 @@ def escucharServidor(sock):
 
 
 def parsearMensajesServidor(mensajeRecibido):
-    tokens = mensajeRecibido.decode("utf-8").split("|")
-    comando = tokens[0] if len(tokens) > 0 else mensajeRecibido
-    argumentos = tokens[1:] if len(tokens) > 0 else []
+    mensajeBase = mensajeRecibido.decode("utf-8").split("|")
+    comando = mensajeBase[0] if len(mensajeBase) > 0 else mensajeRecibido
+    argumentos = mensajeBase[1:] if len(mensajeBase) > 0 else []
     if comando == "mensaje":
         test = str(argumentos).split("'")[1]
         test = test.replace("\\n","")
