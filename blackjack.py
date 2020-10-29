@@ -84,8 +84,9 @@ class Blackjack():
     """
     def empezarTimer(self):
         self.timerIniciado = True
-        segundosRestantes = 10-self.segundosTotales
-        self.notificarJugadores("empieza el juego en " + str(segundosRestantes) + " segundos")
+        segundosRestantes = 60-self.segundosTotales
+        if segundosRestantes % 10 == 0:
+            self.notificarJugadores("empieza el juego en " + str(segundosRestantes) + " segundos")
         self.segundosTotales += 1
         if segundosRestantes > 0:
             Timer(1.0, self.empezarTimer).start()
@@ -159,6 +160,7 @@ class Blackjack():
             self.notificarJugadoresActivos("La banca tiene " + self.banca.mano.obtenerDescripcionCompleta())
             self.jugadorActualIndice = 0
             self.jugadorActual = self.jugadoresActivosSet[self.jugadoresActivos[0]]
+            self.notificarJugadoresActivos("es el turno de " + self.jugadorActual.usuario.nombre)
 
 
     """
@@ -199,11 +201,13 @@ class Blackjack():
                 else:
                     _jug.enviarMensaje("Perdiste contra la banca!")
             self.segundosTotales = 0
+            self.jugadorActual = None
             self.empezarTimer()
 
         else:
             self.jugadorActualIndice += 1
             self.jugadorActual = self.jugadores[self.jugadoresActivos[self.jugadorActualIndice]]
+        self.notificarJugadoresActivos("es el turno de " + self.jugadorActual.usuario.nombre)
 
     """
         Maneja la petición de una carta, y el escenario de perdida en caso de que se exceda de los puntos.
