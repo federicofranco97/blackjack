@@ -31,7 +31,7 @@ class Blackjack():
         esta cerrado. Esto dispara remover al jugador del juego.
     """
     def removerJugador(self, usuario):
-        if self.has_key(usuario) == False:
+        if self.jugadores.has_key(usuario) == False:
             return
         del self.jugadores[usuario]
         del self.jugadoresActivosSet[usuario]
