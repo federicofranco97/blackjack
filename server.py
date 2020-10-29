@@ -14,8 +14,17 @@ class Usuario:
         self.socket = socket
         self.dinero = 0
 
+    def enviarData(self, data):
+        try:
+            self.socket.send(data.encode())
+        except:
+            pass
+
     def enviarMensaje(self, mensaje):
-        self.socket.send(str(mensaje).encode() + "\n".encode())
+        self.enviarData(str("mensaje|"+mensaje+"\n"))
+
+    def enviarEstadoPartida(self, estado):
+        self.enviarData(str("partida|"+estado))
 
 """
     La clase ejecutor esta implementada con un patron strategy. Los comandos a ejecutar implementan la misma interfaz
@@ -27,6 +36,7 @@ class Ejecutor:
         self.comandos = {
             "soy": comIdentificarUsuario,
             "estadisticas": comObtenerEstadisticas,
+            "doblar": comJuegoComando,
             "ingresar": comIngresarDinero,
             "iniciar": comJuegoComando,
             "apostar": comJuegoComando,
@@ -37,7 +47,6 @@ class Ejecutor:
 
     def ejecutar(self, comando, argumentos, socket, juego, cliente):
         ejecutorComando = self.comandos.get(comando)
-        print(str(comando))
         if ejecutorComando == None:
             return cliente.enviarMensaje("No conozco ese comando")
         if comando != "soy" and cliente.nombre == None:
@@ -62,6 +71,8 @@ def comJuegoComando(nombreComando, argumentos, socket, juego, cliente):
         return juego.iniciarPartida(cliente.nombre,)
     if nombreComando == "apostar":
         return juego.apostar(cliente.nombre, argumentos[0])
+    if nombreComando == "doblar":
+        return juego.doblar(cliente.nombre)
     if nombreComando == "pedir":
         return juego.pedir(cliente.nombre)
     if nombreComando == "plantarse":
@@ -112,11 +123,15 @@ def inicializarCliente(cliente, bg):
     usuario.enviarMensaje("Bienvenido al juego. Ingresa tu nombre con el comando soy <nombre>.\n")
     ejecutor = Ejecutor()
     while True:
-        mensajeRecibido = cliente.recv(1024)
-        tokens = mensajeRecibido.decode("utf-8").split()
-        comando = tokens[0] if len(tokens) > 0 else mensajeRecibido
-        argumentos = tokens[1:] if len(tokens) > 0 else []
-        ejecutor.ejecutar(comando, argumentos, cliente, bg, usuario)
+        try:
+            mensajeRecibido = cliente.recv(1024)
+            tokens = mensajeRecibido.decode("utf-8").split()
+            comando = tokens[0] if len(tokens) > 0 else mensajeRecibido
+            argumentos = tokens[1:] if len(tokens) > 0 else []
+            ejecutor.ejecutar(comando, argumentos, cliente, bg, usuario)
+        except:
+            if usuario.nombre != None:
+                bg.removerJugador(usuario.nombre)
 
 
 """
@@ -125,7 +140,7 @@ def inicializarCliente(cliente, bg):
 """
 
 def iniciarServidor():
-    puerto = 3031
+    puerto = 3030
     blackGame = Blackjack()
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(("",puerto))

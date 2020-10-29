@@ -1,163 +1,41 @@
 from threading import Timer
-import random
-"""
-    Subclase de excepcion, para cuando hay un nombre duplicado
-"""
-class NombreUsado(Exception):
-    pass
-
-"""
-    Clase que representa a un jugador de blackjack
-"""
-class Jugador():
-
-    def __init__(self, instanciaUsuario):
-        self.usuario = instanciaUsuario
-        self.manos = []
-        self.manoActual = None
-
-    def enviarMensaje(self, mensaje):
-        self.usuario.enviarMensaje("[Servidor] " + mensaje)
-
-    def agregarMano(self, mano):
-        self.manos.append(mano)
-
-    def iniciarTurno(self):
-        self.manos = []
-        nuevaMano = Mano()
-        self.agregarMano(nuevaMano)
-        self.manoActual = nuevaMano
-        self.enviarMensaje("Es tu turno")
-
-    def doblarApuesta(self, monto):
-        self.manoActual.apuesta *= 2
-
-    def apostar(self, monto):
-        if self.manoActual.estado == "sin_apuesta":
-            self.manoActual.apuesta = monto
-            self.manoActual.estado = "iniciada"
-        else:
-            self.enviarMensaje("Ya hiciste la apuesta")
-
-    def totalApostado(self):
-        total = 0
-        for mano in self.manos:
-            total += mano.apuesta
-        return total
-
-    def pedir(self, carta):
-        if self.manoActual.estado == "iniciada":
-            self.manoActual.agregarCarta(carta)
-            puntajeMano = self.manoActual.obtenerPuntaje()
-            self.enviarMensaje("El total de tu mano es " + str(puntajeMano))
-            return puntajeMano
-        else:
-            self.enviarMensaje("No puedes pedir una carta en este momento")
-
-    def finalizarMano(self):
-        self.manoActual.estado = "finalizada_ido"
-
-    def plantarse(self):
-        if self.manoActual.estado == "iniciada":
-            self.manoActual.estado = "esperando_banca"
-        else:
-            self.enviarMensaje("No puedes plantarse, esta mano ya esta terminada")
-
-
-
-
-"""
-    Clase que representa una mano
-"""
-class Mano():
-
-    def __init__(self):
-        self.apuesta = 0
-        self.estado = "sin_apuesta"
-        self.cartas = []
-
-    def agregarApuesta(self, monto):
-        self.apuesta += monto
-
-    def agregarCarta(self, carta):
-        self.cartas.append(carta)
-
-    def obtenerPuntaje(self):
-        total = 0
-        for carta in self.cartas:
-            valor = carta.valor
-            if valor == 11 or valor == 12 or valor == 13:
-                total += 10
-            elif valor == 14:
-                if total >= 11: total += 1
-                if total < 11: total += 11
-            else:
-                total += valor
-        return total
-
-
-"""
-    Clase que representa a una carta
-"""
-class Carta():
-
-    def __init__(self, valor, palo):
-        self.valor = valor
-        self.palo = palo
-
-class Mazo():
-
-    def __init__(self):
-        self.cartas = []
-
-    def shuffle(self):
-        mix = []
-        for z in range(4):
-            for x in range(13):
-                for y in range(4):
-                    mix.append(Carta(x, y))
-        print(len(mix))
-        random.shuffle(mix)
-        self.cartas = mix.copy()
-
-    def proximaCarta(self):
-        return self.cartas.pop()
-
+from mazo import Mazo, Carta, Mano
+from excepciones import NombreUsado, DineroInsuficiente, ApuestaRealizada, JugadorInexistente, ComandoNoPermitido
+from jugador import Jugador, Banca
+import copy
 
 """
     Coordinador del juego
 """
+
 class Blackjack():
 
     def __init__(self):
+        self.estadoActual = None
         self.jugadores = {}
         self.jugadoresActivos = {}
+        self.jugadoresActivosSet = {}
+        self.jugadorActualIndice = None
         self.jugadoresEsperando = {}
         self.rondaActiva = False
         self.interrumpirTimer = False
         self.jugadorActual = None
-        self.iterador = None
         self.timerIniciado = False
+        self.banca = Banca()
         self.segundosTotales = 0
         self.mazo = None
 
-    def empezarTimer(self):
-        self.timerIniciado = True
-        segundosRestantes = 60-self.segundosTotales
-        self.notificarJugadores("Empieza el juego en " + str(segundosRestantes) + "segundos")
-        self.segundosTotales += 1
-        if segundosRestantes > 0:
-            Timer(1.0, self.empezarTimer).start()
-        else:
-            self.timerIniciado = False
-            self.rondaActiva = True
-            self.mazo = Mazo()
-            self.mazo.shuffle()
-            self.jugadoresActivos = self.jugadores.copy()
-            self.iterador = iter(self.jugadoresActivos)
-            self.jugadorActual = self.jugadoresActivos[next(self.iterador)]
-            self.jugadorActual.iniciarTurno()
-            
+    def removerJugador(self, usuario):
+        del self.jugadores[usuario]
+        del self.jugadoresActivosSet[usuario]
+        for i in range(len(self.jugadoresActivos)):
+            if self.jugadoresActivos[i] == usuario:
+                del self.jugadoresActivos[i]
+        if self.jugadorActual.usuario.nombre == usuario:
+            self.jugadorActualIndice = self.jugadorActualIndice-1
+            self.rotarJugador()
+        self.notificarJugadores("el usuario " + usuario + " abandono la sala")
+
 
     def _notificarJugadores(self, jugadores, mensaje):
         for jug in jugadores:
@@ -167,74 +45,160 @@ class Blackjack():
         self._notificarJugadores(self.jugadores, mensaje)
 
     def notificarJugadoresActivos(self, mensaje):
-        self._notificarJugadores(self.jugadoresActivos, mensaje)
+        self._notificarJugadores(self.jugadoresActivosSet, mensaje)
+
+    def _obtenerJugador(self, nombre):
+        jugador = self.jugadores[nombre]
+        if jugador == None:
+            raise JugadorInexistente()
+        return jugador
+
+    def _esJugadorActual(self, nombre):
+        if self.jugadorActual == None:
+            return False
+        return self.jugadorActual.usuario.nombre == nombre
+
+    def empezarTimer(self):
+        self.timerIniciado = True
+        segundosRestantes = 10-self.segundosTotales
+        self.notificarJugadores("empieza el juego en " + str(segundosRestantes) + " segundos")
+        self.segundosTotales += 1
+        if segundosRestantes > 0:
+            Timer(1.0, self.empezarTimer).start()
+        else:
+            self.timerIniciado = False
+            self.rondaActiva = True
+            self.mazo = Mazo()
+            self.mazo.mezclar()
+            self.jugadoresActivosSet = self.jugadores.copy()
+            self.jugadoresActivos = list(self.jugadoresActivosSet)
+            self.estadoActual = "pendiente_apuestas"
+            self.banca.iniciarTurno()
+            for i in self.jugadoresActivos:
+                self.jugadoresActivosSet[i].esperandoApuesta()
 
     def decidirUsuario(self, jugador):
         if self.rondaActiva == True:
             self.jugadoresEsperando[jugador.usuario.nombre] = jugador
-            jugador.enviarMensaje("Hay una ronda activa, una vez finalizada se te unirá automaticamnete. Puedes irte de la espera con el comando retirarse")
+            jugador.enviarMensaje("hay una ronda activa, una vez finalizada se te unirá automaticamente. Puedes irte de la espera cerrando la conexion.")
         else:
             if self.timerIniciado == False:
-                jugador.enviarMensaje("Iniciando cuenta regresiva para iniciar el juego")
+                jugador.enviarMensaje("iniciaremos cuenta regresiva para iniciar el juego")
                 self.empezarTimer()
             else:
-                jugador.enviarMensaje("Una vez finalizada la cuenta regresiva")
-
+                jugador.enviarMensaje("una vez finalizada la cuenta regresiva")
 
     def agregarJugador(self, usuario):
         if usuario.nombre in self.jugadores:
             usuario.enviarMensaje("Ya existe un usuario con ese nombre")
-        self.interrumpirTimer = True
-        nuevoJugador = Jugador(usuario)
-        nuevoJugador.enviarMensaje("Bienvenido " + usuario.nombre + "")
-        self.jugadores[usuario.nombre] = nuevoJugador
-        self.notificarJugadores(usuario.nombre + " se unio al juego")
-        self.decidirUsuario(nuevoJugador)
+        else:
+            self.interrumpirTimer = True
+            nuevoJugador = Jugador(usuario)
+            nuevoJugador.enviarMensaje("Bienvenido " + usuario.nombre + "")
+            self.jugadores[usuario.nombre] = nuevoJugador
+            self.notificarJugadores(usuario.nombre + " se unio al juego")
+            self.decidirUsuario(nuevoJugador)
     
     def obtenerEstadisticas(self):
         cantJugadores = "Cantidad jugadores: " + str(len(self.jugadores))
         return cantJugadores
 
+    def _deberiaEmpezar(self):
+        apuestasPendientes = 0
+        for i in self.jugadoresActivos:
+            if self.jugadoresActivosSet[i].apuestaInicial == None:
+                apuestasPendientes += 1
+        if apuestasPendientes == 0:
+            for ronda in range(2):
+                for indiceAct in range(len(self.jugadoresActivos)):
+                    nombreJugador = self.jugadoresActivos[indiceAct]
+                    jugadorActual = self.jugadoresActivosSet[nombreJugador]
+                    proximaCarta = self.mazo.proximaCarta()
+                    jugadorActual.pedir(proximaCarta)
+                cartaBanca = self.mazo.proximaCarta()
+                if ronda == 1:
+                    cartaBanca.visible = False
+                self.banca.mano.agregarCarta(cartaBanca)
+            self.notificarJugadoresActivos("La banca tiene " + self.banca.mano.obtenerDescripcionCompleta())
+            self.jugadorActualIndice = 0
+            self.jugadorActual = self.jugadoresActivosSet[self.jugadoresActivos[0]]
+
+
     def apostar(self, usuario, monto):
-        if not self.jugadorActual.usuario.nombre  == usuario:
-            usuario.enviarMensaje("No es tu turno")
-        else:
-            self.jugadorActual.apostar(monto)
+        _jugador = self._obtenerJugador(usuario)
+        try:
+            _jugador.apostar(monto)
+            self._deberiaEmpezar()
+        except DineroInsuficiente:
+            _jugador.enviarMensaje("No tienes el dinero suficiente")
+        except ApuestaRealizada:
+            _jugador.enviarMensaje("Ya realizaste la apuesta de esta mano")
 
     def rotarJugador(self):
-        self.jugadorActual = self.jugadoresActivos[next(self.iterador)]
-        self.jugadorActual.iniciarTurno()
+        if len(self.jugadoresActivos) == (self.jugadorActualIndice+1):
+            self.notificarJugadoresActivos("ahora jugara la banca")
+            self.banca.mano.mostrarTodas()
+            self.notificarJugadoresActivos("la banca mostrar su carta oculta")
+            self.notificarJugadoresActivos("la banca tiene: " + self.banca.mano.obtenerDescripcionCompleta())
+            while self.banca.mano.obtenerPuntaje() <= 16:
+                proxCarta = self.mazo.proximaCarta()
+                self.banca.mano.agregarCarta(proxCarta)
+                self.notificarJugadoresActivos("la banca tiene: " + self.banca.mano.obtenerDescripcionCompleta())
+            puntaje = self.banca.mano.obtenerPuntaje()
+            for jugador in self.jugadoresActivos:
+                _jug = self.jugadoresActivosSet[jugador]
+                if _jug.estadoActual == "finalizado_pendiente" and (_jug.manoActual.obtenerPuntaje() > puntaje or puntaje > 21):
+                    _jug.darGanancia(2)
+                    _jug.enviarMensaje("Felicitaciones! Ganaste!")
+                elif puntaje == _jug.manoActual.obtenerPuntaje():
+                    _jug.darGanancia(1)
+                    _jug.enviarMensaje("es un empate, recuperaste lo aposado!")
+                else:
+                    _jug.enviarMensaje("Perdiste contra la banca!")
+            self.segundosTotales = 0
+            self.empezarTimer()
+
+        else:
+            self.jugadorActualIndice += 1
+            self.jugadorActual = self.jugadores[self.jugadoresActivos[self.jugadorActualIndice]]
 
     def pedir(self, usuario):
-        if not self.jugadorActual.usuario.nombre  == usuario:
-            usuario.enviarMensaje("No es tu turno")
+        _jugador = self._obtenerJugador(usuario)
+        if self._esJugadorActual(usuario) == False:
+            _jugador.enviarMensaje("No es tu turno")
         else:
             proxima = self.mazo.proximaCarta()
-            puntajeTotal = self.jugadorActual.pedir(proxima)
+            puntajeTotal = _jugador.pedir(proxima)
             if puntajeTotal > 21:
-                self.jugadorActual.finalizarMano()
+                _jugador.enviarMensaje("Finalizo tu mano con un puntaje de " + _jugador.manoActual.obtenerDescripcionCompleta())
+                _jugador.marcarComoPerdedor()
                 self.rotarJugador()
 
-
-
     def plantarse(self, usuario):
+        _jugador = self._obtenerJugador(usuario)
         if not self.jugadorActual.usuario.nombre  == usuario:
-            usuario.enviarMensaje("No es tu turno")
+            _jugador.enviarMensaje("No es tu turno")
         else:
             self.jugadorActual.plantarse()
             self.rotarJugador()
 
     def doblar(self, usuario):
+        _jugador = self._obtenerJugador(usuario)
         if not self.jugadorActual.usuario.nombre  == usuario:
-            usuario.enviarMensaje("No es tu turno")
+            _jugador.enviarMensaje("No es tu turno")
         else:
-            self.jugadorActual.manoActual.doblarApuesta()
-            proxima = self.mazo.proximaCarta()
-            puntajeTotal = self.jugadorActual.pedir(proxima)
-            if puntajeTotal > 21:
-                self.jugadorActual.finalizarMano()
-                self.jugadorActual.enviarMensaje("Perdiste con un puntaje de " + str(puntajeTotal))
-            self.rotarJugador()            
+            try:
+                self.jugadorActual.doblarApuesta()
+                proxima = self.mazo.proximaCarta()
+                puntajeTotal = self.jugadorActual.pedir(proxima)
+                if puntajeTotal > 21:
+                    self.jugadorActual.marcarComoPerdedor()
+                    self.jugadorActual.enviarMensaje("Finalizaste con un puntaje de " + _jugador.manoActual.obtenerDescripcionCompleta())
+                else:
+                    self.jugadorActual.plantarse()
+                self.rotarJugador()    
+            except DineroInsuficiente:
+                _jugador.enviarMensaje("Dinero insuficiente")        
 
         
 
