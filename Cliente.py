@@ -59,25 +59,25 @@ def inicioCliente():
         return
     print("Conectado, bienvenido al servidor!")
 
-    # name = raw_input("Por favor ingrese su nombre: ")
-    # si se pudo conectar, envio el nombre del jugador
-    # s.send(bytes(name, 'utf-8'))
-    # imprimirEstadoServidor()
-    data = sock.recv(4096)
-    if not data:
-        print('Ocurrio un error de conexion con el servidor!!')
-        sys.exit()
-    else:
-        # Primera respuesta del servidor (Ingresa tu nombre)
-        print(str(data), ":")
-        name = raw_input()
-        sock.send(name.encode())
+    print("Separo el thread")
+    start_new_thread(escucharServidor,(sock,))
 
-    start_new_thread(escucharServidor(sock))
-    while 1:
+    # # si se pudo conectar, envio el nombre del jugador
+    # data = sock.recv(4096)
+    # if not data:
+    #     print('Ocurrio un error de conexion con el servidor!!')
+    #     sys.exit()
+    # else:
+    #     # Primera respuesta del servidor (Ingresa tu nombre)
+    #     print(str(data), ":")
+    #     name = raw_input()
+    #     sock.send(name.encode())
+    # start_new_thread(escucharServidor(sock))
+
+    while True:
         newMsg = sys.stdin.readline()
-        s.send(newMsg.encode())
-
+        sock.send(newMsg.encode())
+    sock.close()
 
 if __name__ == "__main__":
     inicioCliente()
