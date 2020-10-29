@@ -5,6 +5,7 @@ import socket
 import sys
 from _thread import *
 import logging
+import re
 
 from pip._vendor.distlib.compat import raw_input
 
@@ -42,7 +43,11 @@ def parsearMensajesServidor(mensajeRecibido):
     argumentos = tokens[1:] if len(tokens) > 0 else []
     if comando == "mensaje":
         test = str(argumentos).split("'")[1]
-        return test.replace('\n', ' ').replace('\r', '')
+        test = test.replace("\\n","")
+        # for i in test:
+        #     if i == "\n":
+        #         test.remove(i)
+        return test
     else:
         return str(argumentos)
 
