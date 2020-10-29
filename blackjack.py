@@ -5,7 +5,8 @@ from jugador import Jugador, Banca
 import copy
 
 """
-    Coordinador del juego
+    Coordinador del juego. Se encarga de todo aquello que excede los limites del jugador en si mismo. Coordina las rondas y mantiene
+    el estado general del kjuego.
 """
 
 class Blackjack():
@@ -25,6 +26,10 @@ class Blackjack():
         self.segundosTotales = 0
         self.mazo = None
 
+    """
+        Esta funcion se llama desde el thread que esta escuchando el socket de los usuarios cuando no puede enviar un mensaje porque el socket
+        esta cerrado. Esto dispara remover al jugador del juego.
+    """
     def removerJugador(self, usuario):
         del self.jugadores[usuario]
         del self.jugadoresActivosSet[usuario]
@@ -37,27 +42,46 @@ class Blackjack():
         self.notificarJugadores("el usuario " + usuario + " abandono la sala")
 
 
+    """
+        Esta funcion se utiliza para enviar un mensaje a una lista de jugadores. Es una funcion pseudo-privada, no deberia ser llamada directamente, sino
+        a traves de notificarJugadores o notificarJugadoresActivos.
+    """
     def _notificarJugadores(self, jugadores, mensaje):
         for jug in jugadores:
             jugadores[jug].enviarMensaje(mensaje)
 
+    """
+        Esta funcion envia un mensaje a todos los jugadores, activos o no.
+    """
     def notificarJugadores(self, mensaje):
         self._notificarJugadores(self.jugadores, mensaje)
 
+    """
+        Esta funcion envia un mensaje a los jugadores que estan participando de la ronda.
+    """
     def notificarJugadoresActivos(self, mensaje):
         self._notificarJugadores(self.jugadoresActivosSet, mensaje)
 
+    """
+        Obtiene la referencia de un jugador para utilizarlo.
+    """
     def _obtenerJugador(self, nombre):
         jugador = self.jugadores[nombre]
         if jugador == None:
             raise JugadorInexistente()
         return jugador
 
+    """
+        Devuelve verdadero si el jugador actual tiene el nombre del argumento.
+    """
     def _esJugadorActual(self, nombre):
         if self.jugadorActual == None:
             return False
         return self.jugadorActual.usuario.nombre == nombre
 
+    """
+        Empieza la cuenta regresiva para iniciar el juego, y resetea el estado general del mismo.
+    """
     def empezarTimer(self):
         self.timerIniciado = True
         segundosRestantes = 10-self.segundosTotales
@@ -77,6 +101,9 @@ class Blackjack():
             for i in self.jugadoresActivos:
                 self.jugadoresActivosSet[i].esperandoApuesta()
 
+    """
+        Cuando se conecta un usuario nuevo, esta funcion decide si colocarlo en la lista de espera o no.
+    """
     def decidirUsuario(self, jugador):
         if self.rondaActiva == True:
             self.jugadoresEsperando[jugador.usuario.nombre] = jugador
@@ -88,6 +115,9 @@ class Blackjack():
             else:
                 jugador.enviarMensaje("una vez finalizada la cuenta regresiva")
 
+    """
+        Esta funcion maneja la peticion de agregar un jugador al juego.
+    """
     def agregarJugador(self, usuario):
         if usuario.nombre in self.jugadores:
             usuario.enviarMensaje("Ya existe un usuario con ese nombre")
@@ -99,10 +129,17 @@ class Blackjack():
             self.notificarJugadores(usuario.nombre + " se unio al juego")
             self.decidirUsuario(nuevoJugador)
     
+    """
+        Devuelve la cantidad de jugadores
+    """
     def obtenerEstadisticas(self):
         cantJugadores = "Cantidad jugadores: " + str(len(self.jugadores))
         return cantJugadores
 
+    """
+        Funciona que chequea si el juego debe comenzar, es decir, si el resto de los participanes ya hizo una apuesta.
+        De haber hecho todas las apuestas, se reparten las priemras cartas.
+    """
     def _deberiaEmpezar(self):
         apuestasPendientes = 0
         for i in self.jugadoresActivos:
@@ -124,6 +161,9 @@ class Blackjack():
             self.jugadorActual = self.jugadoresActivosSet[self.jugadoresActivos[0]]
 
 
+    """
+        Esta funcion maneja la peticion de apuesta de los usuarios.
+    """
     def apostar(self, usuario, monto):
         _jugador = self._obtenerJugador(usuario)
         try:
@@ -134,6 +174,9 @@ class Blackjack():
         except ApuestaRealizada:
             _jugador.enviarMensaje("Ya realizaste la apuesta de esta mano")
 
+    """
+        Funcion que rota los jugadores y, en caso que ya no queden mas para rotar, hace jugar a la banca.
+    """
     def rotarJugador(self):
         if len(self.jugadoresActivos) == (self.jugadorActualIndice+1):
             self.notificarJugadoresActivos("ahora jugara la banca")
@@ -162,6 +205,9 @@ class Blackjack():
             self.jugadorActualIndice += 1
             self.jugadorActual = self.jugadores[self.jugadoresActivos[self.jugadorActualIndice]]
 
+    """
+        Maneja la petición de una carta, y el escenario de perdida en caso de que se exceda de los puntos.
+    """
     def pedir(self, usuario):
         _jugador = self._obtenerJugador(usuario)
         if self._esJugadorActual(usuario) == False:
@@ -174,6 +220,9 @@ class Blackjack():
                 _jugador.marcarComoPerdedor()
                 self.rotarJugador()
 
+    """
+        Maneja la petición de plantarse
+    """
     def plantarse(self, usuario):
         _jugador = self._obtenerJugador(usuario)
         if not self.jugadorActual.usuario.nombre  == usuario:
@@ -182,6 +231,9 @@ class Blackjack():
             self.jugadorActual.plantarse()
             self.rotarJugador()
 
+    """
+        Maneja la petición de doblar la apuesta. Solo puede hacerlo si tiene el dinero suficiente
+    """
     def doblar(self, usuario):
         _jugador = self._obtenerJugador(usuario)
         if not self.jugadorActual.usuario.nombre  == usuario:
