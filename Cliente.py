@@ -44,9 +44,6 @@ def parsearMensajesServidor(mensajeRecibido):
     if comando == "mensaje":
         test = str(argumentos).split("'")[1]
         test = test.replace("\\n","")
-        # for i in test:
-        #     if i == "\n":
-        #         test.remove(i)
         return test
     else:
         return str(argumentos)
@@ -74,7 +71,6 @@ def inicioCliente():
         return
     print("Conectado, bienvenido al servidor!")
 
-    print("Separo el thread")
     start_new_thread(escucharServidor, (sock,))
     while True:
         newMsg = sys.stdin.readline()
