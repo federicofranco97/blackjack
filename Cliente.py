@@ -41,10 +41,13 @@ def parsearMensajesServidor(mensajeRecibido):
     mensajeBase = mensajeRecibido.decode("utf-8").split("|")
     comando = mensajeBase[0] if len(mensajeBase) > 0 else mensajeRecibido
     argumentos = mensajeBase[1:] if len(mensajeBase) > 0 else []
-    if comando == "mensaje":
-        test = str(argumentos).split("'")[1]
-        test = test.replace("\\n","")
-        return test
+    if comando == "comandos" or comando == "status" or comando =="mensaje":
+        formateo = str(argumentos).split("'")[1]
+        return formateo.replace("\\n","")
+    elif comando == "mano":
+        print("")
+    elif comando == "jugadores":
+        print("")
     else:
         return str(argumentos)
 
