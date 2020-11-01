@@ -48,9 +48,40 @@ def parsearMensajesServidor(mensajeRecibido):
         for x in argumentos:
             subcomando = str(x).split(":")[0]
             subargumentos = str(x).split(":")[1:]
-            
+            parsearSubComando(subcomando, subargumentos)
     else:
         return str(argumentos)
+
+
+"""
+    Metodo que se encarga de parsear los subcomandos que lleguen 
+    a lo largo de la partida
+"""
+
+
+def parsearSubComando(subcom, args):
+    if subcom == "mano":
+        mano = parsearMano(args)
+        puntaje = str(args).split('#')[1]
+        return mano + " Y su puntaje es: " + puntaje
+    elif subcom == "jugadores":
+        listadoJugadores = str(args).split("#")
+        return ""
+    elif subcom == "":
+        return ""
+    else:
+        return ""
+
+
+def parsearJugadores(jugs):
+    for j in jugs:
+        props = (str(j).replace("{", "").replace("}", "")).split(",")
+
+
+def parsearMano(arg):
+    mensaje = "Su mano es: "
+    manoparse = (str(arg).split('#')[0]).replace("{", "").replace("}", "")
+    return mensaje + manoparse
 
 
 """
