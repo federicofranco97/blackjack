@@ -142,7 +142,7 @@ class Blackjack():
 
     """
         Funciona que chequea si el juego debe comenzar, es decir, si el resto de los participanes ya hizo una apuesta.
-        De haber hecho todas las apuestas, se reparten las priemras cartas.
+        De haber hecho todas las apuestas, se reparten las primeras cartas.
     """
     def _deberiaEmpezar(self):
         apuestasPendientes = 0
