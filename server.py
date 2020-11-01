@@ -153,5 +153,7 @@ def iniciarServidor():
         start_new_thread(inicializarCliente, (cliente, blackGame))
     sock.close()
 
+
+
 if __name__ == "__main__":
     iniciarServidor()

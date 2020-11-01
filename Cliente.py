@@ -6,11 +6,16 @@ import sys
 from _thread import *
 import logging
 import re
+from datetime import date, datetime
 
 from pip._vendor.distlib.compat import raw_input
 
+from gui import *
+from guiViewModel import guiViewModel
+
 hayJugadoresEnEspera = False
 hayPartidaEnCurso = True
+vm = guiViewModel()
 
 """
     Metodo que escucha el socket del servidor y se dedica a imprimir los mensajes parseados que 
@@ -81,4 +86,9 @@ def inicioCliente():
 
 
 if __name__ == "__main__":
+
+    start_new_thread(mostrarInterfaz, (vm,))
+    while True:
+        setTurnoActual(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+        vm.Puntaje = 1000
     inicioCliente()
