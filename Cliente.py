@@ -16,8 +16,8 @@ from guiViewModel import GuiViewModel
 
 hayJugadoresEnEspera = False
 hayPartidaEnCurso = True
-vm = GuiViewModel()
 
+vm = GuiViewModel()
 """
     Metodo que escucha el socket del servidor y se dedica a imprimir los mensajes parseados que 
     recibe del servidor.
@@ -90,6 +90,7 @@ def parsearMano(arg):
     return mensaje + manoparse
 
 def pedirCarta():
+    print("pedir carta")
     return
 
 
@@ -120,8 +121,13 @@ def inicioCliente():
 
 if __name__ == "__main__":
 
+    vm.ee.on("pedirCartaEvent", pedirCarta)
+
     start_new_thread(mostrarInterfaz, (vm,))
-    vm.observe('pedirCartaEvent', pedirCarta)
+
+
+    #EventManager.pedirCartaEvent += pedirCarta
+    #vm.observe('pedirCartaEvent', pedirCarta)
     while True:
         time.sleep(1)
         vm.Jugador = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -134,6 +140,6 @@ if __name__ == "__main__":
             botones.append("plantarse")
         if (boton == 3):
             botones.append("doblar")
-        vm.onRefreshButtons(botones)
+        #vm.onRefreshButtons(botones)
         vm.MisCartas = [{ "P": random.randint(1, 4), "V": random.randint(1, 14)}, { "P": random.randint(1, 4), "V": random.randint(1, 14)}]
     inicioCliente()

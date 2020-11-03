@@ -1,6 +1,8 @@
+import os
 import time
 import tkinter as tk
 from _thread import start_new_thread
+import playsound
 
 
 def mostrarInterfaz(view):
@@ -28,7 +30,7 @@ def mostrarInterfaz(view):
     labelCartas = tk.Label(root, textvariable=miscartas)
     labelCartas.pack()
 
-    view.observe('refreshButtonsEvent', lambda: RefreshButtonsStatus(view, btnApostar, btnPedir, btnPlantarse))
+    #view.observe('refreshButtonsEvent', lambda: RefreshButtonsStatus(view, btnApostar, btnPedir, btnPlantarse))
 
     #start_new_thread(refreshGUI,(view, titulo, miscartas))
 
@@ -36,6 +38,7 @@ def mostrarInterfaz(view):
 
 def TestMethod(view):
     print('asd')
+    start_new_thread(play, ())
     view.onPedirCarta()
 
 def RefreshButtonsStatus(view, btnApostar, btnPedir, btnPlantarse):
@@ -54,7 +57,9 @@ def RefreshButtonsStatus(view, btnApostar, btnPedir, btnPlantarse):
     else:
         btnPlantarse.config(state="disabled")
 
-
+def play():
+    soundurl = os.path.join("sounds", "myTurn.mp3")
+    playsound.playsound(soundurl)
 
 def refreshGUI(pView, pTitulo, pMisCartas):
     while True:

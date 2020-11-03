@@ -1,3 +1,4 @@
+"""
 class Observer:
     _observers = []
 
@@ -16,24 +17,28 @@ class Event:
                 if observable['event_name'] == event_name:
                     observable['callback_fn'](*callback_args)
 
+"""
+from pymitter import EventEmitter
 
 
-class GuiViewModel(Observer):
+class GuiViewModel():
     def __init__(self):
+        self.ee = EventEmitter()
         self.MiNombre = "sebastian"
         self.MiPuntaje = 100
         self.MisCartas = []
         self.Turno = "sebastian"
         self.Acciones = []
-
-        Observer.__init__(self)
+        #Observer.__init__(self)
 
     def onPedirCarta(self):
-        Event('pedirCartaEvent')
+        self.ee.emit("pedirCartaEvent", );
+        #Event('pedirCartaEvent')
 
     def onRefreshButtons(self, botones):
         self.Acciones = botones
-        Event('refreshButtonsEvent')
+        self.ee.emit("refreshButtonsEvent", (botones))
+        #Event('refreshButtonsEvent')
 
 
 
