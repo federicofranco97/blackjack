@@ -7,15 +7,16 @@ from _thread import *
 import logging
 import re
 from datetime import date, datetime
+import time
 
 from pip._vendor.distlib.compat import raw_input
 
 from gui import *
-from guiViewModel import guiViewModel
+from guiViewModel import GuiViewModel
 
 hayJugadoresEnEspera = False
 hayPartidaEnCurso = True
-vm = guiViewModel()
+vm = GuiViewModel()
 
 """
     Metodo que escucha el socket del servidor y se dedica a imprimir los mensajes parseados que 
@@ -88,13 +89,14 @@ def parsearMano(arg):
     manoparse = (str(arg).split('#')[0]).replace("{", "").replace("}", "")
     return mensaje + manoparse
 
+def pedirCarta():
+    return
+
 
 """
     Metodo que inicializa el cliente, solicita los datos principales como ip del servidor,
     puerto, y luego de realizar la conexion pide el nombre de usuario
 """
-
-
 def inicioCliente():
     print("Bienvenido al servidor de BlackJack")
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -119,7 +121,19 @@ def inicioCliente():
 if __name__ == "__main__":
 
     start_new_thread(mostrarInterfaz, (vm,))
+    vm.observe('pedirCartaEvent', pedirCarta)
     while True:
-        setTurnoActual(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+        time.sleep(1)
+        vm.Jugador = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         vm.Puntaje = 1000
+        botones = []
+        boton = random.randint(1, 10)
+        if (boton == 1):
+            botones.append("pedir")
+        if (boton == 2):
+            botones.append("plantarse")
+        if (boton == 3):
+            botones.append("doblar")
+        vm.onRefreshButtons(botones)
+        vm.MisCartas = [{ "P": random.randint(1, 4), "V": random.randint(1, 14)}, { "P": random.randint(1, 4), "V": random.randint(1, 14)}]
     inicioCliente()
