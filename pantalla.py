@@ -53,9 +53,13 @@ class PantallaPrincipal:
         
         self.inicializarFrames()
         self.inicializarBotones()
-        
+        self.inicializarEnvioMensajes()  
+             
         return
     
+    def modoEspera(self):
+        
+        return
 
     def inicializarFrames(self):
         
@@ -74,9 +78,10 @@ class PantallaPrincipal:
         self.framePanelInferior['bg']='green'
 
 
-        self.frameBotones = tk.Frame(self.framePanelSuperior, width = 1024, height = 50)
+        self.frameBotones = tk.Frame(self.framePanelSuperior, width = 1024, height = 30)
         self.frameBotones.pack(side=tk.TOP)
         self.frameBotones['bg']='green'
+        self.frameBotones.pack_propagate(0) 
         
         self.framePanel = tk.Frame(self.framePanelSuperior, width = 1024, height = 668)
         self.framePanel.pack(side=tk.BOTTOM)
@@ -184,75 +189,161 @@ class PantallaPrincipal:
 
     def inicializarBotones(self):
 
-        frame = self.frameBotones
-        self.buttonConectar= tk.Button(frame, 
+        ancho = 13
+        colorFront = "white"
+        colorBack = "medium blue"
+        self.buttonConectar= tk.Button(self.frameBotones, width = ancho, height = 20,
                            text="CONECTAR",
-                           fg="red",
-                           bg="white",
-                           command=self.test)
+                           fg=colorFront,
+                           bg=colorBack,
+                           font=("Arial Bold", 9),
+                           command=self.btConectar)
         self.buttonConectar.pack(side=tk.LEFT)
-        self.buttonIngresar = tk.Button(frame, 
+        self.buttonIngresar = tk.Button(self.frameBotones, width = ancho, height = 20, 
                            text="INGRESAR", 
-                           fg="red",
-                           command=self.test)
+                           fg=colorFront,
+                           bg=colorBack,
+                           font=("Arial Bold", 9),
+                           command=self.btIngresar)
         self.buttonIngresar.pack(side=tk.LEFT)
-        self.buttonPedir = tk.Button(frame, 
+        self.buttonPedir = tk.Button(self.frameBotones, width = ancho, height = 20,
                            text="PEDIR", 
-                           fg="red",
-                           command=self.test)
+                           fg=colorFront,
+                           bg=colorBack,
+                           font=("Arial Bold", 9),
+                           command=self.btPedir)
         self.buttonPedir.pack(side=tk.LEFT)
-        self.buttonPlantarse = tk.Button(frame, 
+        self.buttonPlantarse = tk.Button(self.frameBotones, width = ancho, height = 20,
                            text="PLANTARSE", 
-                           fg="red",
-                           command=self.test)
+                           fg=colorFront,
+                           bg=colorBack,
+                           font=("Arial Bold", 9),
+                           command=self.btPlantarse)
         self.buttonPlantarse.pack(side=tk.LEFT)
-        self.buttonSeparar = tk.Button(frame,
+        self.buttonSeparar = tk.Button(self.frameBotones, width = ancho, height = 20,
                            text="SEPARAR",
-                           fg="red",                                       
-                           command=self.test)
+                           fg=colorFront,
+                           bg=colorBack,
+                           font=("Arial Bold", 9),
+                           command=self.btSeparar)
         self.buttonSeparar.pack(side=tk.LEFT)
-        self.buttonFondear = tk.Button(frame, 
-                           text="FONDEAR", 
-                           fg="red",
-                           command=quit)
-        self.buttonFondear.pack(side=tk.LEFT)
-        self.buttonApostar = tk.Button(frame, 
+        self.buttonApostar = tk.Button(self.frameBotones, width = ancho, height = 20,
                            text="APOSTAR", 
-                           fg="red",
-                           command=quit)
+                           fg=colorFront,
+                           bg=colorBack,
+                           font=("Arial Bold", 9),
+                           command=self.btApostar)
         self.buttonApostar.pack(side=tk.LEFT)
-        self.buttonDoblar = tk.Button(frame, 
+        self.labelPesos = tk.Label(self.frameBotones, text="$",width = 3, height = 20,
+                           fg=colorFront,
+                           bg=colorBack,
+                           font=("Arial Bold", 9))
+        self.labelPesos.pack(side=tk.LEFT)
+        self.scrolledMonto = tk.Text(self.frameBotones, width = 8, height = 18, 
+                           fg=colorFront,
+                           bg=colorBack,
+                           font=("Arial Bold", 15))
+        self.scrolledMonto.pack(side=tk.LEFT)
+        self.buttonFondear = tk.Button(self.frameBotones, width = ancho, height = 20,
+                           text="FONDEAR", 
+                           fg=colorFront,
+                           bg=colorBack,
+                           font=("Arial Bold", 9),
+                           command=self.btFondear)
+        self.buttonFondear.pack(side=tk.LEFT)
+        self.buttonDoblar = tk.Button(self.frameBotones, width = ancho, height = 20,
                            text="DOBLAR", 
-                           fg="red",
-                           command=quit)
+                           fg=colorFront,
+                           bg=colorBack,
+                           font=("Arial Bold", 9),
+                           command=self.btDoblar)
         self.buttonDoblar.pack(side=tk.LEFT)
-        self.buttonSalir = tk.Button(frame, 
+        self.buttonSalir = tk.Button(self.frameBotones, width = ancho, height = 20,
                            text="SALIR", 
-                           fg="red",
+                           fg=colorFront,
+                           bg=colorBack,
+                           font=("Arial Bold", 9),
                            command=quit)
         self.buttonSalir.pack(side=tk.LEFT)
         
         return
+
+    def btConectar(self):
+        
+        #self.model.onConecta()
+       
+        return
     
+    
+    def btIngresar(self):
+        
+        self.model.onPedirCarta()
+       
+        return
+    
+    
+    def btPedir(self):
+ 
+        self.model.onPedirCarta()
+       
+        return
+    
+    
+    def btPlantarse(self):
+        
+        self.model.onPlantarse()
+       
+        return
+    
+    
+    def btSeparar(self):
+        
+        self.model.onSeparar()
+       
+        return
+    
+    
+    def btFondear(self):
+        
+        monto = self.scrolledMonto.get("1.0", tk.END)
+        self.model.onFondear(monto)
+        self.scrolledMonto.delete("0.0", tk.END)
+       
+        return
+    
+    
+    def btApostar(self):
+        
+        monto = self.scrolledMonto.get("1.0", tk.END)
+        self.model.onApostar(monto)
+        self.scrolledMonto.delete("0.0", tk.END)
+       
+        return
+    
+    
+    def btDoblar(self):
+        
+        self.model.onDoblar()
+       
+        return    
+
     
     def enviarMensaje(self):
         
         mensaje = self.entryEnvioMensajes.get("1.0", tk.END)
         self.entryEnvioMensajes.delete("0.0", tk.END)
         self.modificarMensajes(mensaje)
+        self.model.onEnviarMensaje(mensaje)
                 
         return
 
-    def cargarEnvioMensajes(self):
-    
-        #self.entryEnvioMensajes = tk.Entry(self.frameMenuEntry, width=338)
-        #self.entryEnvioMensajes.pack()
-        
+
+    def inicializarEnvioMensajes(self):
+      
         self.entryEnvioMensajes = ScrolledText(self.frameMenuEntry, 
                                     font=("Arial Bold", 10))
         self.entryEnvioMensajes.pack()
 
-        #self.frameMensaje.create_window(340, 50, window=self.entryEnvioMensajes)
         self.buttonEnviarMensaje = tk.Button(self.frameMenuButton, width = 48, height = 48,
                            text="ENVIAR", 
                            fg="white",
@@ -261,7 +352,8 @@ class PantallaPrincipal:
         self.buttonEnviarMensaje.pack()
         
         return
-        
+
+
     def modificarScore(self, score):
         
         self.score.set(score)
@@ -395,14 +487,8 @@ if __name__ == "__main__":
     bjScreen.cargarEstado("Jugar")
     bjScreen.cargarJugadores("Quique: Esperando\nSeba: Esperando\nFede G: Esperando\nFede F: Jugando\nRichard: Esperando")
     bjScreen.cargarMensajes("Quique: Esperando...\n")
-    bjScreen.cargarEnvioMensajes()
     listaCartas = ['1_3', '2_4', '3_5']
     bjScreen.mostrar()
     
     test=input("prueba")
     
-
-#pedir plantarse separar fondear apostar doblar
-#mensajes, conectar
-#soy
-#modo espera
