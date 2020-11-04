@@ -145,9 +145,6 @@ if __name__ == "__main__":
 
     start_new_thread(mostrarInterfaz, (vm,))
 
-
-    #EventManager.pedirCartaEvent += pedirCarta
-    #vm.observe('pedirCartaEvent', pedirCarta)
     while True:
         time.sleep(1)
         vm.Jugador = datetime.now().strftime("%d/%m/%Y %H:%M:%S")

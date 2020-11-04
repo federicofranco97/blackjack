@@ -64,6 +64,9 @@ class GuiViewModel():
     def onJuegoComenzado(self):
         self.ee.emit("juegoComenzadoEvent", )
 
+    def onJuegoTerminado(self, ganador):
+        self.ee.emit("juegoTerminadoEvent", )
+
 
 
 
