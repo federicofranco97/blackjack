@@ -29,18 +29,33 @@ class Blackjack():
         esta cerrado. Esto dispara remover al jugador del juego.
     """
 
-    def obtenerJugadorActivo(self, nombre):
+    def obtenerJugadorActivo(self, nombreUsuario):
         for i in range(len(self.jugadoresJugando)):
-            if self.jugadoresJugando[i].usuario.nombre == nombre:
+            if self.jugadoresJugando[i].usuario.nombre == nombreUsuario:
                 return self.jugadoresJugando[i]
         return None
 
-    def obtenerJugadorTotal(self, nombre):
+    def obtenerJugadorTotal(self, nombreUsuario):
+        print("Usuario buscador: " + nombreUsuario)
         for i in range(len(self.jugadoresTotales)):
-            if self.jugadoresTotales[i].usuario.nombre == nombre:
+            print(self.jugadoresTotales[i].usuario.nombre)
+            if self.jugadoresTotales[i].usuario.nombre == nombreUsuario:
                 return self.jugadoresTotales[i]
         return None
 
+
+    def calcularComandos(self, nombreUsuario):
+        comandos = []
+        jugadorSeleccionado = self.obtenerJugadorTotal(nombreUsuario)
+        esJugadorActivo = self._esJugadorActual(nombreUsuario)
+        if not jugadorSeleccionado == None:
+            if esJugadorActivo == True:
+                comandos.append("pedir")
+                comandos.append("plantarse")
+                comandos.append("doblar")
+            if jugadorSeleccionado.estadoActual == "apuesta_pendiente":
+                comandos.append("apostar")
+        return comandos
 
     def removerJugador(self, usuario):
         for i in range(len(self.jugadoresTotales)):
@@ -55,14 +70,40 @@ class Blackjack():
                 self.rotarJugador()
         self.notificarJugadores("el usuario " + usuario + " abandono la sala")
 
+    def obtenerEstadoJugadores(self):
+        estados = []
+        manoDesc = None
+        puntaje = None
+        for i in range(len(self.jugadoresJugando)):
+            jugActual = self.jugadoresJugando[i]
+            if not jugActual.manoActual == None:
+                manoDesc = jugActual.manoActual.obtenerValores()
+                puntaje = jugActual.manoActual.obtenerPuntaje()
+            estadoJugador = "{" + jugActual.usuario.nombre + "," + str(jugActual.usuario.dinero) + "," + jugActual.estadoActual
+            if not manoDesc == None:
+                estadoJugador = estadoJugador + "," + "[" + ",".join(manoDesc) + "]"
+                estadoJugador = estadoJugador + "," + str(puntaje)
+            estados.append(estadoJugador + "}")
+        return estados
 
     """
         Esta funcion se utiliza para enviar un mensaje a una lista de jugadores. Es una funcion pseudo-privada, no deberia ser llamada directamente, sino
-        a traves de notificarJugadores o notificarJugadoresActivos.
+        a traves de notificarJugadores o notificarJugadoresActivos o notificarJugador.
     """
     def _notificarJugadores(self, jugadores, mensaje):
+        banca = []
+        jugadoresEstados = self.obtenerEstadoJugadores()
+        if not self.banca.mano == None:
+            bancaValores = self.banca.mano.obtenerValores()
+            bancaPuntaje = self.banca.mano.obtenerPuntaje()
+            banca = [("{"+ ",".join(bancaValores) + "}" + "#" + str(bancaPuntaje))]
         for jug in range(len(jugadores)):
-            jugadores[jug].enviarMensaje(mensaje)
+            jugSel = jugadores[jug]
+            comandos = self.calcularComandos(jugSel.usuario.nombre)
+            jugadores[jug].enviarMensaje(mensaje, comandos, jugadoresEstados, banca)
+
+    def notificarJugador(self, jugador, mensaje):
+        self._notificarJugadores([jugador], mensaje)
 
     """
         Esta funcion envia un mensaje a todos los jugadores, activos o no.
@@ -98,7 +139,7 @@ class Blackjack():
     """
     def empezarTimer(self):
         self.timerIniciado = True
-        segundosRestantes = 5-self.segundosTotales
+        segundosRestantes = 20-self.segundosTotales
         if segundosRestantes % 10 == 0:
             self.notificarJugadores("empieza el juego en " + str(segundosRestantes) + " segundos")
         self.segundosTotales += 1
@@ -114,31 +155,38 @@ class Blackjack():
             self.banca.iniciarTurno()
             for i in range(len(self.jugadoresJugando)):
                 self.jugadoresJugando[i].esperandoApuesta()
+            for j in range(len(self.jugadoresJugando)):
+                self.notificarJugador(self.jugadoresJugando[j], "ingresa tu apuesta")
+                
 
     """
         Cuando se conecta un usuario nuevo, esta funcion decide si colocarlo en la lista de espera o no.
     """
     def decidirUsuario(self, jugador):
         if self.rondaActiva == True:
-            jugador.enviarMensaje("hay una ronda activa, una vez finalizada se te unira automaticamente. Puedes irte de la espera cerrando la conexion.")
+            self.notificarJugador(jugador, "Hay una ronda activa, una vez finalizada se te unirá automaticamente. Puedes irte de la espera cerrando la conexion.")
         else:
             if self.timerIniciado == False:
-                jugador.enviarMensaje("iniciaremos cuenta regresiva para iniciar el juego")
+                self.notificarJugador(jugador, "Iniciaremos cuenta regresiva para iniciar el juego")
                 self.empezarTimer()
             else:
-                jugador.enviarMensaje("una vez finalizada la cuenta regresiva")
+                self.notificarJugador(jugador, "Una vez finalizada la cuenta regresiva comenzara la partida")
 
     """
         Esta funcion maneja la peticion de agregar un jugador al juego.
         Mover el check del nombre de usuario a la funcion principal.
     """
     def agregarJugador(self, usuario):
-        self.interrumpirTimer = True
-        nuevoJugador = Jugador(usuario)
-        nuevoJugador.enviarMensaje("Bienvenido " + usuario.nombre + "")
-        self.jugadoresTotales.append(nuevoJugador)
-        self.notificarJugadores(usuario.nombre + " se unio al juego")
-        self.decidirUsuario(nuevoJugador)
+        jug = self.obtenerJugadorTotal(usuario.nombre)
+        if jug == None:
+            self.interrumpirTimer = True
+            nuevoJugador = Jugador(usuario)
+            nuevoJugador.enviarMensaje("Bienvenido " + usuario.nombre + "")
+            self.jugadoresTotales.append(nuevoJugador)
+            self.notificarJugadores(usuario.nombre + " se unio al juego")
+            self.decidirUsuario(nuevoJugador)
+        else:
+            self.notificarJugadores(usuario.nombre + " ha ingresado dinero")
     
     """
         Devuelve la cantidad de jugadores
@@ -166,10 +214,11 @@ class Blackjack():
                 if ronda == 1:
                     cartaBanca.visible = False
                 self.banca.mano.agregarCarta(cartaBanca)
-            self.notificarJugadoresActivos("La banca tiene " + self.banca.mano.obtenerDescripcionCompleta())
+            self.notificarJugadores("La banca tiene " + self.banca.mano.obtenerDescripcionCompleta())
             self.jugadorActualIndice = 0
             self.jugadorActual = self.jugadoresJugando[0]
-            self.notificarJugadoresActivos("es el turno de " + self.jugadorActual.usuario.nombre)
+            self.jugadorActual.estadoActual = "activo"
+            self.notificarJugadores("es el turno de " + self.jugadorActual.usuario.nombre)
 
 
     """
@@ -181,15 +230,16 @@ class Blackjack():
             _jugador.apostar(monto)
             self._deberiaEmpezar()
         except DineroInsuficiente:
-            _jugador.enviarMensaje("No tienes el dinero suficiente")
+            self.notificarJugador(_jugador, "No tienes el dinero suficiente")
         except ApuestaRealizada:
-            _jugador.enviarMensaje("Ya realizaste la apuesta de esta mano")
+            self.notificarJugador(_jugador, "Ya realizaste la apuesta de esta mano")
 
     """
         Funcion que rota los jugadores y, en caso que ya no queden mas para rotar, hace jugar a la banca.
     """
     def rotarJugador(self):
         if len(self.jugadoresJugando) == (self.jugadorActualIndice+1):
+            self.jugadorActual = None
             self.notificarJugadoresActivos("ahora jugara la banca")
             self.banca.mano.mostrarTodas()
             self.notificarJugadoresActivos("la banca mostrar su carta oculta")
@@ -216,6 +266,7 @@ class Blackjack():
         else:
             self.jugadorActualIndice += 1
             self.jugadorActual = self.jugadoresJugando[self.jugadorActualIndice]
+            self.jugadorActual.estadoActual = "activo"
             self.notificarJugadoresActivos("es el turno de " + self.jugadorActual.usuario.nombre)
 
     """
@@ -224,12 +275,13 @@ class Blackjack():
     def pedir(self, usuario):
         _jugador = self._obtenerJugador(usuario)
         if self._esJugadorActual(usuario) == False:
-            _jugador.enviarMensaje("No es tu turno")
+            self.notificarJugador(_jugador, "No es tu turno")
         else:
             proxima = self.mazo.proximaCarta()
             puntajeTotal = _jugador.pedir(proxima)
+            self.notificarJugadores(_jugador.usuario.nombre + " ha obtenido " + str(puntajeTotal))
             if puntajeTotal > 21:
-                _jugador.enviarMensaje("Finalizo tu mano con un puntaje de " + _jugador.manoActual.obtenerDescripcionCompleta())
+                self.notificarJugadores(self.jugadorActual.usuario.nombre + " perdio con un puntaje de " + _jugador.manoActual.obtenerDescripcionCompleta())
                 _jugador.marcarComoPerdedor()
                 self.rotarJugador()
 
@@ -239,7 +291,7 @@ class Blackjack():
     def plantarse(self, usuario):
         _jugador = self._obtenerJugador(usuario)
         if not self.jugadorActual.usuario.nombre  == usuario:
-            _jugador.enviarMensaje("No es tu turno")
+            self.notificarJugador(_jugador, "No es tu turno")
         else:
             self.jugadorActual.plantarse()
             self.rotarJugador()
@@ -250,7 +302,7 @@ class Blackjack():
     def doblar(self, usuario):
         _jugador = self._obtenerJugador(usuario)
         if not self.jugadorActual.usuario.nombre  == usuario:
-            _jugador.enviarMensaje("No es tu turno")
+            self.notificarJugador(_jugador, "No es tu turno")
         else:
             try:
                 self.jugadorActual.doblarApuesta()
@@ -258,12 +310,12 @@ class Blackjack():
                 puntajeTotal = self.jugadorActual.pedir(proxima)
                 if puntajeTotal > 21:
                     self.jugadorActual.marcarComoPerdedor()
-                    self.jugadorActual.enviarMensaje("Finalizaste con un puntaje de " + _jugador.manoActual.obtenerDescripcionCompleta())
+                    self.notificarJugadores(self.jugadorActual.usuario.nombre + " perdio con un puntaje de " + _jugador.manoActual.obtenerDescripcionCompleta())
                 else:
                     self.jugadorActual.plantarse()
                 self.rotarJugador()    
             except DineroInsuficiente:
-                _jugador.enviarMensaje("Dinero insuficiente")        
+                self.notificarJugador(_jugador, "No tienes el dinero suficiente")
 
         
 
