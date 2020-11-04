@@ -93,6 +93,21 @@ def pedirCarta():
     print("pedir carta")
     return
 
+def plantarse():
+    print("me planto")
+
+def doblar():
+    print("doblar apuesta")
+
+def separar():
+    print("separar")
+
+def fondear(monto):
+    print("fondear " + monto)
+
+def apostar(monto):
+    print("apostando " + monto)
+
 
 """
     Metodo que inicializa el cliente, solicita los datos principales como ip del servidor,
@@ -122,6 +137,11 @@ def inicioCliente():
 if __name__ == "__main__":
 
     vm.ee.on("pedirCartaEvent", pedirCarta)
+    vm.ee.on("plantarseEvent", plantarse)
+    vm.ee.on("separarEvent", separar)
+    vm.ee.on("fondearEvent", fondear)
+    vm.ee.on("apostarEvent", apostar)
+    vm.ee.on("doblarEvent", doblar)
 
     start_new_thread(mostrarInterfaz, (vm,))
 
@@ -140,6 +160,16 @@ if __name__ == "__main__":
             botones.append("plantarse")
         if (boton == 3):
             botones.append("doblar")
+        if (boton == 4):
+            botones.append("apostar")
+
+        largo = random.randint(1, 20)
+        mensaje = ""
+        for i in range(largo):
+            mensaje += chr(random.randint(97, 105))
+
+        vm.onMensajeEntrante(mensaje)
+
         #vm.onRefreshButtons(botones)
         vm.MisCartas = [{ "P": random.randint(1, 4), "V": random.randint(1, 14)}, { "P": random.randint(1, 4), "V": random.randint(1, 14)}]
     inicioCliente()

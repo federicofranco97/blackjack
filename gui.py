@@ -4,11 +4,20 @@ import tkinter as tk
 from _thread import start_new_thread
 import playsound
 
+textChat = None
+scrollbarChat = None
+
+def MensajeRecibido(mensaje):
+    textChat.insert(tk.END, mensaje + '\n')
+
 
 def mostrarInterfaz(view):
     root = tk.Tk()
     root.title("BLACKJACK")
     root.geometry("1000x700+50+50")
+
+    photo = tk.PhotoImage(file=os.path.join("images", "poker.png"))
+    root.iconphoto(False, photo)
 
     FrameBotones = tk.Frame(root)
     FrameBotones.pack()
@@ -30,9 +39,24 @@ def mostrarInterfaz(view):
     labelCartas = tk.Label(root, textvariable=miscartas)
     labelCartas.pack()
 
+    global scrollbarChat
+    scrollbarChat = tk.Scrollbar(root)
+
+    global textChat
+    textChat = tk.Text(root, width=388, height=509, font=("Arial Bold", 10), fg="black", bg="white")
+
+    scrollbarChat.pack(side=tk.RIGHT, fill=tk.Y)
+    textChat.pack(side=tk.LEFT, fill=tk.Y)
+    scrollbarChat.config(command=textChat.yview)
+    textChat.config(yscrollcommand=scrollbarChat.set)
+
+    textChat.pack(side=tk.LEFT)
+
+
     #view.observe('refreshButtonsEvent', lambda: RefreshButtonsStatus(view, btnApostar, btnPedir, btnPlantarse))
 
     #start_new_thread(refreshGUI,(view, titulo, miscartas))
+    view.ee.on("mensajeEntranteEvent", MensajeRecibido )
 
     root.mainloop()
 
@@ -40,6 +64,8 @@ def TestMethod(view):
     print('asd')
     start_new_thread(play, ())
     view.onPedirCarta()
+
+
 
 def RefreshButtonsStatus(view, btnApostar, btnPedir, btnPlantarse):
     if "apostar" in view.Acciones:

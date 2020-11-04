@@ -32,13 +32,40 @@ class GuiViewModel():
         #Observer.__init__(self)
 
     def onPedirCarta(self):
-        self.ee.emit("pedirCartaEvent", );
-        #Event('pedirCartaEvent')
+        self.ee.emit("pedirCartaEvent", )
+
+    def onPlantarse(self):
+        self.ee.emit("plantarseEvent", )
+
+    def onSeparar(self):
+        self.ee.emit("separarEvent", )
+
+    def onDoblar(self):
+        self.ee.emit("doblarEvent", )
+
+    def onFondear(self, monto):
+        self.ee.emit("fondearEvent", )
+
+    def onApostar(self, monto):
+        self.ee.emit("apostarEvent", )
+
 
     def onRefreshButtons(self, botones):
         self.Acciones = botones
         self.ee.emit("refreshButtonsEvent", (botones))
-        #Event('refreshButtonsEvent')
+
+    def onTurnoChanged(self, turno):
+        self.miTurno = self.MiNombre == turno
+        self.ee.emit("turnoChangedEvent", (turno))
+
+    def onMensajeEntrante(self, mensaje):
+        self.ee.emit("mensajeEntranteEvent", (mensaje))
+
+    def onJuegoComenzado(self):
+        self.ee.emit("juegoComenzadoEvent", )
+
+
+
 
 
 
