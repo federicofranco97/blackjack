@@ -163,22 +163,7 @@ class PantallaPrincipal:
         self.frameMenuButton.pack_propagate(0)
                         
         return
-    
-    
-    def test(self):
-        
-        self.cartas = ['1_3', '2_4', '3_5', '4_2', '1_4', '2_2', '1_3', '2_4', '3_5', '4_2', '1_4', '2_2', '1_3', '2_4', '3_5', '4_2', '1_4', '2_2']
-        self.cargarCartas(self.cartas)
-        #self.modificarScore("20")
-        self.modificarScore("20")
-        self.modificarEstado("Plantado")
-        self.modificarJugadores("Quique: Esperando\nSeba: Esperando\nFede G: Jugando\nFede F: Perdio\nRichard: Esperando")
-        self.modificarMensajes("Seba: Esperando...\nQuique: me abuurroonnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn....")
-        
-        self.model.onPedirCarta()
-        print("Test")
-        self.mostrar()
-        
+            
 
     def mostrar(self):
         
@@ -470,12 +455,32 @@ class PantallaPrincipal:
  
         return
 
+
+def test(self):
+    
+    self.cartas = ['1-3', '2-4', '3-5', '4-2', '1-4', '2-2', '1-3', '2-4', '3-5', '4-2', '1-4', '2-2', '1-3', '2-4', '3-5', '4-2', '1-4', '2-2']
+    self.cargarCartas(self.cartas)
+    #self.modificarScore("20")
+    self.modificarScore("20")
+    self.modificarEstado("Plantado")
+    self.modificarJugadores("Quique: Esperando\nSeba: Esperando\nFede G: Jugando\nFede F: Perdio\nRichard: Esperando")
+    self.modificarMensajes("Seba: Esperando...\nQuique: me abuurroonnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn....")
+    
+    self.model.onPedirCarta()
+    print("Test")
+    self.mostrar()
+
+
 def pedirCarta():
     print("hola carta")
 
+
+
+
+
 if __name__ == "__main__":
-    #cartas1 = ['1_3', '2_4', '3_5']
-    listaCartas = ['1_3', '2_4', '3_5', '4_2', '1_4', '2_2']
+    #cartas1 = ['1-3', '2-4', '3-5']
+    listaCartas = ['1-3', '2-4', '3-5', '4-2', '1-4', '2-2']
     
     
     model = GuiViewModel()
