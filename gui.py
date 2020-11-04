@@ -57,7 +57,6 @@ def mostrarInterfaz(view):
 
     #start_new_thread(refreshGUI,(view, titulo, miscartas))
     view.ee.on("mensajeEntranteEvent", MensajeRecibido )
-
     root.mainloop()
 
 def TestMethod(view):
