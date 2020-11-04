@@ -1,6 +1,7 @@
 import socket
 from _thread import *
 import threading
+import traceback
 from blackjack import Blackjack
 
 clientes = []
@@ -129,9 +130,11 @@ def inicializarCliente(cliente, bg):
             comando = tokens[0] if len(tokens) > 0 else mensajeRecibido
             argumentos = tokens[1:] if len(tokens) > 0 else []
             ejecutor.ejecutar(comando, argumentos, cliente, bg, usuario)
-        except:
+        except Exception as e:
+            traceback.print_exc()
             if usuario.nombre != None:
                 bg.removerJugador(usuario.nombre)
+
 
 
 """
@@ -139,7 +142,7 @@ def inicializarCliente(cliente, bg):
     Acepta las conexiones entrantes, y llama a inicializarCliente en un nuevo threado.
 """
 def iniciarServidor():
-    puerto = 3039
+    puerto = 3031
     blackGame = Blackjack()
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(('',puerto))

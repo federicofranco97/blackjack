@@ -16,6 +16,7 @@ from guiViewModel import GuiViewModel
 
 hayJugadoresEnEspera = False
 hayPartidaEnCurso = True
+sock = None
 
 vm = GuiViewModel()
 """
@@ -24,27 +25,42 @@ vm = GuiViewModel()
 """
 
 
-def escucharServidor(sock):
+def escucharServidor():
     while 1:
         try:
             data = sock.recv(4096)
             if not data:
                 continue
             else:
-                # Imprimo los msjs del servidor
-                print(parsearMensajesServidor(data))
+                print(data)
+                # Imprimo los mensajes del servidor
+                mensajes = getMensajesServidor(data)
+                for m in mensajes:
+                    print(m)
+                    mensajeParseado = parsearMensajeServidor(m)
+                    if m.split("|")[0] == "mensaje":
+                        vm.onMensajeEntrante(mensajeParseado)
+
+            # time.sleep(1)
+            #if random.randint(1, 4) == 1:
+                #vm.onTurnoChanged("sebastian")
+
         except socket.timeout:
-            print("Se perdio la conexion con el servidor")
+            mensajeError = "Se perdio la conexion con el servidor"
+            print(mensajeError)
+            vm.onMensajeEntrante(mensajeError)
+
+def getMensajesServidor(mensajeRecibido):
+    mensajes = mensajeRecibido.decode("utf-8").split("\n")
+    return mensajes
 
 
 """
-    Metodo que se dedica a parsear los mensajes que envia el servidor dependiendo de la modalidiad
-    de los mismos 
+    Metodo que se dedica a parsear los mensajes que envia el servidor dependiendo de la modalidad de los mismos 
 """
-
-
-def parsearMensajesServidor(mensajeRecibido):
-    mensajeBase = mensajeRecibido.decode("utf-8").split("|")
+def parsearMensajeServidor(mensajeRecibido):
+    #mensajeBase = mensajeRecibido.decode("utf-8").split("|")
+    mensajeBase = mensajeRecibido.split("|")
     comando = mensajeBase[0] if len(mensajeBase) > 0 else mensajeRecibido
     argumentos = mensajeBase[1:] if len(mensajeBase) > 0 else []
     if comando == "comandos" or comando == "status" or comando == "mensaje":
@@ -63,8 +79,6 @@ def parsearMensajesServidor(mensajeRecibido):
     Metodo que se encarga de parsear los subcomandos que lleguen 
     a lo largo de la partida
 """
-
-
 def parsearSubComando(subcom, args):
     if subcom == "mano":
         mano = parsearMano(args)
@@ -91,10 +105,13 @@ def parsearMano(arg):
 
 def pedirCarta():
     print("pedir carta")
-    return
+    comando = "pedir"
+    sock.send(comando.encode())
 
 def plantarse():
     print("me planto")
+    comando = "plantarse"
+    sock.send(comando.encode())
 
 def doblar():
     print("doblar apuesta")
@@ -104,9 +121,18 @@ def separar():
 
 def fondear(monto):
     print("fondear " + monto)
+    comando = "ingresar " + monto
+    sock.send(comando.encode())
 
 def apostar(monto):
     print("apostando " + monto)
+    comando = "apostar " + monto
+    sock.send(comando.encode())
+
+def enviarMensaje(mensaje):
+    print("enviando mensaje: " + mensaje)
+    comando = "mensaje " + mensaje
+    sock.send(comando.encode())
 
 
 """
@@ -119,6 +145,7 @@ def inicioCliente():
     s.settimeout(200)
     host = raw_input("Por favor ingresa la IP del servidor: ")
     port = raw_input("Por favor ingresa el puerto del servidor: ")
+    global sock
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         sock.connect((host, int(port)))
@@ -127,7 +154,8 @@ def inicioCliente():
         return
     print("Conectado, bienvenido al servidor!")
 
-    start_new_thread(escucharServidor, (sock,))
+    start_new_thread(escucharServidor, ())
+    start_new_thread(mostrarInterfaz, (vm,))
     while True:
         newMsg = sys.stdin.readline()
         sock.send(newMsg.encode())
@@ -143,8 +171,10 @@ if __name__ == "__main__":
     vm.ee.on("apostarEvent", apostar)
     vm.ee.on("doblarEvent", doblar)
 
-    start_new_thread(mostrarInterfaz, (vm,))
 
+
+    inicioCliente()
+    #start_new_thread(mostrarInterfaz, (vm,))
     while True:
         time.sleep(1)
         vm.Jugador = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -169,4 +199,4 @@ if __name__ == "__main__":
 
         #vm.onRefreshButtons(botones)
         vm.MisCartas = [{ "P": random.randint(1, 4), "V": random.randint(1, 14)}, { "P": random.randint(1, 4), "V": random.randint(1, 14)}]
-    inicioCliente()
+
