@@ -1,6 +1,7 @@
 import tkinter as tk
 import os
 from PIL import Image, ImageTk
+from guiViewModel import GuiViewModel
 
 class PantallaCartas(tk.Frame):
     
@@ -34,7 +35,7 @@ class PantallaCartas(tk.Frame):
 
 class PantallaPrincipal:
 
-    def __init__(self):
+    def __init__(self, model):
     
         self.root = tk.Tk()
         self.cartas = []
@@ -45,6 +46,8 @@ class PantallaPrincipal:
         self.app = None
         self.labelScore = None
         self.cartas = None
+        self.model = model
+        self.textChat = None
 
         
         self.inicializarFrames()
@@ -133,7 +136,7 @@ class PantallaPrincipal:
         self.frameChat['bg']='white'
         self.frameChat.pack_propagate(0)
 
-        return 
+        return
     
     
     def test(self):
@@ -143,7 +146,9 @@ class PantallaPrincipal:
         self.modificarScore("20")
         self.modificarEstado("Plantado")
         self.modificarJugadores("Quique: Esperando\nSeba: Esperando\nFede G: Jugando\nFede F: Perdio\nRichard: Esperando")
-        self.modificarMensajes("Seba: Esperando...\nQuique: me abuurroo....")
+        self.modificarMensajes("Seba: Esperando...\nQuique: me abuurroonnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn....")
+        
+        self.model.onPedirCarta()
         print("Test")
         self.mostrar()
         
@@ -226,34 +231,52 @@ class PantallaPrincipal:
 
     def modificarJugadores(self, jugadores):
         
-        self.jugadores.set(jugadores)
-        
+        #self.jugadores.set(jugadores)
+        self.textJugadores.insert(tk.END, jugadores)
+        self.textJugadores.see(tk.END)
+                
         return
         
     
     def cargarJugadores(self, jugadores):
-        
+
+        self.scrollbarJugadores = tk.Scrollbar(self.frameJugadores) 
+        self.textJugadores = tk.Text(self.frameJugadores, width = 622, height = 148,
+                                font=("Arial Bold", 15), fg="black", bg="white")
+        self.scrollbarJugadores.pack(side=tk.RIGHT, fill=tk.Y)
+        self.textJugadores.pack(side=tk.LEFT, fill=tk.Y)
+        self.scrollbarJugadores.config(command=self.textJugadores.yview)
+        self.textJugadores.config(yscrollcommand=self.scrollbarJugadores.set)
+
         self.modificarJugadores(jugadores)
-        self.labelScore = tk.Label(self.frameJugadores, textvariable=self.jugadores, 
-                                   font=("Arial Bold", 20), fg="black", bg="white", justify=tk.LEFT)
-        self.labelScore.pack(side=tk.LEFT)
+        self.textJugadores.pack(side=tk.LEFT)
+
+        return
 
         return
 
     
     def modificarMensajes(self, mensajes):
         
-        self.mensajes.set(mensajes)
+        #self.mensajes.set(mensajes)
+        self.textChat.insert(tk.END, mensajes)
+        self.textChat.see(tk.END)
         
         return
         
     
     def cargarMensajes(self, mensajes):
-        
+
+        self.scrollbarChat = tk.Scrollbar(self.frameChat) 
+        self.textChat = tk.Text(self.frameChat, width=388, height=509,
+                                font=("Arial Bold", 10), fg="black", bg="white")
+        self.scrollbarChat.pack(side=tk.RIGHT, fill=tk.Y)
+        self.textChat.pack(side=tk.LEFT, fill=tk.Y)
+        self.scrollbarChat.config(command=self.textChat.yview)
+        self.textChat.config(yscrollcommand=self.scrollbarChat.set)
+
         self.modificarMensajes(mensajes)
-        self.labelScore = tk.Label(self.frameChat, textvariable=self.mensajes, 
-                                   font=("Arial Bold", 10), fg="medium blue", bg="white", justify=tk.LEFT)
-        self.labelScore.pack(side=tk.LEFT)
+        self.textChat.pack(side=tk.LEFT)
 
         return
 
@@ -283,7 +306,7 @@ class PantallaPrincipal:
             '''225 x 315
                640 x 480'''
                           
-            print(x, y)
+            #print(x, y)
             self.app.agregar(self.imgList[i], x, y)
 
             x = x + xOffset
@@ -294,19 +317,30 @@ class PantallaPrincipal:
  
         return
 
-
+def pedirCarta():
+    print("hola carta")
 
 if __name__ == "__main__":
     #cartas1 = ['1_3', '2_4', '3_5']
     listaCartas = ['1_3', '2_4', '3_5', '4_2', '1_4', '2_2']
     
-    bjScreen = PantallaPrincipal()
+    
+    model = GuiViewModel()
+    model.ee.on("pedirCartaEvent", pedirCarta)
+    
+    bjScreen = PantallaPrincipal(model)
     bjScreen.cargarCartas(listaCartas)
     bjScreen.cargarScore("12")
     bjScreen.cargarEstado("Jugar")
     bjScreen.cargarJugadores("Quique: Esperando\nSeba: Esperando\nFede G: Esperando\nFede F: Jugando\nRichard: Esperando")
-    bjScreen.cargarMensajes("Quique: Esperando...")
+    bjScreen.cargarMensajes("Quique: Esperando...\n")
     listaCartas = ['1_3', '2_4', '3_5']
     bjScreen.mostrar()
     
     test=input("prueba")
+    
+
+#pedir plantarse separar fondear apostar doblar
+#mensajes, conectar
+#soy
+#modo espera
