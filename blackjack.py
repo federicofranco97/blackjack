@@ -31,14 +31,17 @@ class Blackjack():
         esta cerrado. Esto dispara remover al jugador del juego.
     """
     def removerJugador(self, usuario):
+        if self.jugadores.has_key(usuario) == False:
+            return
         del self.jugadores[usuario]
         del self.jugadoresActivosSet[usuario]
         for i in range(len(self.jugadoresActivos)):
             if self.jugadoresActivos[i] == usuario:
                 del self.jugadoresActivos[i]
-        if self.jugadorActual.usuario.nombre == usuario:
-            self.jugadorActualIndice = self.jugadorActualIndice-1
-            self.rotarJugador()
+        if not self.jugadorActual == None:
+            if self.jugadorActual.usuario.nombre == usuario:
+                self.jugadorActualIndice = self.jugadorActualIndice-1
+                self.rotarJugador()
         self.notificarJugadores("el usuario " + usuario + " abandono la sala")
 
 
@@ -139,7 +142,7 @@ class Blackjack():
 
     """
         Funciona que chequea si el juego debe comenzar, es decir, si el resto de los participanes ya hizo una apuesta.
-        De haber hecho todas las apuestas, se reparten las priemras cartas.
+        De haber hecho todas las apuestas, se reparten las primeras cartas.
     """
     def _deberiaEmpezar(self):
         apuestasPendientes = 0
