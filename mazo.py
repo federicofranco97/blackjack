@@ -82,6 +82,13 @@ class Mano():
     def agregarApuesta(self, monto):
         self.apuesta += monto
 
+    def obtenerValores(self):
+        valores = []
+        for carta in self.cartas:
+            if carta.visible == True:
+                valores.append(str(carta.valor) + "-" + str(carta.palo))
+        return valores
+
     def agregarCarta(self, carta):
         self.cartas.append(carta)
 

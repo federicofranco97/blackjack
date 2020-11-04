@@ -21,11 +21,23 @@ class Usuario:
         except:
             pass
 
-    def enviarMensaje(self, mensaje):
-        self.enviarData(str("mensaje|"+mensaje+"\n"))
-
-    def enviarEstadoPartida(self, estado):
-        self.enviarData(str("partida|"+estado))
+    def enviarMensaje(self, mensajeArg, comandos = [], jugadores = [], banca = [], mano = []):
+        mensaje = ""
+        _comm = comandos.copy()
+        _comm.append("mensaje")
+        if self.nombre == None:
+            _comm.append("soy")
+        elif self.dinero == 0:
+            _comm.append("ingresar")
+        mensaje += ("comandos:"+"#".join(_comm))
+        if len(jugadores) > 0:
+            mensaje += ("|jugadores:"+"#".join(jugadores))
+        if len(banca) > 0:
+            mensaje += ("|banca:"+",".join(banca))
+        if len(mano) > 0:
+            mensaje += ("|mano:"+",".join(mano))
+        mensaje += ("|mensaje:" + mensajeArg + "\n")
+        self.enviarData(mensaje)
 
 """
     La clase ejecutor esta implementada con un patron strategy. Los comandos a ejecutar implementan la misma interfaz
@@ -98,7 +110,6 @@ def comIngresarDinero(nombreComando, argumentos, socket, juego, cliente):
         cliente.enviarMensaje("Tienes que ingresar un monto mayor a 0")
     else:
         cliente.dinero += monto
-        cliente.enviarMensaje("Tu nuevo saldo es de " + str(cliente.dinero))
         juego.agregarJugador(cliente)
 
 """
@@ -121,7 +132,7 @@ def crearMensajeLog(mensaje):
 def inicializarCliente(cliente, bg):
     usuario = Usuario(cliente)
     clientes.append(usuario)
-    usuario.enviarMensaje("Bienvenido al juego. Ingresa tu nombre con el comando soy <nombre>.\n")
+    usuario.enviarMensaje("Bienvenido al juego. Ingresa tu nombre con el comando soy <nombre>.")
     ejecutor = Ejecutor()
     while True:
         try:
@@ -143,7 +154,7 @@ def inicializarCliente(cliente, bg):
 """
 
 def iniciarServidor():
-    puerto = 3031
+    puerto = 3030
     blackGame = Blackjack()
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(("",puerto))
