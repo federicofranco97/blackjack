@@ -120,7 +120,7 @@ class Blackjack():
     """
     def decidirUsuario(self, jugador):
         if self.rondaActiva == True:
-            jugador.enviarMensaje("hay una ronda activa, una vez finalizada se te unirá automaticamente. Puedes irte de la espera cerrando la conexion.")
+            jugador.enviarMensaje("hay una ronda activa, una vez finalizada se te unira automaticamente. Puedes irte de la espera cerrando la conexion.")
         else:
             if self.timerIniciado == False:
                 jugador.enviarMensaje("iniciaremos cuenta regresiva para iniciar el juego")

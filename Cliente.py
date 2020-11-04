@@ -25,17 +25,21 @@ vm = GuiViewModel()
 """
 
 
-def escucharServidor(sock):
+def escucharServidor():
     while 1:
         try:
             data = sock.recv(4096)
             if not data:
                 continue
             else:
+                print(data)
                 # Imprimo los mensajes del servidor
-                mensaje = parsearMensajesServidor(data)
-                print(mensaje)
-                vm.onMensajeEntrante(mensaje)
+                mensajes = getMensajesServidor(data)
+                for m in mensajes:
+                    print(m)
+                    mensajeParseado = parsearMensajeServidor(m)
+                    if m.split("|")[0] == "mensaje":
+                        vm.onMensajeEntrante(mensajeParseado)
 
             # time.sleep(1)
             #if random.randint(1, 4) == 1:
@@ -46,12 +50,17 @@ def escucharServidor(sock):
             print(mensajeError)
             vm.onMensajeEntrante(mensajeError)
 
+def getMensajesServidor(mensajeRecibido):
+    mensajes = mensajeRecibido.decode("utf-8").split("\n")
+    return mensajes
+
 
 """
     Metodo que se dedica a parsear los mensajes que envia el servidor dependiendo de la modalidad de los mismos 
 """
-def parsearMensajesServidor(mensajeRecibido):
-    mensajeBase = mensajeRecibido.decode("utf-8").split("|")
+def parsearMensajeServidor(mensajeRecibido):
+    #mensajeBase = mensajeRecibido.decode("utf-8").split("|")
+    mensajeBase = mensajeRecibido.split("|")
     comando = mensajeBase[0] if len(mensajeBase) > 0 else mensajeRecibido
     argumentos = mensajeBase[1:] if len(mensajeBase) > 0 else []
     if comando == "comandos" or comando == "status" or comando == "mensaje":
@@ -145,7 +154,7 @@ def inicioCliente():
         return
     print("Conectado, bienvenido al servidor!")
 
-    start_new_thread(escucharServidor, (sock,))
+    start_new_thread(escucharServidor, ())
     start_new_thread(mostrarInterfaz, (vm,))
     while True:
         newMsg = sys.stdin.readline()

@@ -25,7 +25,7 @@ def mostrarInterfaz(view):
     btnApostar = tk.Button(FrameBotones, text="APOSTAR", fg="red", command=lambda: TestMethod(view))
     btnApostar.pack(side=tk.LEFT)
 
-    btnPedir = tk.Button(FrameBotones, text="PEDIR", fg="red", command=lambda: TestMethod(view), state="disabled")
+    btnPedir = tk.Button(FrameBotones, text="PEDIR", fg="red", command=lambda: TestMethod(view))
     btnPedir.pack(side=tk.LEFT)
 
     btnPlantarse = tk.Button(FrameBotones, text="PLANTARSE", fg="red", command=lambda: TestMethod(view))
