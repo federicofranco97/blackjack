@@ -137,7 +137,6 @@ class Blackjack():
         nuevoJugador = Jugador(usuario)
         nuevoJugador.enviarMensaje("Bienvenido " + usuario.nombre + "")
         self.jugadoresTotales.append(nuevoJugador)
-        self.jugadores[usuario.nombre] = nuevoJugador
         self.notificarJugadores(usuario.nombre + " se unio al juego")
         self.decidirUsuario(nuevoJugador)
     
@@ -145,7 +144,7 @@ class Blackjack():
         Devuelve la cantidad de jugadores
     """
     def obtenerEstadisticas(self):
-        cantJugadores = "Cantidad jugadores: " + str(len(self.jugadores))
+        cantJugadores = "Cantidad jugadores: " + str(len(self.jugadoresTotales))
         return cantJugadores
 
     """
