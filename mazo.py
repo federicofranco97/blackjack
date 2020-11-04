@@ -86,7 +86,7 @@ class Mano():
         valores = []
         for carta in self.cartas:
             if carta.visible == True:
-                valores.append(str(carta.valor) + "-" + str(carta.palo))
+                valores.append(str(carta.palo) + "-" + str(carta.valor))
         return valores
 
     def agregarCarta(self, carta):
