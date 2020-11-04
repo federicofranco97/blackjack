@@ -2,6 +2,7 @@ import tkinter as tk
 import os
 from PIL import Image, ImageTk
 from guiViewModel import GuiViewModel
+from tkinter.scrolledtext import ScrolledText
 
 class PantallaCartas(tk.Frame):
     
@@ -131,16 +132,37 @@ class PantallaPrincipal:
         self.frameScoreSeparador.pack(side=tk.BOTTOM)
         self.frameScoreSeparador['bg']='green'
 
-        self.frameChat = tk.Frame(self.frameInfoDatos, width = 390, height = 511)
-        self.frameChat.pack(side=tk.BOTTOM)
+        self.frameMenuChat = tk.Frame(self.frameInfoDatos, width = 390, height = 511)
+        self.frameMenuChat.pack(side=tk.BOTTOM)
+        self.frameMenuChat['bg']='white'
+        self.frameMenuChat.pack_propagate(0)
+
+        self.frameChat = tk.Frame(self.frameMenuChat, width = 390, height = 451)
+        self.frameChat.pack(side=tk.TOP)
         self.frameChat['bg']='white'
         self.frameChat.pack_propagate(0)
+        
+        self.frameMensaje = tk.Frame(self.frameMenuChat, width = 390, height = 60)
+        self.frameMensaje.pack(side=tk.BOTTOM)
+        self.frameMensaje['bg']='white'
+        self.frameMensaje.pack_propagate(0)
 
+        self.frameMenuEntry = tk.Frame(self.frameMensaje, width = 340, height = 60)
+        self.frameMenuEntry.pack(side=tk.LEFT)
+        self.frameMenuEntry['bg']='white'
+        self.frameMenuEntry.pack_propagate(0)
+        
+        self.frameMenuButton = tk.Frame(self.frameMensaje, width = 50, height = 60)
+        self.frameMenuButton.pack(side=tk.RIGHT)
+        self.frameMenuButton['bg']='white'
+        self.frameMenuButton.pack_propagate(0)
+                        
         return
     
     
     def test(self):
         
+        self.cartas = ['1_3', '2_4', '3_5', '4_2', '1_4', '2_2', '1_3', '2_4', '3_5', '4_2', '1_4', '2_2', '1_3', '2_4', '3_5', '4_2', '1_4', '2_2']
         self.cargarCartas(self.cartas)
         #self.modificarScore("20")
         self.modificarScore("20")
@@ -163,38 +185,83 @@ class PantallaPrincipal:
     def inicializarBotones(self):
 
         frame = self.frameBotones
-        button1 = tk.Button(frame, 
-                           text="CONECTAR", 
+        self.buttonConectar= tk.Button(frame, 
+                           text="CONECTAR",
                            fg="red",
+                           bg="white",
                            command=self.test)
-        button1.pack(side=tk.LEFT)
-        button2 = tk.Button(frame, 
+        self.buttonConectar.pack(side=tk.LEFT)
+        self.buttonIngresar = tk.Button(frame, 
                            text="INGRESAR", 
                            fg="red",
                            command=self.test)
-        button2.pack(side=tk.LEFT)
-        button3 = tk.Button(frame, 
-                           text="APOSTAR", 
+        self.buttonIngresar.pack(side=tk.LEFT)
+        self.buttonPedir = tk.Button(frame, 
+                           text="PEDIR", 
                            fg="red",
                            command=self.test)
-        button3.pack(side=tk.LEFT)
-        button4 = tk.Button(frame, 
+        self.buttonPedir.pack(side=tk.LEFT)
+        self.buttonPlantarse = tk.Button(frame, 
                            text="PLANTARSE", 
                            fg="red",
                            command=self.test)
-        button4.pack(side=tk.LEFT)
-        slogan = tk.Button(frame,
-                           text="MENSAJE",
+        self.buttonPlantarse.pack(side=tk.LEFT)
+        self.buttonSeparar = tk.Button(frame,
+                           text="SEPARAR",
+                           fg="red",                                       
                            command=self.test)
-        slogan.pack(side=tk.LEFT)
-        button5 = tk.Button(frame, 
+        self.buttonSeparar.pack(side=tk.LEFT)
+        self.buttonFondear = tk.Button(frame, 
+                           text="FONDEAR", 
+                           fg="red",
+                           command=quit)
+        self.buttonFondear.pack(side=tk.LEFT)
+        self.buttonApostar = tk.Button(frame, 
+                           text="APOSTAR", 
+                           fg="red",
+                           command=quit)
+        self.buttonApostar.pack(side=tk.LEFT)
+        self.buttonDoblar = tk.Button(frame, 
+                           text="DOBLAR", 
+                           fg="red",
+                           command=quit)
+        self.buttonDoblar.pack(side=tk.LEFT)
+        self.buttonSalir = tk.Button(frame, 
                            text="SALIR", 
                            fg="red",
                            command=quit)
-        button5.pack(side=tk.LEFT)
+        self.buttonSalir.pack(side=tk.LEFT)
         
         return
     
+    
+    def enviarMensaje(self):
+        
+        mensaje = self.entryEnvioMensajes.get("1.0", tk.END)
+        self.entryEnvioMensajes.delete("0.0", tk.END)
+        self.modificarMensajes(mensaje)
+                
+        return
+
+    def cargarEnvioMensajes(self):
+    
+        #self.entryEnvioMensajes = tk.Entry(self.frameMenuEntry, width=338)
+        #self.entryEnvioMensajes.pack()
+        
+        self.entryEnvioMensajes = ScrolledText(self.frameMenuEntry, 
+                                    font=("Arial Bold", 10))
+        self.entryEnvioMensajes.pack()
+
+        #self.frameMensaje.create_window(340, 50, window=self.entryEnvioMensajes)
+        self.buttonEnviarMensaje = tk.Button(self.frameMenuButton, width = 48, height = 48,
+                           text="ENVIAR", 
+                           fg="white",
+                           bg="medium blue",
+                           command=self.enviarMensaje)
+        self.buttonEnviarMensaje.pack()
+        
+        return
+        
     def modificarScore(self, score):
         
         self.score.set(score)
@@ -253,8 +320,6 @@ class PantallaPrincipal:
 
         return
 
-        return
-
     
     def modificarMensajes(self, mensajes):
         
@@ -268,7 +333,7 @@ class PantallaPrincipal:
     def cargarMensajes(self, mensajes):
 
         self.scrollbarChat = tk.Scrollbar(self.frameChat) 
-        self.textChat = tk.Text(self.frameChat, width=388, height=509,
+        self.textChat = tk.Text(self.frameChat, width=388, height=449,
                                 font=("Arial Bold", 10), fg="black", bg="white")
         self.scrollbarChat.pack(side=tk.RIGHT, fill=tk.Y)
         self.textChat.pack(side=tk.LEFT, fill=tk.Y)
@@ -297,16 +362,12 @@ class PantallaPrincipal:
         y0 = 5
         xOffset = 60
         yOffset = 5
-        yLineOffset = 100
+        yLineOffset = 60
         x = x0
         y = y0
         cartasPorLinea = 7
         for i in range(0, len(self.cartas)):
             self.imgList.append(os.path.join(os.path.join(self.cwd, mazo), self.cartas[i] + '.jpg'))
-            '''225 x 315
-               640 x 480'''
-                          
-            #print(x, y)
             self.app.agregar(self.imgList[i], x, y)
 
             x = x + xOffset
@@ -334,6 +395,7 @@ if __name__ == "__main__":
     bjScreen.cargarEstado("Jugar")
     bjScreen.cargarJugadores("Quique: Esperando\nSeba: Esperando\nFede G: Esperando\nFede F: Jugando\nRichard: Esperando")
     bjScreen.cargarMensajes("Quique: Esperando...\n")
+    bjScreen.cargarEnvioMensajes()
     listaCartas = ['1_3', '2_4', '3_5']
     bjScreen.mostrar()
     
