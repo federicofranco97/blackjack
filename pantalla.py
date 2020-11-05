@@ -276,6 +276,13 @@ class PantallaPrincipal:
         self.root.mainloop()
         
         return
+    
+    def procesarMonto(self, monto):
+        
+        if self.botonesActivados['apostar']:
+            self.btApostar()
+        elif self.botonesActivados['ingresar']:
+            self.btIngresar()
 
 
     def inicializarBotones(self):
@@ -308,6 +315,7 @@ class PantallaPrincipal:
                            fg=colorFront,
                            bg=colorBack,
                            font=("Arial Bold", tamMonto))
+        self.scrolledMonto.bind('<Return>', self.procesarMonto)
         self.scrolledMonto.pack(side=tk.LEFT)
         self.buttonApostar = tk.Button(self.frameBotones, width = ancho, height = 20,
                            text="APOSTAR", 
@@ -440,6 +448,7 @@ class PantallaPrincipal:
       
         self.entryEnvioMensajes = ScrolledText(self.frameMenuEntry, 
                                     font=("Arial Bold", 10))
+        self.entryEnvioMensajes.bind('<Return>', self.procesarMensaje)
         self.entryEnvioMensajes.pack()
 
         self.buttonEnviarMensaje = tk.Button(self.frameMenuButton, width = 48, height = 48,
@@ -531,6 +540,12 @@ class PantallaPrincipal:
         self.textJugadores.pack(side=tk.LEFT)
 
         return
+
+
+    def procesarMensaje(self, monto):
+        
+        if self.botonesActivados['mensaje']:
+            self.enviarMensaje()
 
     
     def modificarMensajes(self, mensajes):
