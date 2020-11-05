@@ -98,7 +98,7 @@ def parsearMensajeServidor(mensajeRecibido):
                 vm.MiPuntaje = datosJugador[4]
                 vm.MiSaldo = datosJugador[1]
                 vm.MiEstado = datosJugador[2]
-                if len(datosJugador[3] > 2):
+                if len(datosJugador[3]) > 2:
                     vm.MisCartas = datosJugador[3].strip('][').split(',')
                 else:
                     vm.MisCartas = []
@@ -106,7 +106,8 @@ def parsearMensajeServidor(mensajeRecibido):
                 print(type(datosJugador[3]))
                 vm.onEstadoChanged(vm.MiEstado)
                 if vm.MiEstado == "activo":
-                    vm.onTurnoChanged(vm.MiNombre)
+                    if vm.Turno != vm.MiNombre:
+                        vm.onTurnoChanged(vm.MiNombre)
             else:
                 if datosJugador[2] == "activo":
                     vm.onTurnoChanged(datosJugador[0])
