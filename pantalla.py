@@ -59,7 +59,7 @@ class PantallaPrincipal:
         self.inicializarBotones()
         self.inicializarEnvioMensajes()  
         self.cargarScore("0")
-        self.cargarEstado("")
+        self.cargarEstado("...")
         self.cargarJugadores("")
         self.cargarBotones("")
         self.habilitarBotones()
@@ -101,6 +101,7 @@ class PantallaPrincipal:
     def modoEspera(self):
         
         return
+
 
     def inicializarFrames(self):
         
@@ -347,7 +348,7 @@ class PantallaPrincipal:
                            fg=colorFront,
                            bg=colorBack,
                            font=("Arial Bold", tamLetra),
-                           command=quit)
+                           command=self.btSalir)
         self.buttonSalir.pack(side=tk.LEFT)
         
         return
@@ -417,6 +418,14 @@ class PantallaPrincipal:
         return    
 
     
+    def btSalir(self):
+        
+        self.model.onSalir()
+        self.root.quit()
+       
+        return    
+
+    
     def enviarMensaje(self):
         
         mensaje = self.entryEnvioMensajes.get("1.0", tk.END)
@@ -479,7 +488,7 @@ class PantallaPrincipal:
     def modificarEstado(self, estado):
         
         self.estadoStr = estado.replace('[', '').replace(']', '')
-        self.estado.set(self.usuario + " "  + estado + " (" + str(self.model.MiSaldo) + ")")
+        self.estado.set(self.usuario + " "  + "$" + str(self.model.MiSaldo) + " (" + estado + ")")
         self.modificarScore(self.model.MiPuntaje)
         self.cargarCartas(self.model.MisCartas)
         

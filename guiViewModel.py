@@ -64,6 +64,8 @@ class GuiViewModel():
     def onPuntajeBancaChanged(self, puntaje):
         self.ee.emit("puntajeBancaChangedEvent", puntaje)
 
+    def onSalir(self):
+        self.ee.emit("salirEvent")
 
 
 
