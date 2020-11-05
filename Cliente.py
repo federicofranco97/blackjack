@@ -234,7 +234,7 @@ def inicioCliente():
     print("Conectado, bienvenido al servidor!")
 
     start_new_thread(escucharServidor, ())
-    start_new_thread(iniciarPantalla, (vm,""))
+    start_new_thread(iniciarPantalla, (vm, ""))
     while True:
         newMsg = sys.stdin.readline()
         analizarComandoEnviado(newMsg)
