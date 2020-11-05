@@ -54,7 +54,7 @@ class Ejecutor:
             "ingresar": comIngresarDinero,
             "iniciar": comJuegoComando,
             "apostar": comJuegoComando,
-            "mensaje": comMensaje,
+            "mensaje": comJuegoComando,
             "pedir": comJuegoComando,
             "plantarse": comJuegoComando
         }
@@ -93,6 +93,8 @@ def comJuegoComando(nombreComando, argumentos, socket, juego, cliente):
         return juego.plantarse(cliente.nombre)
     if nombreComando == "estadisticas":
         return juego.obtenerEstadisticas()
+    if nombreComando == "mensaje":
+        return juego.enviarMensaje(cliente.nombre, " ".join(argumentos))
 
 """
     El comando <soy> es para que el usuario s eidentifique

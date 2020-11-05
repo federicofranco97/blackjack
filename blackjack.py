@@ -333,6 +333,9 @@ class Blackjack():
             except DineroInsuficiente:
                 self.notificarJugador(_jugador, "No tienes el dinero suficiente")
 
+    def enviarMensaje(self, nombreUsuario, mensaje):
+        self.notificarJugadores("[" + nombreUsuario + "] " + mensaje)
+
         
 
 
