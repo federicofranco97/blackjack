@@ -98,7 +98,10 @@ def parsearMensajeServidor(mensajeRecibido):
                 vm.MiPuntaje = datosJugador[4]
                 vm.MiSaldo = datosJugador[1]
                 vm.MiEstado = datosJugador[2]
-                vm.MisCartas = datosJugador[3]  #datosJugador[3].strip('][').split(',')
+                if len(datosJugador[3] > 2):
+                    vm.MisCartas = datosJugador[3].strip('][').split(',')
+                else:
+                    vm.MisCartas = []
                 print(datosJugador[3])
                 print(type(datosJugador[3]))
                 vm.onEstadoChanged(vm.MiEstado)
