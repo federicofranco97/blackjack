@@ -154,7 +154,6 @@ def parsearMano(arg):
 def soy(usr):
     comando = "soy " + usr
     sock.send(comando.encode())
-    start_new_thread(iniciarPantalla, (vm,""))
     vm.MiNombre = usr.replace('\n','')
 
 def pedirCarta():
@@ -235,6 +234,7 @@ def inicioCliente():
     print("Conectado, bienvenido al servidor!")
 
     start_new_thread(escucharServidor, ())
+    start_new_thread(iniciarPantalla, (vm, ""))
     while True:
         newMsg = sys.stdin.readline()
         analizarComandoEnviado(newMsg)
