@@ -73,10 +73,10 @@ class Mano():
         }
 
         self.palos = {
-            1: "Trebol",
-            2: "Corazon",
-            3: "Picas",
-            4: "Diamante"
+            1: "Corazon",
+            2: "Picas",
+            3: "Diamante",
+            4: "Trebol"
         }
 
     def agregarApuesta(self, monto):
