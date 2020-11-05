@@ -98,7 +98,7 @@ def parsearMensajeServidor(mensajeRecibido):
                 vm.MiPuntaje = datosJugador[4]
                 vm.MiSaldo = datosJugador[1]
                 vm.MiEstado = datosJugador[2]
-                vm.MisCartas = datosJugador[3]
+                vm.MisCartas = datosJugador[3].strip('][').split(',')
                 print(datosJugador[3])
                 print(type(datosJugador[3]))
                 vm.onEstadoChanged(vm.MiEstado)
