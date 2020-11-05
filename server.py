@@ -2,6 +2,7 @@ import socket
 from _thread import *
 import threading
 import traceback
+import sqlite3
 from blackjack import Blackjack
 
 clientes = []
@@ -48,7 +49,7 @@ class Ejecutor:
     def __init__(self):
         self.comandos = {
             "soy": comIdentificarUsuario,
-            "estadisticas": comObtenerEstadisticas,
+            "estadisticas": comJuegoComando,
             "doblar": comJuegoComando,
             "ingresar": comIngresarDinero,
             "iniciar": comJuegoComando,
@@ -90,6 +91,8 @@ def comJuegoComando(nombreComando, argumentos, socket, juego, cliente):
         return juego.pedir(cliente.nombre)
     if nombreComando == "plantarse":
         return juego.plantarse(cliente.nombre)
+    if nombreComando == "estadisticas":
+        return juego.obtenerEstadisticas()
 
 """
     El comando <soy> es para que el usuario s eidentifique
@@ -111,14 +114,6 @@ def comIngresarDinero(nombreComando, argumentos, socket, juego, cliente):
     else:
         cliente.dinero += monto
         juego.agregarJugador(cliente)
-
-"""
-    El comando estadisticas se utiliza para obtener las estadisticas del juego
-"""
-
-def comObtenerEstadisticas(nombreComando, argumentos, socket, juego, cliente):
-    estadisticas = juego.obtenerEstadisticas()
-    cliente.enviarMensaje("Estadisticas: " + estadisticas + "\n")
 
 """
     Funcion auxiliar para debuggear
@@ -154,7 +149,7 @@ def inicializarCliente(cliente, bg):
 """
 
 def iniciarServidor():
-    puerto = 3030
+    puerto = 3031
     blackGame = Blackjack()
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(("",puerto))

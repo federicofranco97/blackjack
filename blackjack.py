@@ -2,6 +2,7 @@ from threading import Timer
 from mazo import Mazo, Carta, Mano
 from excepciones import NombreUsado, DineroInsuficiente, ApuestaRealizada, JugadorInexistente, ComandoNoPermitido
 from jugador import Jugador, Banca
+from sql import ManejadorDB
 import copy
 
 """
@@ -12,7 +13,7 @@ import copy
 class Blackjack():
 
     def __init__(self):
-        self.estadoActual = None
+        self.manejadorDB = ManejadorDB(False)
         self.jugadoresTotales = []
         self.jugadoresJugando = []
         self.jugadorActualIndice = None
@@ -139,7 +140,7 @@ class Blackjack():
     """
     def empezarTimer(self):
         self.timerIniciado = True
-        segundosRestantes = 20-self.segundosTotales
+        segundosRestantes = 5-self.segundosTotales
         if segundosRestantes % 10 == 0:
             self.notificarJugadores("empieza el juego en " + str(segundosRestantes) + " segundos")
         self.segundosTotales += 1
@@ -151,7 +152,6 @@ class Blackjack():
             self.mazo = Mazo()
             self.mazo.mezclar()
             self.jugadoresJugando = self.jugadoresTotales.copy()
-            self.estadoActual = "pendiente_apuestas"
             self.banca.iniciarTurno()
             for i in range(len(self.jugadoresJugando)):
                 self.jugadoresJugando[i].esperandoApuesta()
@@ -170,7 +170,7 @@ class Blackjack():
                 self.notificarJugador(jugador, "Iniciaremos cuenta regresiva para iniciar el juego")
                 self.empezarTimer()
             else:
-                self.notificarJugador(jugador, "Una vez finalizada la cuenta regresiva comenzara la partida")
+                self.notificarJugador(jugador, "Una vez finalizada la cuenta regresiva, comenzara la partida")
 
     """
         Esta funcion maneja la peticion de agregar un jugador al juego.
@@ -192,8 +192,13 @@ class Blackjack():
         Devuelve la cantidad de jugadores
     """
     def obtenerEstadisticas(self):
-        cantJugadores = "Cantidad jugadores: " + str(len(self.jugadoresTotales))
-        return cantJugadores
+        mensaje = ""
+        (estadJugadores, estadCartas) = self.manejadorDB.obtenerEstadisticas()
+        for fila in estadJugadores:
+            mensaje += ("Jugador: " + fila[0] + ". Ganadas: " + str(fila[1]) + ". Empatadas: " + str(fila[2]) + ". Perdidas: " + str(fila[3]) + "\n")
+        for f in estadCartas:
+            mensaje += ("Carta: " + f[0] + ". Cantidad de aparaciones: " + str(f[1]) + "\n")
+        self.notificarJugadores(mensaje)
 
     """
         Funciona que chequea si el juego debe comenzar, es decir, si el resto de los participanes ya hizo una apuesta.
@@ -253,12 +258,16 @@ class Blackjack():
                 _jug = self.jugadoresJugando[jugador]
                 if _jug.estadoActual == "finalizado_pendiente" and (_jug.manoActual.obtenerPuntaje() > puntaje or puntaje > 21):
                     _jug.darGanancia(2)
+                    _jug.marcarComoGanador()
                     _jug.enviarMensaje("Felicitaciones! Ganaste!")
                 elif puntaje == _jug.manoActual.obtenerPuntaje():
                     _jug.darGanancia(1)
+                    _jug.marcarComoEmpate()
                     _jug.enviarMensaje("es un empate, recuperaste lo aposado!")
                 else:
+                    _jug.marcarComoPerdedor()
                     _jug.enviarMensaje("Perdiste contra la banca!")
+            self.manejadorDB.registrarPartida(self.jugadoresJugando)
             self.segundosTotales = 0
             self.jugadorActual = None
             self.empezarTimer()

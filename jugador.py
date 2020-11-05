@@ -57,6 +57,12 @@ class Jugador():
     def marcarComoPerdedor(self):
         self.estadoActual = "finalizado_perdido"
 
+    def marcarComoGanador(self):
+        self.estadoActual = "finalizado_ganador"
+
+    def marcarComoEmpate(self):
+        self.estadoActual = "finalizado_empate"
+
     def plantarse(self):
         self.estadoActual = "finalizado_pendiente"
 

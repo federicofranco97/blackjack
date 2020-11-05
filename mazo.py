@@ -95,6 +95,15 @@ class Mano():
     def obtenerDescripcionCompleta(self):
         return str(self.obtenerPuntaje()) + " compuestos por " + str(self.obtenerDescripcion())
 
+    def obtenerDescripcionCartas(self):
+        descripciones = []
+        for carta in self.cartas:
+            nombre = self.valores[carta.valor]
+            palo = self.palos[carta.palo]
+            nombreFinal = nombre + " de " + palo
+            descripciones.append(nombreFinal)
+        return descripciones
+
     def obtenerDescripcion(self):
         descripciones = []
         for carta in self.cartas:
