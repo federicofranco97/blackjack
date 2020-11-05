@@ -1,3 +1,4 @@
+import ast
 import os
 import random
 import select
@@ -38,12 +39,6 @@ def escucharServidor():
                 for m in mensajes:
                     print(m)
                     mensajeParseado = parsearMensajeServidor(m)
-                    if m.split("|")[0] == "mensaje":
-                        vm.onMensajeEntrante(mensajeParseado)
-
-            # time.sleep(1)
-            #if random.randint(1, 4) == 1:
-                #vm.onTurnoChanged("sebastian")
 
         except socket.timeout:
             mensajeError = "Se perdio la conexion con el servidor"
@@ -51,28 +46,66 @@ def escucharServidor():
             vm.onMensajeEntrante(mensajeError)
 
 def getMensajesServidor(mensajeRecibido):
+    retorno = []
     mensajes = mensajeRecibido.decode("utf-8").split("\n")
-    return mensajes
+    for m in mensajes:
+        mensajesSplit = m.split('|')
+        for m2 in mensajesSplit:
+            retorno.append(m2)
+    return retorno
 
 
 """
     Metodo que se dedica a parsear los mensajes que envia el servidor dependiendo de la modalidad de los mismos 
 """
 def parsearMensajeServidor(mensajeRecibido):
-    #mensajeBase = mensajeRecibido.decode("utf-8").split("|")
-    mensajeBase = mensajeRecibido.split("|")
+    mensajeBase = mensajeRecibido.split(":")
     comando = mensajeBase[0] if len(mensajeBase) > 0 else mensajeRecibido
     argumentos = mensajeBase[1:] if len(mensajeBase) > 0 else []
-    if comando == "comandos" or comando == "status" or comando == "mensaje":
-        formateo = str(argumentos).split("'")[1]
+
+    if comando == "comandos":
+        formateo = str(argumentos[0]).split("#")
+        print("Comandos Posibles: " + " - ".join(formateo))
+        vm.onRefreshButtons(formateo)
+    elif comando == "mensaje":
+        formateo = str(argumentos[0])
+        print(formateo)
+        vm.onMensajeEntrante(formateo)
+    elif comando == "status":
+        formateo = str(argumentos).split("#")[1]
         return formateo.replace("\\n", "")
-    elif comando == "partida":
-        for x in argumentos:
-            subcomando = str(x).split(":")[0]
-            subargumentos = str(x).split(":")[1:]
-            parsearSubComando(subcomando, subargumentos)
+    elif comando == "banca":
+        formateo = str(argumentos).split("#")
+        vm.onPuntajeBancaChanged(formateo[1])
+    elif comando == "jugadores":
+        jugadores = argumentos[0].split("#")
+        print("Lista jugadores")
+        print(jugadores)
+        vm.Jugadores = []
+        estadisticas = ""
+        for j in jugadores:
+            datosJugador = j.replace("{","[").replace("}","]")
+            datosJugador = datosJugador.strip('][').split(', ')
+            if datosJugador[0] == vm.MiNombre:
+                vm.MiPuntaje = datosJugador[4]
+                vm.MiSaldo = datosJugador[1]
+                vm.MiEstado = datosJugador[2]
+                vm.MisCartas = datosJugador[3]
+                print(datosJugador[3])
+                print(type(datosJugador[3]))
+                vm.onEstadoChanged(vm.MiEstado)
+                if vm.MiEstado == "activo":
+                    vm.onTurnoChanged(vm.MiNombre)
+            else:
+                if datosJugador[2] == "activo":
+                    vm.onTurnoChanged(datosJugador[0])
+                estadisticas += datosJugador[0] + ' $' + datosJugador[1] + ' (' + datosJugador[2] + ')' + '\n'
+
+        vm.onJugadoresRefreshed(estadisticas)
+        print(estadisticas)
     else:
         return str(argumentos)
+
 
 
 """
@@ -102,6 +135,11 @@ def parsearMano(arg):
     mensaje = "Su mano es: "
     manoparse = (str(arg).split('#')[0]).replace("{", "").replace("}", "")
     return mensaje + manoparse
+
+def soy(usr):
+    comando = "soy " + usr
+    sock.send(comando.encode())
+    vm.MiNombre = usr
 
 def pedirCarta():
     print("pedir carta")
@@ -134,6 +172,32 @@ def enviarMensaje(mensaje):
     comando = "mensaje " + mensaje
     sock.send(comando.encode())
 
+#Verifico que comando esta queriendo enviar en la consola y lo encapsulo en la funcion correspondiente (que tambien se invoca desde la GUI)
+def analizarComandoEnviado(linea):
+    try:
+        comando = linea.split(" ")[0].replace('\n','')
+        if (comando == "mensaje"):
+            argumentos = "".join(linea.split(" ")[1:])
+        else:
+            argumentos = " ".join(linea.split(" ")[1:])
+        if comando == "soy":
+            soy(argumentos)
+        elif comando == "mensaje":
+            enviarMensaje(" ".join(argumentos))
+        elif comando == "ingresar":
+            fondear(argumentos)
+        elif comando == "apostar":
+            apostar(argumentos)
+        elif comando == "pedir":
+            pedirCarta()
+        elif comando == "plantarse":
+            plantarse()
+        elif comando == "separar":
+            separar()
+        elif comando == "doblar":
+            doblar()
+    except:
+        print("error al enviar el comando")
 
 """
     Metodo que inicializa el cliente, solicita los datos principales como ip del servidor,
@@ -158,12 +222,12 @@ def inicioCliente():
     start_new_thread(mostrarInterfaz, (vm,))
     while True:
         newMsg = sys.stdin.readline()
-        sock.send(newMsg.encode())
+        analizarComandoEnviado(newMsg)
+        #sock.send(newMsg.encode())
     sock.close()
 
 
 if __name__ == "__main__":
-
     vm.ee.on("pedirCartaEvent", pedirCarta)
     vm.ee.on("plantarseEvent", plantarse)
     vm.ee.on("separarEvent", separar)
@@ -171,32 +235,7 @@ if __name__ == "__main__":
     vm.ee.on("apostarEvent", apostar)
     vm.ee.on("doblarEvent", doblar)
 
-
-
     inicioCliente()
     #start_new_thread(mostrarInterfaz, (vm,))
-    while True:
-        time.sleep(1)
-        vm.Jugador = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        vm.Puntaje = 1000
-        botones = []
-        boton = random.randint(1, 10)
-        if (boton == 1):
-            botones.append("pedir")
-        if (boton == 2):
-            botones.append("plantarse")
-        if (boton == 3):
-            botones.append("doblar")
-        if (boton == 4):
-            botones.append("apostar")
 
-        largo = random.randint(1, 20)
-        mensaje = ""
-        for i in range(largo):
-            mensaje += chr(random.randint(97, 105))
-
-        vm.onMensajeEntrante(mensaje)
-
-        #vm.onRefreshButtons(botones)
-        vm.MisCartas = [{ "P": random.randint(1, 4), "V": random.randint(1, 14)}, { "P": random.randint(1, 4), "V": random.randint(1, 14)}]
 
