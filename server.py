@@ -145,6 +145,7 @@ def inicializarCliente(cliente, bg):
             traceback.print_exc()
             if usuario.nombre != None:
                 bg.removerJugador(usuario.nombre)
+            break
 
 
 
@@ -153,7 +154,7 @@ def inicializarCliente(cliente, bg):
     Acepta las conexiones entrantes, y llama a inicializarCliente en un nuevo threado.
 """
 def iniciarServidor():
-    puerto = 3030
+    puerto = 3039
     blackGame = Blackjack()
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(('',puerto))

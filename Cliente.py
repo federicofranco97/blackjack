@@ -147,7 +147,7 @@ def parsearMano(arg):
 def soy(usr):
     comando = "soy " + usr
     sock.send(comando.encode())
-    vm.MiNombre = usr
+    vm.MiNombre = usr.replace('\n','')
 
 def pedirCarta():
     print("pedir carta")
