@@ -420,7 +420,7 @@ class PantallaPrincipal:
     
     def btSalir(self):
         
-        self.model.onSalir()
+        #self.model.onSalir()
         self.root.quit()
        
         return    
