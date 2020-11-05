@@ -1,8 +1,10 @@
 import tkinter as tk
 import os
+import playsound
 from PIL import Image, ImageTk
 from guiViewModel import GuiViewModel
 from tkinter.scrolledtext import ScrolledText
+from _thread import *
 
 class PantallaCartas(tk.Frame):
     
@@ -43,6 +45,7 @@ class PantallaPrincipal:
         self.score = tk.StringVar()
         self.usuario = usuario
         self.estado = tk.StringVar()
+        self.estadoStr = ""
         self.jugadores = tk.StringVar()
         self.mensajes = tk.StringVar()
         self.app = None
@@ -57,22 +60,40 @@ class PantallaPrincipal:
         self.inicializarEnvioMensajes()  
         self.cargarScore("0")
         self.cargarEstado("")
+        self.cargarJugadores("")
         self.cargarBotones("")
         self.habilitarBotones()
+        self.cargarMensajes("")
+        
+        self.configurarEventos()
+        
+        return
+
+    def cambioTurno(self, usuario):
+        
+        if (usuario == self.usuario):
+            start_new_thread(self.play, ())
+        
+        return
+    
+    def play(self):
+        
+        soundurl = os.path.join("sounds", "myTurn.mp3")
+        playsound.playsound(soundurl)
         
         return
 
 
     def configurarEventos(self):
 
-        view.ee.on("refreshButtonsEvent", self.cargarBotones)
-        view.ee.on("turnoChangedEvent", self.modificarEstado)
-        view.ee.on("mensajeEntranteEvent", self.modificarMensajes)
-        view.ee.on("estadoChangedEvent", self.modificarrEstado)
-        view.ee.on("juegoComenzadoEvent", self.modificarEstadp)
-        view.ee.on("juegoTerminadoEvent", self.modificarEstado)
-        view.ee.on("jugadoresRefreshedEvent", self.modificarJugadores)
-        view.ee.on("puntajeBancaChangedEvent", self.modificarScore)
+        self.model.ee.on("refreshButtonsEvent", self.cargarBotones)
+        self.model.ee.on("turnoChangedEvent", self.cambioTurno)
+        self.model.ee.on("mensajeEntranteEvent", self.modificarMensajes)
+        self.model.ee.on("estadoChangedEvent", self.modificarEstado)
+        self.model.ee.on("juegoComenzadoEvent", self.modificarEstado)
+        self.model.ee.on("juegoTerminadoEvent", self.modificarEstado)
+        self.model.ee.on("jugadoresRefreshedEvent", self.modificarJugadores)
+        self.model.ee.on("puntajeBancaChangedEvent", self.modificarScore)
 
         return
     
@@ -340,7 +361,12 @@ class PantallaPrincipal:
     
     def btIngresar(self):
         
-        self.model.onFondear()
+        self.usuario = self.model.MiNombre
+        self.modificarEstado(self.estado.get())
+        
+        monto = self.scrolledMonto.get("1.0", tk.END)
+        self.model.onFondear(monto)
+        self.scrolledMonto.delete("0.0", tk.END)
        
         return
     
@@ -453,6 +479,7 @@ class PantallaPrincipal:
 
     def modificarEstado(self, estado):
         
+        self.estadoStr = estado
         self.estado.set("[" + self.usuario + "] " + estado)
         
         return
@@ -471,6 +498,7 @@ class PantallaPrincipal:
     def modificarJugadores(self, jugadores):
         
         #self.jugadores.set(jugadores)
+        self.textJugadores.delete("0.0", tk.END)
         self.textJugadores.insert(tk.END, jugadores)
         self.textJugadores.see(tk.END)
                 

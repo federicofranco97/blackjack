@@ -14,6 +14,7 @@ from pip._vendor.distlib.compat import raw_input
 
 from gui import *
 from guiViewModel import GuiViewModel
+from pantalla import PantallaPrincipal
 
 hayJugadoresEnEspera = False
 hayPartidaEnCurso = True
@@ -25,6 +26,13 @@ vm = GuiViewModel()
     recibe del servidor.
 """
 
+def iniciarPantalla(model, usuario):
+    
+    pantalla = PantallaPrincipal(model, usuario)
+    pantalla.mostrar()
+    
+    return
+    
 
 def escucharServidor():
     while 1:
@@ -219,7 +227,7 @@ def inicioCliente():
     print("Conectado, bienvenido al servidor!")
 
     start_new_thread(escucharServidor, ())
-    start_new_thread(mostrarInterfaz, (vm,))
+    start_new_thread(iniciarPantalla, (vm,""))
     while True:
         newMsg = sys.stdin.readline()
         analizarComandoEnviado(newMsg)

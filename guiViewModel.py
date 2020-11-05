@@ -29,10 +29,10 @@ class GuiViewModel():
         self.ee.emit("doblarEvent", )
 
     def onFondear(self, monto):
-        self.ee.emit("fondearEvent", )
+        self.ee.emit("fondearEvent", monto)
 
     def onApostar(self, monto):
-        self.ee.emit("apostarEvent", )
+        self.ee.emit("apostarEvent", monto)
 
     def onEnviarMensaje(self, mensaje):
         self.ee.emit("enviarMensajeEvent", (mensaje))
