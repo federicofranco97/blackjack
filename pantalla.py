@@ -65,12 +65,15 @@ class PantallaPrincipal:
 
     def configurarEventos(self):
 
-        view.ee.on("RefreshButtons", self.cargarBotones)
-        view.ee.on("TurnoChanged", self.cargarEstado)
-        view.ee.on("MensajeEntrante", self.cargarMensajes)
-        view.ee.on("JuegoComenzado", self.cargarEstado)
-        view.ee.on("JuegoTerminado", self.cargarEstado)
-        
+        view.ee.on("refreshButtonsEvent", self.cargarBotones)
+        view.ee.on("turnoChangedEvent", self.modificarEstado)
+        view.ee.on("mensajeEntranteEvent", self.modificarMensajes)
+        view.ee.on("estadoChangedEvent", self.modificarrEstado)
+        view.ee.on("juegoComenzadoEvent", self.modificarEstadp)
+        view.ee.on("juegoTerminadoEvent", self.modificarEstado)
+        view.ee.on("jugadoresRefreshedEvent", self.modificarJugadores)
+        view.ee.on("puntajeBancaChangedEvent", self.modificarScore)
+
         return
     
     
