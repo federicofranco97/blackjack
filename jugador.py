@@ -15,12 +15,12 @@ class Jugador():
     def dineroSuficiente(self, monto):
         return self.usuario.dinero >= int(monto)
 
-    def enviarMensaje(self, mensaje):
-        self.usuario.enviarMensaje("[Servidor] "+ self.usuario.nombre + ", " + mensaje)
+    def enviarMensaje(self, mensaje, comandos = [], jugadores = [], banca = [], mano = []):
+        self.usuario.enviarMensaje("[Servidor] " + mensaje, comandos, jugadores, banca, mano)
 
     def esperandoApuesta(self):
         self.apuestaInicial = None
-        self.enviarMensaje("ingresa tu apuesta. Tu saldo actual es de $" + str(self.usuario.dinero) + "")
+        self.estadoActual = "apuesta_pendiente"
         self.usuario.estadoActual = "apuesta_pendiente"
         self.manoActual = Mano()
 
@@ -52,7 +52,6 @@ class Jugador():
             raise ComandoNoPermitido()
         self.manoActual.agregarCarta(carta)
         puntajeMano = self.manoActual.obtenerPuntaje()
-        self.enviarMensaje("el total de tu mano es de " + self.manoActual.obtenerDescripcionCompleta())
         return puntajeMano
 
     def marcarComoPerdedor(self):

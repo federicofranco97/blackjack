@@ -6,8 +6,14 @@ class GuiViewModel():
         self.MiNombre = "sebastian"
         self.MiPuntaje = 100
         self.MisCartas = []
+        self.MiSaldo = 100
+        self.MiEstado = ""
+
+
+        self.esMiTurno = False
         self.Turno = "sebastian"
         self.Acciones = []
+        self.Jugadores = []
         #Observer.__init__(self)
 
     def onPedirCarta(self):
@@ -37,7 +43,7 @@ class GuiViewModel():
 
     def onTurnoChanged(self, turno):
         self.Turno = turno
-        self.miTurno = self.MiNombre == turno
+        self.esMiTurno = self.MiNombre == turno
         self.ee.emit("turnoChangedEvent", (turno))
 
     def onMensajeEntrante(self, mensaje):
@@ -49,6 +55,14 @@ class GuiViewModel():
     def onJuegoTerminado(self, ganador):
         self.ee.emit("juegoTerminadoEvent", )
 
+    def onEstadoChanged(self, estado):
+        self.ee.emit("estadoChangedEvent", estado)
+
+    def onJugadoresRefreshed(self, status):
+        self.ee.emit("jugadoresRefreshedEvent", status)
+
+    def onPuntajeBancaChanged(self, puntaje):
+        self.ee.emit("puntajeBancaChangedEvent", puntaje)
 
 
 
