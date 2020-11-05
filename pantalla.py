@@ -478,8 +478,8 @@ class PantallaPrincipal:
 
     def modificarEstado(self, estado):
         
-        self.estadoStr = estado
-        self.estado.set("[" + self.usuario + "] " + estado)
+        self.estadoStr = estado.replace('[', '').replace(']', '')
+        self.estado.set(self.usuario + " "  + estado + " (" + str(self.model.MiSaldo) + ")")
         self.modificarScore(self.model.MiPuntaje)
         self.cargarCartas(self.model.MisCartas)
         
@@ -610,7 +610,7 @@ def testPantallaInicializador2():
     bjScreen = PantallaPrincipal(model, "quique")
     bjScreen.cargarCartas(listaCartas)
     bjScreen.cargarScore("12")
-    bjScreen.cargarEstado("Jugar")
+    bjScreen.cargarEstado("Jug")
     #bjScreen.cargarUsuario("quique")
     bjScreen.cargarJugadores("Quique: Esperando\nSeba: Esperando\nFede G: Esperando\nFede F: Jugando\nRichard: Esperando")
     bjScreen.cargarMensajes("Quique: Esperando...\n")
@@ -624,8 +624,11 @@ def testPantallaInicializador():
     #cartas1 = ['1-3', '2-4', '3-5']
     listaCartas = []
     model = GuiViewModel()
+    model.MiSaldo = 3000
     model.ee.on("pedirCartaEvent", testPantallaPedirCarta)
     bjScreen = PantallaPrincipal(model, "quique")
+    bjScreen.modificarEstado("Jugar")
+    bjScreen.modificarScore("12")
     bjScreen.mostrar()
 
     '''    
