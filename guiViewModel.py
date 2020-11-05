@@ -3,15 +3,15 @@ from pymitter import EventEmitter
 class GuiViewModel():
     def __init__(self):
         self.ee = EventEmitter()
-        self.MiNombre = "sebastian"
-        self.MiPuntaje = 100
+        self.MiNombre = ""
+        self.MiPuntaje = 0
         self.MisCartas = []
-        self.MiSaldo = 100
+        self.MiSaldo = 0
         self.MiEstado = ""
 
 
         self.esMiTurno = False
-        self.Turno = "sebastian"
+        self.Turno = ""
         self.Acciones = []
         self.Jugadores = []
         #Observer.__init__(self)

@@ -93,7 +93,7 @@ class PantallaPrincipal:
         self.model.ee.on("juegoComenzadoEvent", self.modificarEstado)
         self.model.ee.on("juegoTerminadoEvent", self.modificarEstado)
         self.model.ee.on("jugadoresRefreshedEvent", self.modificarJugadores)
-        self.model.ee.on("puntajeBancaChangedEvent", self.modificarScore)
+        #self.model.ee.on("puntajeBancaChangedEvent", self.modificarScore)
 
         return
     
@@ -421,7 +421,6 @@ class PantallaPrincipal:
         
         mensaje = self.entryEnvioMensajes.get("1.0", tk.END)
         self.entryEnvioMensajes.delete("0.0", tk.END)
-        self.modificarMensajes(mensaje)
         self.model.onEnviarMensaje(mensaje)
                 
         return
@@ -481,6 +480,7 @@ class PantallaPrincipal:
         
         self.estadoStr = estado
         self.estado.set("[" + self.usuario + "] " + estado)
+        self.modificarScore(self.model.MiPuntaje)
         self.cargarCartas(self.model.MisCartas)
         
         return
