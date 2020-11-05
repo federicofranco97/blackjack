@@ -481,6 +481,7 @@ class PantallaPrincipal:
         
         self.estadoStr = estado
         self.estado.set("[" + self.usuario + "] " + estado)
+        self.cargarCartas(self.model.MisCartas)
         
         return
         
