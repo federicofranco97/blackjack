@@ -431,6 +431,7 @@ class PantallaPrincipal:
         
         #self.model.onSalir()
         self.root.quit()
+        os._exit(0)
        
         return    
 
