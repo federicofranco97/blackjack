@@ -246,6 +246,7 @@ if __name__ == "__main__":
     vm.ee.on("fondearEvent", fondear)
     vm.ee.on("apostarEvent", apostar)
     vm.ee.on("doblarEvent", doblar)
+    vm.ee.on("enviarMensajeEvent", enviarMensaje)
 
     inicioCliente()
     #start_new_thread(mostrarInterfaz, (vm,))
