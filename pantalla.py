@@ -525,7 +525,7 @@ class PantallaPrincipal:
     def modificarMensajes(self, mensajes):
         
         #self.mensajes.set(mensajes)
-        self.textChat.insert(tk.END, mensajes)
+        self.textChat.insert(tk.END, mensajes + "\n")
         self.textChat.see(tk.END)
         
         return
@@ -548,8 +548,7 @@ class PantallaPrincipal:
 
     
     def cargarCartas(self, cartas):
-        
-        print(cartas)
+
         if self.app == None:
             self.app = PantallaCartas(self.frameCartas)
             self.app['bg']='green'
@@ -571,7 +570,6 @@ class PantallaPrincipal:
         for i in range(0, len(self.cartas)):
             self.imgList.append(os.path.join(os.path.join(self.cwd, mazo), self.cartas[i] + '.jpg'))
             self.app.agregar(self.imgList[i], x, y)
-            print(self.imgList[i])
 
             x = x + xOffset
             y = y + yOffset
