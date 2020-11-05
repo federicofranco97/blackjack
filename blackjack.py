@@ -80,10 +80,17 @@ class Blackjack():
             if not jugActual.manoActual == None:
                 manoDesc = jugActual.manoActual.obtenerValores()
                 puntaje = jugActual.manoActual.obtenerPuntaje()
-            estadoJugador = "{" + jugActual.usuario.nombre + "," + str(jugActual.usuario.dinero) + "," + jugActual.estadoActual
+
+            #estadoJugador = "{" + jugActual.usuario.nombre + "," + str(jugActual.usuario.dinero) + "," + jugActual.estadoActual
+            #if not manoDesc == None:
+            #    estadoJugador = estadoJugador + "," + "[" + ",".join(manoDesc) + "]"
+            #    estadoJugador = estadoJugador + "," + str(puntaje)
+
+            estadoJugador = "{" + jugActual.usuario.nombre + ", " + str(jugActual.usuario.dinero) + ", " + jugActual.estadoActual
             if not manoDesc == None:
-                estadoJugador = estadoJugador + "," + "[" + ",".join(manoDesc) + "]"
-                estadoJugador = estadoJugador + "," + str(puntaje)
+                estadoJugador = estadoJugador + ", " + "[" + ",".join(manoDesc) + "]"
+                estadoJugador = estadoJugador + ", " + str(puntaje)
+
             estados.append(estadoJugador + "}")
         return estados
 

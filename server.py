@@ -140,6 +140,7 @@ def inicializarCliente(cliente, bg):
             traceback.print_exc()
             if usuario.nombre != None:
                 bg.removerJugador(usuario.nombre)
+            break
 
 
 
@@ -147,20 +148,22 @@ def inicializarCliente(cliente, bg):
     La funcion iniciarServidor inicializar la escucha en el puerto 3030 y configura las entidades necesarias (como el coordinador de juego de BlackJack).
     Acepta las conexiones entrantes, y llama a inicializarCliente en un nuevo threado.
 """
-
 def iniciarServidor():
-    puerto = 3031
+    puerto = 3039
     blackGame = Blackjack()
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.bind(("",puerto))
+    sock.bind(('',puerto))
     print(crearMensajeLog("Socket bindeado"))
     sock.listen(5)
     print(crearMensajeLog("Socket escuchando"))
     while True:
         cliente, direccionCliente = sock.accept()
+        print(cliente)
         print(crearMensajeLog("Nuevo jugador desde: " + direccionCliente[0]))
         start_new_thread(inicializarCliente, (cliente, blackGame))
     sock.close()
+
+
 
 if __name__ == "__main__":
     iniciarServidor()
