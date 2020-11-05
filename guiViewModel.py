@@ -3,7 +3,7 @@ from pymitter import EventEmitter
 class GuiViewModel():
     def __init__(self):
         self.ee = EventEmitter()
-        self.MiNombre = ""
+        self.MiNombre = "..."
         self.MiPuntaje = 0
         self.MisCartas = []
         self.MiSaldo = 0

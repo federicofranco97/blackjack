@@ -221,6 +221,7 @@ class PantallaPrincipal:
         
         self.botones = botones
         self.habilitarBotones()
+        self.modificarEstado(self.estadoStr)
         
         return
     
@@ -362,8 +363,8 @@ class PantallaPrincipal:
     
     def btIngresar(self):
         
-        self.usuario = self.model.MiNombre
-        self.modificarEstado(self.estado.get())
+        #self.modificarEstado(self.estado.get())
+        self.modificarEstado(self.estadoStr)
         
         monto = self.scrolledMonto.get("1.0", tk.END)
         self.model.onFondear(monto)
@@ -487,8 +488,9 @@ class PantallaPrincipal:
 
     def modificarEstado(self, estado):
         
+        self.usuario = self.model.MiNombre
         self.estadoStr = estado.replace('[', '').replace(']', '')
-        self.estado.set(self.usuario + " "  + "$" + str(self.model.MiSaldo) + " (" + estado + ")")
+        self.estado.set(self.usuario + " "  + "$" + str(self.model.MiSaldo) + " (" + self.estadoStr + ")")
         self.modificarScore(self.model.MiPuntaje)
         self.cargarCartas(self.model.MisCartas)
         
@@ -499,7 +501,7 @@ class PantallaPrincipal:
         
         self.modificarEstado(estado)
         self.labelEstados = tk.Label(self.frameEstadoUsuario, textvariable=self.estado, 
-                                   font=("Arial Bold", 30), bg="medium blue", fg="white")
+                                   font=("Arial Bold", 25), bg="medium blue", fg="white")
         self.labelEstados.pack(side=tk.LEFT)
 
         return
@@ -544,7 +546,7 @@ class PantallaPrincipal:
 
         self.scrollbarChat = tk.Scrollbar(self.frameChat) 
         self.textChat = tk.Text(self.frameChat, width=388, height=449,
-                                font=("Arial Bold", 10), fg="black", bg="white")
+                                font=("Arial Bold", 13), fg="blue", bg="white")
         self.scrollbarChat.pack(side=tk.RIGHT, fill=tk.Y)
         self.textChat.pack(side=tk.LEFT, fill=tk.Y)
         self.scrollbarChat.config(command=self.textChat.yview)
