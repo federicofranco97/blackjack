@@ -94,6 +94,9 @@ def parsearMensajeServidor(mensajeRecibido):
         for j in jugadores:
             datosJugador = j.replace("{","[").replace("}","]")
             datosJugador = datosJugador.strip('][').split(', ')
+            print("dato jugador")
+            print(datosJugador)
+            print(datosJugador[4])
             if datosJugador[0] == vm.MiNombre:
                 vm.MiPuntaje = datosJugador[4]
                 vm.MiSaldo = datosJugador[1]
