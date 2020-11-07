@@ -9,12 +9,25 @@ class GuiViewModel():
         self.MiSaldo = 0
         self.MiEstado = ""
 
-
         self.esMiTurno = False
         self.Turno = ""
         self.Acciones = []
         self.Jugadores = []
-        #Observer.__init__(self)
+
+    def onRequestConnection(self, servidor, puerto):
+        self.ee.emit("requestConnectionEvent", servidor, puerto)
+
+    def onSoy(self, soy):
+        self.ee.emit("soyEvent", soy)
+
+    def onConnected(self):
+        self.ee.emit("connectedEvent", )
+
+    def onConnectError(self, mensaje):
+        self.ee.emit("connectErrorEvent", mensaje)
+
+    def onEntered(self):
+        self.ee.emit("enteredEvent", )
 
     def onPedirCarta(self):
         self.ee.emit("pedirCartaEvent", )
@@ -64,8 +77,6 @@ class GuiViewModel():
     def onPuntajeBancaChanged(self, puntaje):
         self.ee.emit("puntajeBancaChangedEvent", puntaje)
 
-    def onSalir(self):
-        self.ee.emit("salirEvent")
 
 
 

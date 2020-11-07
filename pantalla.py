@@ -1,3 +1,4 @@
+import json
 import tkinter as tk
 import os
 import playsound
@@ -39,7 +40,8 @@ class PantallaCartas(tk.Frame):
 class PantallaPrincipal:
 
     def __init__(self, model, usuario):
-    
+        self.lenguaje = "es"
+        self.diccionario = {}
         self.root = tk.Tk()
         self.cartas = []
         self.score = tk.StringVar()
@@ -69,18 +71,18 @@ class PantallaPrincipal:
         
         return
 
+    def cambiarIdioma(self, idioma):
+        with open(os.path.join("lenguaje", idioma + ".py")) as json_file:
+            self.diccionario = json.load(json_file)
+
     def cambioTurno(self, usuario):
-        
-        if (usuario == self.usuario):
+        if usuario == self.usuario:
             start_new_thread(self.play, ())
-        
         return
     
     def play(self):
-        
         soundurl = os.path.join("sounds", "myTurn.mp3")
         playsound.playsound(soundurl)
-        
         return
 
 
@@ -300,7 +302,7 @@ class PantallaPrincipal:
         #                   command=self.btConectar)
         #self.buttonConectar.pack(side=tk.LEFT)
         self.buttonIngresar = tk.Button(self.frameBotones, width = ancho, height = 20, 
-                           text="INGRESAR", 
+                           text=self.diccionario["ingresar"],
                            fg=colorFront,
                            bg=colorBack,
                            font=("Arial Bold", tamLetra),
@@ -318,42 +320,42 @@ class PantallaPrincipal:
         self.scrolledMonto.bind('<Return>', self.procesarMonto)
         self.scrolledMonto.pack(side=tk.LEFT)
         self.buttonApostar = tk.Button(self.frameBotones, width = ancho, height = 20,
-                           text="APOSTAR", 
+                           text=self.diccionario["apostar"],
                            fg=colorFront,
                            bg=colorBack,
                            font=("Arial Bold", tamLetra),
                            command=self.btApostar)
         self.buttonApostar.pack(side=tk.LEFT)
         self.buttonPedir = tk.Button(self.frameBotones, width = ancho, height = 20,
-                           text="PEDIR", 
+                           text=self.diccionario["pedir"],
                            fg=colorFront,
                            bg=colorBack,
                            font=("Arial Bold", tamLetra),
                            command=self.btPedir)
         self.buttonPedir.pack(side=tk.LEFT)
         self.buttonPlantarse = tk.Button(self.frameBotones, width = ancho, height = 20,
-                           text="PLANTARSE", 
+                           text=self.diccionario["plantarse"],
                            fg=colorFront,
                            bg=colorBack,
                            font=("Arial Bold", tamLetra),
                            command=self.btPlantarse)
         self.buttonPlantarse.pack(side=tk.LEFT)
         self.buttonSeparar = tk.Button(self.frameBotones, width = ancho, height = 20,
-                           text="SEPARAR",
+                           text=self.diccionario["separar"],
                            fg=colorFront,
                            bg=colorBack,
                            font=("Arial Bold", tamLetra),
                            command=self.btSeparar)
         self.buttonSeparar.pack(side=tk.LEFT)
         self.buttonDoblar = tk.Button(self.frameBotones, width = ancho, height = 20,
-                           text="DOBLAR", 
+                           text=self.diccionario["doblar"],
                            fg=colorFront,
                            bg=colorBack,
                            font=("Arial Bold", tamLetra),
                            command=self.btDoblar)
         self.buttonDoblar.pack(side=tk.LEFT)
         self.buttonSalir = tk.Button(self.frameBotones, width = ancho, height = 20,
-                           text="SALIR", 
+                           text=self.diccionario["salir"],
                            fg=colorFront,
                            bg=colorBack,
                            font=("Arial Bold", tamLetra),
@@ -382,78 +384,52 @@ class PantallaPrincipal:
     
     
     def btPedir(self):
- 
         self.model.onPedirCarta()
-       
         return
     
     
     def btPlantarse(self):
-        
         self.model.onPlantarse()
-       
         return
     
     
     def btSeparar(self):
-        
         self.model.onSeparar()
-       
         return
-    
-    
-    #def btFondear(self):
-    #    
-    #    monto = self.scrolledMonto.get("1.0", tk.END)
-    #    self.model.onFondear(monto)
-    #    self.scrolledMonto.delete("0.0", tk.END)
-       
-    #    return
-    
-    
+
+
     def btApostar(self):
-        
         monto = self.scrolledMonto.get("1.0", tk.END)
         self.model.onApostar(monto)
         self.scrolledMonto.delete("0.0", tk.END)
-       
         return
     
     
     def btDoblar(self):
-        
         self.model.onDoblar()
-       
         return    
 
     
     def btSalir(self):
-        
-        #self.model.onSalir()
         self.root.quit()
         os._exit(0)
-       
         return    
 
     
     def enviarMensaje(self):
-        
         mensaje = self.entryEnvioMensajes.get("1.0", tk.END)
         self.entryEnvioMensajes.delete("0.0", tk.END)
         self.model.onEnviarMensaje(mensaje)
-                
         return
 
 
     def inicializarEnvioMensajes(self):
-      
-        self.entryEnvioMensajes = ScrolledText(self.frameMenuEntry, 
-                                    font=("Arial Bold", 10))
+        self.entryEnvioMensajes = ScrolledText(self.frameMenuEntry, font=("Arial Bold", 10))
         self.entryEnvioMensajes.bind('<Return>', self.procesarMensaje)
         self.entryEnvioMensajes.pack()
 
         self.buttonEnviarMensaje = tk.Button(self.frameMenuButton, width = 48, height = 48,
-                           text="ENVIAR", 
+                           text=self.diccionario["enviar"],
                            fg="white",
                            bg="medium blue",
                            command=self.enviarMensaje)
@@ -463,9 +439,7 @@ class PantallaPrincipal:
 
 
     def modificarScore(self, score):
-        
         self.score.set(score)
-        
         return
         
     

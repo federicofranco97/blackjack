@@ -4,6 +4,7 @@ import random
 import select
 import socket
 import sys
+import json
 from _thread import *
 import logging
 import re
@@ -16,24 +17,26 @@ from gui import *
 from guiViewModel import GuiViewModel
 from pantalla import PantallaPrincipal
 
+usarGUI = False
 hayJugadoresEnEspera = False
 hayPartidaEnCurso = True
 sock = None
-
+lenguaje = "es"
+diccionario = {}
 vm = GuiViewModel()
-"""
-    Metodo que escucha el socket del servidor y se dedica a imprimir los mensajes parseados que 
-    recibe del servidor.
-"""
+
 
 def iniciarPantalla(model, usuario):
-    
+    vm.onConnected()
+
     pantalla = PantallaPrincipal(model, usuario)
     pantalla.mostrar()
-    
     return
-    
 
+
+"""
+Metodo que escucha el socket del servidor y se dedica a imprimir los mensajes parseados que recibe del servidor.
+"""
 def escucharServidor():
     while 1:
         try:
@@ -49,9 +52,10 @@ def escucharServidor():
                     mensajeParseado = parsearMensajeServidor(m)
 
         except socket.timeout:
-            mensajeError = "Se perdio la conexion con el servidor"
+            mensajeError = lenguaje["conexionPerdida"]
             print(mensajeError)
             vm.onMensajeEntrante(mensajeError)
+
 
 def getMensajesServidor(mensajeRecibido):
     retorno = []
@@ -64,7 +68,7 @@ def getMensajesServidor(mensajeRecibido):
 
 
 """
-    Metodo que se dedica a parsear los mensajes que envia el servidor dependiendo de la modalidad de los mismos 
+Metodo que se dedica a parsear los mensajes que envia el servidor dependiendo de la modalidad de los mismos 
 """
 def parsearMensajeServidor(mensajeRecibido):
     mensajeBase = mensajeRecibido.split(":")
@@ -92,9 +96,8 @@ def parsearMensajeServidor(mensajeRecibido):
         vm.Jugadores = []
         estadisticas = ""
         for j in jugadores:
-            datosJugador = j.replace("{","[").replace("}","]")
+            datosJugador = j.replace("{", "[").replace("}", "]")
             datosJugador = datosJugador.strip('][').split(', ')
-            print("dato jugador")
             print(datosJugador)
             print(datosJugador[4])
             if datosJugador[0] == vm.MiNombre:
@@ -102,7 +105,8 @@ def parsearMensajeServidor(mensajeRecibido):
                 vm.MiSaldo = datosJugador[1]
                 vm.MiEstado = datosJugador[2]
                 if len(datosJugador[3]) > 2:
-                    vm.MisCartas = datosJugador[3].strip('][').split(',')
+                    tempCartas = datosJugador[3].strip('][').split(',')
+                    vm.MisCartas = tempCartas
                 else:
                     vm.MisCartas = []
                 print(datosJugador[3])
@@ -122,10 +126,8 @@ def parsearMensajeServidor(mensajeRecibido):
         return str(argumentos)
 
 
-
 """
-    Metodo que se encarga de parsear los subcomandos que lleguen 
-    a lo largo de la partida
+Metodo que se encarga de parsear los subcomandos que lleguen a lo largo de la partida
 """
 def parsearSubComando(subcom, args):
     if subcom == "mano":
@@ -151,47 +153,68 @@ def parsearMano(arg):
     manoparse = (str(arg).split('#')[0]).replace("{", "").replace("}", "")
     return mensaje + manoparse
 
+
 def soy(usr):
     comando = "soy " + usr
     sock.send(comando.encode())
-    vm.MiNombre = usr.replace('\n','')
+    vm.MiNombre = usr.replace('\n', '')
+
 
 def pedirCarta():
     print("pedir carta")
     comando = "pedir"
     sock.send(comando.encode())
 
+
 def plantarse():
     print("me planto")
     comando = "plantarse"
     sock.send(comando.encode())
 
+
 def doblar():
     print("doblar apuesta")
 
+
 def separar():
     print("separar")
+
 
 def fondear(monto):
     print("fondear " + monto)
     comando = "ingresar " + monto
     sock.send(comando.encode())
 
+
 def apostar(monto):
     print("apostando " + monto)
     comando = "apostar " + monto
     sock.send(comando.encode())
+
 
 def enviarMensaje(mensaje):
     print("enviando mensaje: " + mensaje)
     comando = "mensaje " + mensaje
     sock.send(comando.encode())
 
-#Verifico que comando esta queriendo enviar en la consola y lo encapsulo en la funcion correspondiente (que tambien se invoca desde la GUI)
+# Se conecta al servidor con los parametros solicitados
+def conectar(ip, puerto):
+    global sock
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        sock.connect((ip, int(puerto)))
+    except Exception as e:
+        print(lenguaje["errorConexion"], e)
+        vm.onConnectError("")
+        return False
+    return True
+
+
+# Verifico que comando esta queriendo enviar en la consola y lo encapsulo en la funcion correspondiente (que tambien se invoca desde la GUI)
 def analizarComandoEnviado(linea):
     try:
-        comando = linea.split(" ")[0].replace('\n','')
-        if (comando == "mensaje"):
+        comando = linea.split(" ")[0].replace('\n', '')
+        if comando == "mensaje":
             argumentos = "".join(linea.split(" ")[1:])
         else:
             argumentos = " ".join(linea.split(" ")[1:])
@@ -212,37 +235,38 @@ def analizarComandoEnviado(linea):
         elif comando == "doblar":
             doblar()
     except:
-        print("error al enviar el comando")
+        print(lenguaje["errorComando"])
+
 
 """
-    Metodo que inicializa el cliente, solicita los datos principales como ip del servidor,
-    puerto, y luego de realizar la conexion pide el nombre de usuario
+Metodo que inicializa el cliente, solicita los datos principales como ip del servidor, puerto, y luego de realizar la conexion pide el nombre de usuario
 """
 def inicioCliente():
-    print("Bienvenido al servidor de BlackJack")
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.settimeout(200)
-    host = raw_input("Por favor ingresa la IP del servidor: ")
-    port = raw_input("Por favor ingresa el puerto del servidor: ")
-    global sock
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        sock.connect((host, int(port)))
-    except Exception as e:
-        print("Ocurrio un error al conectarse con el servidor:", e)
-        return
-    print("Conectado, bienvenido al servidor!")
+    if not usarGUI:
+        while True:
+            host = raw_input(lenguaje["solicitarIp"])
+            port = raw_input(lenguaje["solicitarPuerto"])
+            if conectar(host, port):
+                break
+        print(lenguaje["mensajeBienvenida"])
 
     start_new_thread(escucharServidor, ())
-    start_new_thread(iniciarPantalla, (vm, ""))
-    while True:
-        newMsg = sys.stdin.readline()
-        analizarComandoEnviado(newMsg)
-        #sock.send(newMsg.encode())
+    if usarGUI:
+        start_new_thread(iniciarPantalla, (vm, ""))
+
+    if not usarGUI:
+        while True:
+            newMsg = sys.stdin.readline()
+            analizarComandoEnviado(newMsg)
+
     sock.close()
 
 
 if __name__ == "__main__":
+    #global lenguaje
+    with open(os.path.join("lenguaje", lenguaje + ".py")) as json_file:
+        diccionario = json.load(json_file)
+
     vm.ee.on("pedirCartaEvent", pedirCarta)
     vm.ee.on("plantarseEvent", plantarse)
     vm.ee.on("separarEvent", separar)
@@ -250,8 +274,5 @@ if __name__ == "__main__":
     vm.ee.on("apostarEvent", apostar)
     vm.ee.on("doblarEvent", doblar)
     vm.ee.on("enviarMensajeEvent", enviarMensaje)
-
+    vm.ee.on("requestConnectionEvent", conectar)
     inicioCliente()
-    #start_new_thread(mostrarInterfaz, (vm,))
-
-
