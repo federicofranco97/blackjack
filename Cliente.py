@@ -15,6 +15,7 @@ from pip._vendor.distlib.compat import raw_input
 
 from gui import *
 from guiViewModel import GuiViewModel
+from ingresar import PantallaIngreso
 from pantalla import PantallaPrincipal
 
 usarGUI = True
@@ -251,15 +252,17 @@ def inicioCliente():
 
 
     if usarGUI:
-        start_new_thread(iniciarPantalla, (vm, ""))
+        iniciarPantalla(vm, "")
+        #start_new_thread(iniciarPantalla, (vm, ""))
+
 
     if not usarGUI:
         start_new_thread(escucharServidor, ())
         while True:
             newMsg = sys.stdin.readline()
             analizarComandoEnviado(newMsg)
+        sock.close()
 
-    sock.close()
 
 
 #Punto de entrada del Cliente
