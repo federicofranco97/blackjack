@@ -108,7 +108,7 @@ def comJuegoComando(nombreComando, argumentos, socket, juego, cliente):
 def comIdentificarUsuario(nombreComando, argumentos, socket, juego, cliente):
     if (cliente.nombre == None):
         cliente.nombre = argumentos[0]
-        cliente.enviarMensaje("Debes ingresar un saldo para iniciar")
+        cliente.enviarMensaje(diccionario[cliente.idioma]["ingresarSaldo"])
     else:
         socket.send("Ya te conozco. Te llamas " + cliente.nombre + ", no " + argumentos[0] + "\n")
 
@@ -118,7 +118,7 @@ def comIdentificarUsuario(nombreComando, argumentos, socket, juego, cliente):
 def comIngresarDinero(nombreComando, argumentos, socket, juego, cliente):
     monto = int(argumentos[0])
     if monto <= 0:
-        cliente.enviarMensaje("Tienes que ingresar un monto mayor a 0")
+        cliente.enviarMensaje(diccionario[cliente.idioma]["ingresarMontoMayorCero"])
     else:
         cliente.dinero += monto
         juego.agregarJugador(cliente)
@@ -135,7 +135,7 @@ def crearMensajeLog(mensaje):
 def inicializarCliente(cliente, bg):
     usuario = Usuario(cliente)
     clientes.append(usuario)
-    usuario.enviarMensaje(diccionario[""]["bienvenidoAlJuego"])
+    usuario.enviarMensaje(diccionario[usuario.idioma]["bienvenidoAlJuego"])
     ejecutor = Ejecutor()
     while True:
         try:
