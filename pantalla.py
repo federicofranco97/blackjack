@@ -39,13 +39,13 @@ class MostrarImagenes(tk.Frame):
 
 class PantallaPrincipal:
 
-    def __init__(self, model, usuario):
+    def __init__(self, model):
         self.lenguaje = "es"
         self.diccionario = {}
         self.root = tk.Tk()
         self.cartas = []
         self.score = tk.StringVar()
-        self.usuario = usuario
+        self.usuario = ""
         self.estado = tk.StringVar()
         self.estadoStr = ""
         self.jugadores = tk.StringVar()
