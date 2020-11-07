@@ -1,7 +1,7 @@
 import tkinter as tk
 import os
 import playsound
-from pantalla import MostrarImagenes 
+from pantalla import MostrarImagenes
 #from PIL import Image, ImageTk
 from guiViewModel import GuiViewModel
 #from tkinter.scrolledtext import ScrolledText
@@ -175,10 +175,12 @@ class PantallaIngreso:
 
 
     def soyAceptadoEvent(self):
-        
+                
+        self.model.onEntered()
         self.root.quit()
         
         return
+
 
     def notificacion(self, usuario):
         
@@ -281,7 +283,6 @@ class PantallaIngreso:
     
     def btConectar(self):
         
-        model.ee.on("requestConnectionEvent", testPantallaPedirCarta)
         if self.model.onRequestConnection('190.55.116.66', '3039'):
             self.botones= ['jugar']
             self.habilitarBotones() 
@@ -308,31 +309,6 @@ class PantallaIngreso:
         
         return
 
-
-def testPantallaPedirCarta():
-    print("hola carta")
-
-
-def testPantallaInicializador2():
-    #cartas1 = ['1-3', '2-4', '3-5']
-    listaCartas = ['1-3', '2-4', '3-5', '4-2', '1-4', '2-2']
-    
-    
-    model = GuiViewModel()
-    model.ee.on("pedirCartaEvent", testPantallaPedirCarta)
-    
-    bjScreen = PantallaPrincipal(model, "quique")
-    bjScreen.cargarCartas(listaCartas)
-    bjScreen.cargarScore("12")
-    bjScreen.cargarEstado("Jug")
-    #bjScreen.cargarUsuario("quique")
-    bjScreen.cargarJugadores("Quique: Esperando\nSeba: Esperando\nFede G: Esperando\nFede F: Jugando\nRichard: Esperando")
-    bjScreen.cargarMensajes("Quique: Esperando...\n")
-    listaCartas = ['1_3', '2_4', '3_5']
-    bjScreen.mostrar()
-    
-    test=input("prueba")
-    
 
 def testPantallaInicializadorIngreso():
 
