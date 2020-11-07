@@ -57,6 +57,7 @@ class PantallaPrincipal:
         self.textChat = None
         #self.modificarUsuario(self.usuario)
         
+        self.cambiarIdioma('es')
         self.inicializarFrames()
         self.inicializarBotones()
         self.inicializarEnvioMensajes()  

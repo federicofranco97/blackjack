@@ -13,5 +13,6 @@
     "separar": "Separar",
     "plantarse": "Plantarse",
     "mensaje": "Mensaje",
-    "enviar": "Enviar"
+    "enviar": "Enviar",
+    "salir": "Salir"
 }
