@@ -31,9 +31,6 @@ vm = GuiViewModel()
 def iniciarPantalla(model, usuario):
     pantallainicial = PantallaIngreso(model)
     pantallainicial.mostrar()
-
-    pantalla = PantallaPrincipal(model, usuario)
-    pantalla.mostrar()
     return
 
 
@@ -80,6 +77,8 @@ def parsearMensajeServidor(mensajeRecibido):
         vm.onRefreshButtons(formateo)
     elif comando == "mensaje":
         formateo = str(argumentos[0])
+        if formateo == diccionario["ingresarSaldo"]:
+            vm.onSoyAceptado()
         print(formateo)
         vm.onMensajeEntrante(formateo)
     elif comando == "status":
@@ -211,6 +210,11 @@ def conectar(ip, puerto):
     return True
 
 
+def clienteConectado():
+    pantalla = PantallaPrincipal(vm)
+    pantalla.mostrar()
+
+
 # Verifico que comando esta queriendo enviar en la consola y lo encapsulo en la funcion correspondiente (que tambien se invoca desde la GUI)
 def analizarComandoEnviado(linea):
     try:
@@ -280,4 +284,5 @@ if __name__ == "__main__":
     vm.ee.on("enviarMensajeEvent", enviarMensaje)
     vm.ee.on("requestConnectionEvent", conectar)
     vm.ee.on("soyEvent", soy)
+    vm.ee.on("enteredEvent", )
     inicioCliente()
