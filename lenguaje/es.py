@@ -16,6 +16,7 @@
     "enviar": "Enviar",
     "salir": "Salir",
     "jugar": "Jugar",
+    "bienvenidoAlJuego": "Bienvenido al juego. Ingresa tu nombre con el comando soy <nombre>.",
     "ingresarMontoMayorCero": "Tenes que ingresar un monto mayor a 0",
     "ingresarSaldo": "Debes ingresar un saldo para iniciar"
 }

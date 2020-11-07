@@ -18,7 +18,7 @@ class PantallaIngreso:
         self.inicializarFrames()
         self.inicializarBotones()
         #self.cargarImagen()
-        #self.configurarEventos()
+        self.configurarEventos()
         self.cargarBotones()
 
         return

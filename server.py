@@ -135,7 +135,7 @@ def crearMensajeLog(mensaje):
 def inicializarCliente(cliente, bg):
     usuario = Usuario(cliente)
     clientes.append(usuario)
-    usuario.enviarMensaje("Bienvenido al juego. Ingresa tu nombre con el comando soy <nombre>.")
+    usuario.enviarMensaje(diccionario[""]["bienvenidoAlJuego"])
     ejecutor = Ejecutor()
     while True:
         try:

@@ -30,7 +30,6 @@ vm = GuiViewModel()
 def iniciarPantalla(model, usuario):
     pantallainicial = PantallaIngreso(model)
     pantallainicial.mostrar()
-    vm.onConnected()
 
     pantalla = PantallaPrincipal(model, usuario)
     pantalla.mostrar()
