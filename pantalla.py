@@ -7,7 +7,7 @@ from guiViewModel import GuiViewModel
 from tkinter.scrolledtext import ScrolledText
 from _thread import *
 
-class PantallaCartas(tk.Frame):
+class MostrarImagenes(tk.Frame):
     
     def __init__(self, master=None):
         tk.Frame.__init__(self, master)
@@ -551,7 +551,7 @@ class PantallaPrincipal:
     def cargarCartas(self, cartas):
 
         if self.app == None:
-            self.app = PantallaCartas(self.frameCartas)
+            self.app = MostrarImagenes(self.frameCartas)
             self.app['bg']='green'
         else:
             self.app.borrar()
