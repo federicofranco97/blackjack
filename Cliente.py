@@ -17,7 +17,7 @@ from gui import *
 from guiViewModel import GuiViewModel
 from pantalla import PantallaPrincipal
 
-usarGUI = False
+usarGUI = True
 hayJugadoresEnEspera = False
 hayPartidaEnCurso = True
 sock = None
@@ -202,6 +202,7 @@ def conectar(ip, puerto):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         sock.connect((ip, int(puerto)))
+        start_new_thread(escucharServidor, ())
     except Exception as e:
         print(diccionario["errorConexion"], e)
         vm.onConnectError("")
@@ -248,11 +249,12 @@ def inicioCliente():
                 break
         print(diccionario["mensajeBienvenida"])
 
-    start_new_thread(escucharServidor, ())
+
     if usarGUI:
         start_new_thread(iniciarPantalla, (vm, ""))
 
     if not usarGUI:
+        start_new_thread(escucharServidor, ())
         while True:
             newMsg = sys.stdin.readline()
             analizarComandoEnviado(newMsg)
