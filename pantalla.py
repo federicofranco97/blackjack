@@ -628,7 +628,7 @@ def testPantallaInicializador():
     model = GuiViewModel()
     model.MiSaldo = 3000
     model.ee.on("pedirCartaEvent", testPantallaPedirCarta)
-    bjScreen = PantallaPrincipal(model, "quique")
+    bjScreen = PantallaPrincipal(model)
     bjScreen.modificarEstado("Jugar")
     bjScreen.modificarScore("12")
     bjScreen.mostrar()
