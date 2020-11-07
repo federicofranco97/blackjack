@@ -14,5 +14,8 @@
     "plantarse": "Plantarse",
     "mensaje": "Mensaje",
     "enviar": "Enviar",
-    "salir": "Salir"
+    "salir": "Salir",
+    "jugar": "Jugar",
+    "ingresarMontoMayorCero": "Tenes que ingresar un monto mayor a 0",
+    "ingresarSaldo": "Debes ingresar un saldo para iniciar"
 }

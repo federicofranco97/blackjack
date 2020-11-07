@@ -26,7 +26,10 @@ diccionario = {}
 vm = GuiViewModel()
 
 
+# Iniciamos la GUI
 def iniciarPantalla(model, usuario):
+    pantallainicial = PantallaIngreso(model)
+    pantallainicial.mostrar()
     vm.onConnected()
 
     pantalla = PantallaPrincipal(model, usuario)
@@ -34,9 +37,7 @@ def iniciarPantalla(model, usuario):
     return
 
 
-"""
-Metodo que escucha el socket del servidor y se dedica a imprimir los mensajes parseados que recibe del servidor.
-"""
+# Este metodo corre permanentemente escuchando el socket para recibir los mensajes del servidor
 def escucharServidor():
     while 1:
         try:
@@ -56,7 +57,7 @@ def escucharServidor():
             print(mensajeError)
             vm.onMensajeEntrante(mensajeError)
 
-
+# Recibe todos los mensajes del socket, que entren en el buffer, y los parte para analizarlos posteriormente
 def getMensajesServidor(mensajeRecibido):
     retorno = []
     mensajes = mensajeRecibido.decode("utf-8").split("\n")
@@ -67,9 +68,7 @@ def getMensajesServidor(mensajeRecibido):
     return retorno
 
 
-"""
-Metodo que se dedica a parsear los mensajes que envia el servidor dependiendo de la modalidad de los mismos 
-"""
+# Recibe el mensaje y lo parsea, informando a la GUI o a consola segun corresponda
 def parsearMensajeServidor(mensajeRecibido):
     mensajeBase = mensajeRecibido.split(":")
     comando = mensajeBase[0] if len(mensajeBase) > 0 else mensajeRecibido
@@ -153,45 +152,46 @@ def parsearMano(arg):
     manoparse = (str(arg).split('#')[0]).replace("{", "").replace("}", "")
     return mensaje + manoparse
 
-
+# Envia el comando soy
 def soy(usr):
     comando = "soy " + usr
     sock.send(comando.encode())
     vm.MiNombre = usr.replace('\n', '')
 
 
+# Envia el pedido de carta
 def pedirCarta():
     print("pedir carta")
     comando = "pedir"
     sock.send(comando.encode())
 
-
+# Envia el pedido de plantarse
 def plantarse():
     print("me planto")
     comando = "plantarse"
     sock.send(comando.encode())
 
-
+# Envia la solicitud de doblar
 def doblar():
     print("doblar apuesta")
 
-
+# Envia la solicitud de split
 def separar():
     print("separar")
 
-
+# Envia el fondeo
 def fondear(monto):
     print("fondear " + monto)
     comando = "ingresar " + monto
     sock.send(comando.encode())
 
-
+# Envia la apuesta
 def apostar(monto):
     print("apostando " + monto)
     comando = "apostar " + monto
     sock.send(comando.encode())
 
-
+# Envia un mensaje por el socket
 def enviarMensaje(mensaje):
     print("enviando mensaje: " + mensaje)
     comando = "mensaje " + mensaje
@@ -204,7 +204,7 @@ def conectar(ip, puerto):
     try:
         sock.connect((ip, int(puerto)))
     except Exception as e:
-        print(lenguaje["errorConexion"], e)
+        print(diccionario["errorConexion"], e)
         vm.onConnectError("")
         return False
     return True
@@ -235,20 +235,19 @@ def analizarComandoEnviado(linea):
         elif comando == "doblar":
             doblar()
     except:
-        print(lenguaje["errorComando"])
+        print(diccionario["errorComando"])
 
 
-"""
-Metodo que inicializa el cliente, solicita los datos principales como ip del servidor, puerto, y luego de realizar la conexion pide el nombre de usuario
-"""
+
+#Metodo que inicializa el cliente, y decide si entrar en modo consola o con GUI
 def inicioCliente():
     if not usarGUI:
         while True:
-            host = raw_input(lenguaje["solicitarIp"])
-            port = raw_input(lenguaje["solicitarPuerto"])
+            host = raw_input(diccionario["solicitarIp"])
+            port = raw_input(diccionario["solicitarPuerto"])
             if conectar(host, port):
                 break
-        print(lenguaje["mensajeBienvenida"])
+        print(diccionario["mensajeBienvenida"])
 
     start_new_thread(escucharServidor, ())
     if usarGUI:
@@ -262,6 +261,7 @@ def inicioCliente():
     sock.close()
 
 
+#Punto de entrada del Cliente
 if __name__ == "__main__":
     #global lenguaje
     with open(os.path.join("lenguaje", lenguaje + ".py")) as json_file:
@@ -275,4 +275,5 @@ if __name__ == "__main__":
     vm.ee.on("doblarEvent", doblar)
     vm.ee.on("enviarMensajeEvent", enviarMensaje)
     vm.ee.on("requestConnectionEvent", conectar)
+    vm.ee.on("soyEvent", soy)
     inicioCliente()

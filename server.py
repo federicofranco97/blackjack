@@ -1,11 +1,16 @@
+import json
+import os
 import socket
 from _thread import *
 import threading
 import traceback
 import sqlite3
+from pathlib import Path
+
 from blackjack import Blackjack
 
 clientes = []
+diccionario = {}
 
 """
     La clase usuario representa la relacion entre un nombre (identificador unico del usuario) y el socket asociado al mismo.
@@ -15,6 +20,7 @@ class Usuario:
         self.nombre = None
         self.socket = socket
         self.dinero = 0
+        self.idioma = "es"
 
     def enviarData(self, data):
         try:
@@ -97,7 +103,7 @@ def comJuegoComando(nombreComando, argumentos, socket, juego, cliente):
         return juego.enviarMensaje(cliente.nombre, " ".join(argumentos))
 
 """
-    El comando <soy> es para que el usuario s eidentifique
+    El comando <soy> es para que el usuario se identifique
 """
 def comIdentificarUsuario(nombreComando, argumentos, socket, juego, cliente):
     if (cliente.nombre == None):
@@ -151,6 +157,14 @@ def inicializarCliente(cliente, bg):
     Acepta las conexiones entrantes, y llama a inicializarCliente en un nuevo threado.
 """
 def iniciarServidor():
+    files = os.listdir("lenguaje")
+    for f in files:
+        with open(os.path.join("lenguaje", f)) as json_file:
+            name = Path(f).resolve().stem
+            diccionario[name] = json.load(json_file)
+
+
+
     puerto = 3039
     blackGame = Blackjack()
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

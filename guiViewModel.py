@@ -20,6 +20,12 @@ class GuiViewModel():
     def onSoy(self, soy):
         self.ee.emit("soyEvent", soy)
 
+    def onSoyAceptado(self):
+        self.ee.emit("soyAceptadoEvent", )
+
+    def onSoyRechazado(self):
+        self.ee.emit("soyRechazadoEvent", )
+
     def onConnected(self):
         self.ee.emit("connectedEvent", )
 
