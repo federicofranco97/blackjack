@@ -161,27 +161,71 @@ class PantallaIngreso:
 
     def configurarEventos(self):
 
-        self.model.ee.on("soyAceptadoEvent", self.soyAceptadoEvent)
-        self.model.ee.on("soyRechazadoEvent", self.soyRechazadoEvent)
+        self.model.ee.on("connectedEvent", self.onConnectEvent)
+        self.model.ee.on("connectErrorEvent", self.onConnectErrorEvent)
+        self.model.ee.on("soyAceptadoEvent", self.onSoyAceptadoEvent)
+        self.model.ee.on("soyRechazadoEvent", self.onSoyRechazadoEvent)
 
         return
     
     
-    def soyRechazadoEvent(self):
+    def onConnectEvent(self):
+        
+        print("Conectado")
+        self.botones= ['jugar']
+        self.habilitarBotones()
+        
+        return
+
+
+    def onConnectErrorEvent(self):
+                
+        print("Error Conectando")
+        self.botones= ['conectar']
+        self.habilitarBotones()
+        
+        return
+
+    
+    def onSoyRechazadoEvent(self):
         
         #Error
+        print("Rechazado")
+        self.botones= ['jugar']
+        self.habilitarBotones()
         
         return
 
 
-    def soyAceptadoEvent(self):
-                
+    def onSoyAceptadoEvent(self):
+        
+        print("Aceptado")
         self.model.onEntered()
         self.root.quit()
         
         return
 
 
+    def btConectar(self):
+        
+        print("Conetar")
+        self.botones=[]
+        self.habilitarBotones()
+        self.model.onRequestConnection('190.55.116.66', '3039')
+       
+        return
+    
+    
+    def btJugar(self):
+        
+        print("Jugar")
+        self.botones=[]
+        self.habilitarBotones()
+        self.model.onSoy('quique')
+       
+        return    
+
+    
     def notificacion(self, usuario):
         
         if (usuario == self.usuario):
@@ -279,28 +323,6 @@ class PantallaIngreso:
         self.buttonJugar.pack(side=tk.RIGHT)
                 
         return
-
-    
-    def btConectar(self):
-        
-        if self.model.onRequestConnection('192.168.0.8', '3039'):
-            self.botones= ['jugar']
-            self.habilitarBotones() 
-        else:
-            "error"
-
-        #monto = self.scrolledMonto.get("1.0", tk.END)
-        #self.model.onApostar(monto)
-        #self.scrolledMonto.delete("0.0", tk.END)
-       
-        return
-    
-    
-    def btJugar(self):
-        
-        self.model.onSoy('quique')
-       
-        return    
 
     
     def mostrar(self):
