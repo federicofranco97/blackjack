@@ -178,11 +178,12 @@ class PantallaIngreso:
         return
 
 
-    def onConnectErrorEvent(self):
+    def onConnectErrorEvent(self, mensaje):
                 
         print("Error Conectando")
         self.botones= ['conectar']
         self.habilitarBotones()
+        print(mensaje)
         
         return
 
