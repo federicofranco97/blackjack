@@ -6,11 +6,12 @@ from mazo import Mano
 
 class Jugador():
 
-    def __init__(self, instanciaUsuario):
+    def __init__(self, instanciaUsuario, pDiccionario):
         self.usuario = instanciaUsuario
         self.apuestaInicial = None
         self.manoActual = None
         self.estadoActual = None
+        self.diccionario = pDiccionario
 
     def dineroSuficiente(self, monto):
         return self.usuario.dinero >= int(monto)
@@ -22,7 +23,7 @@ class Jugador():
         self.apuestaInicial = None
         self.estadoActual = "apuesta_pendiente"
         self.usuario.estadoActual = "apuesta_pendiente"
-        self.manoActual = Mano()
+        self.manoActual = Mano(self.diccionario)
 
     def darGanancia(self, multiplicador = 1):
         self.usuario.dinero = self.usuario.dinero + int(self.apuestaInicial*multiplicador)
@@ -43,7 +44,7 @@ class Jugador():
             self.usuario.dinero = self.usuario.dinero - int(monto)
             self.enviarMensaje("hiciste una apuesta de $" + str(monto) + ". Tu saldo actual es de $" + str(self.usuario.dinero))
             self.estadoActual = "esperando_turno"
-            self.manoActual = Mano()
+            self.manoActual = Mano(self.diccionario)
         else:
             raise ApuestaRealizada()
 
