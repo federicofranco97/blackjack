@@ -29,7 +29,7 @@ class PantallaIngreso:
         color = 'medium blue'        
         self.root.wm_title("Blackjac UB version Betal Alfa Centauri v1.0.1")
         self.root.geometry("1024x768")
-        self.root['bg']="green"
+        self.root['bg']=color
  
         self.framePanelTitulo = tk.Frame(self.root, width = 1024, height = 120)
         self.framePanelTitulo.pack(side=tk.TOP)
@@ -320,25 +320,26 @@ class PantallaIngreso:
         ancho = 100
         colorFront = "white"
         colorBack = "medium blue"
-        tamLetra = 20
+        tamLetraLabel = 20
+        tamLetraText = 25
         tamMonto = 15
 
         self.labelTitulo = tk.Label(self.framePanelTitulo, text="Blackjack UB",width = 100, height = 50,
                            fg=colorFront,
                            bg=colorBack,
-                           font=("Arial Bold", 70))
+                           font=("Arial Bold", 70, "bold"))
         self.labelTitulo.bind("<Tab>", self.focus_next_window)
         self.labelTitulo.pack(side=tk.TOP)
 
         self.labelDireccionIP = tk.Label(self.frameServidorTitulo, text="Direccion IP Servidor",width = 100, height = 50,
                            fg=colorFront,
                            bg=colorBack,
-                           font=("Arial Bold", tamLetra))
+                           font=("Arial Bold", tamLetraLabel))
         self.labelDireccionIP.pack(side=tk.TOP)
         self.textlDireccionIP = tk.Text(self.frameServidorIP, width = 100, height = 50, 
                            fg="black",
                            bg="white",
-                           font=("Arial Bold", 25))
+                           font=("Arial Bold", tamLetraText))
         #self.textlDireccionIP.bind('<Tab>', self.procesarMonto)
         self.textlDireccionIP.bind("<Tab>", self.focus_next_window)
         self.textlDireccionIP.pack(side=tk.TOP)
@@ -349,13 +350,13 @@ class PantallaIngreso:
         self.labelPuerto = tk.Label(self.framePuertoTitulo, text="Puerto",width = 100, height = 50,
                            fg=colorFront,
                            bg=colorBack,
-                           font=("Arial Bold", tamLetra))
+                           font=("Arial Bold", tamLetraLabel))
         self.labelPuerto.bind("<Tab>", self.focus_next_window)
         self.labelPuerto.pack(side=tk.TOP)
         self.textPuerto = tk.Text(self.framePuertoNumero, width = 100, height = 50,
                            fg="black",
                            bg="white",
-                           font=("Arial Bold", 25))
+                           font=("Arial Bold", tamLetraText))
         self.textPuerto.bind("<Tab>", self.focus_next_window)
         self.textPuerto.pack(side=tk.TOP)
 
@@ -363,7 +364,7 @@ class PantallaIngreso:
                            text="CONECTAR", 
                            fg=colorFront,
                            bg=colorBack,
-                           font=("Arial Bold", tamLetra),
+                           font=("Arial Bold", tamLetraLabel),
                            command=self.btConectar)
         self.buttonConectar.bind("<Tab>", self.focus_next_window)
         self.buttonConectar.pack(side=tk.TOP)
@@ -372,13 +373,13 @@ class PantallaIngreso:
         self.labelUsuario = tk.Label(self.frameUsuarioTitulo, text="Usuario",width = 100, height = 50,
                            fg=colorFront,
                            bg=colorBack,
-                           font=("Arial Bold", tamLetra))
+                           font=("Arial Bold", tamLetraLabel))
         self.labelUsuario.bind("<Tab>", self.focus_next_window)
         self.labelUsuario.pack(side=tk.TOP)
         self.textUsuario = tk.Text(self.frameUsuarioNombre, width = 100, height = 50,
                            fg="black",
                            bg="white",
-                           font=("Arial Bold", 25))
+                           font=("Arial Bold", tamLetraText))
         self.textUsuario.bind("<Tab>", self.focus_next_window)
         self.textUsuario.pack(side=tk.TOP)
 
@@ -386,7 +387,7 @@ class PantallaIngreso:
                            text="JUGAR", 
                            fg=colorFront,
                            bg=colorBack,
-                           font=("Arial Bold", tamLetra),
+                           font=("Arial Bold", tamLetraLabel),
                            command=self.btJugar)
         self.buttonJugar.bind("<Tab>", self.focus_next_window)
         self.buttonJugar.pack(side=tk.TOP)
