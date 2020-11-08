@@ -198,7 +198,7 @@ class Blackjack():
         jug = self.obtenerJugadorTotal(usuario.nombre)
         if jug == None:
             self.interrumpirTimer = True
-            nuevoJugador = Jugador(usuario)
+            nuevoJugador = Jugador(usuario, self.diccionario)
             nuevoJugador.enviarMensaje(self.diccionario[usuario.idioma]["bienvenido"] + usuario.nombre + "")
             self.jugadoresTotales.append(nuevoJugador)
             for d in self.diccionario:
