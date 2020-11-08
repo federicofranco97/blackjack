@@ -45,7 +45,7 @@ class PantallaPrincipal:
         self.root = tk.Tk()
         self.cartas = []
         self.score = tk.StringVar()
-        self.usuario = ""
+        self.usuario = model.MiNombre
         self.estado = tk.StringVar()
         self.estadoStr = ""
         self.jugadores = tk.StringVar()
@@ -478,7 +478,7 @@ class PantallaPrincipal:
         self.estado.set(self.usuario + " "  + "$" + str(self.model.MiSaldo) + " (" + self.estadoStr + ")")
         self.modificarScore(self.model.MiPuntaje)
         self.cargarCartas(self.model.MisCartas)
-        
+        self.root.update()
         return
         
     

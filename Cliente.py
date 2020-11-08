@@ -12,7 +12,6 @@ from datetime import date, datetime
 import time
 
 from pip._vendor.distlib.compat import raw_input
-
 from gui import *
 from guiViewModel import GuiViewModel
 from ingresar import PantallaIngreso
@@ -25,11 +24,12 @@ sock = None
 lenguaje = "es"
 diccionario = {}
 vm = GuiViewModel()
+estado = 0
 
 
 # Iniciamos la GUI
-def iniciarPantalla(model, usuario):
-    pantallainicial = PantallaIngreso(model)
+def iniciarPantalla():
+    pantallainicial = PantallaIngreso(vm)
     pantallainicial.mostrar()
     return
 
@@ -203,6 +203,7 @@ def conectar(ip, puerto):
     try:
         sock.connect((ip, int(puerto)))
         start_new_thread(escucharServidor, ())
+        estado = 1
         vm.onConnected()
     except Exception as e:
         print(diccionario["errorConexion"] + str(e))
@@ -257,8 +258,11 @@ def inicioCliente():
 
 
     if usarGUI:
-        iniciarPantalla(vm, "")
-        #start_new_thread(iniciarPantalla, (vm, ""))
+        iniciarPantalla()
+        while estado != 0:
+
+            continue
+            #start_new_thread(iniciarPantalla, (vm, ""))
 
 
     if not usarGUI:
@@ -272,7 +276,6 @@ def inicioCliente():
 
 #Punto de entrada del Cliente
 if __name__ == "__main__":
-    #global lenguaje
     with open(os.path.join("lenguaje", lenguaje + ".py")) as json_file:
         diccionario = json.load(json_file)
 
