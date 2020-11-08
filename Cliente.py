@@ -20,11 +20,11 @@ from pantalla import PantallaPrincipal
 usarGUI = True
 hayJugadoresEnEspera = False
 hayPartidaEnCurso = True
-sock = None
 lenguaje = "es"
 diccionario = {}
 vm = GuiViewModel()
 estado = 0
+sock = None
 
 
 # Iniciamos la GUI
@@ -203,6 +203,7 @@ def conectar(ip, puerto):
     try:
         sock.connect((ip, int(puerto)))
         start_new_thread(escucharServidor, ())
+        global estado
         estado = 1
         vm.onConnected()
     except Exception as e:

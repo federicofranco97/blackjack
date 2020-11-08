@@ -215,8 +215,8 @@ class PantallaIngreso:
         print("Conectar")
         self.botones=[]
         self.habilitarBotones()
-        #self.model.onRequestConnection('192.168.0.8', '3039')
-        self.model.onRequestConnection('190.55.116.66', '3039')
+        self.model.onRequestConnection('192.168.0.8', '3039')
+        #self.model.onRequestConnection('190.55.116.66', '3039')
        
         return
     
