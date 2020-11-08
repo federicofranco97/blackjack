@@ -68,7 +68,7 @@ class PantallaIngreso:
         self.frameConexion['bg']=color
         self.frameConexion.pack_propagate(0)
 
-        self.frameIngreso = tk.Frame(self.framePanelDatos, width = 264, height = 150)
+        self.frameIngreso = tk.Frame(self.framePanelDatos, width = 264, height = 220)
         self.frameIngreso.pack(side=tk.TOP)
         self.frameIngreso['bg']=color
         self.frameIngreso.pack_propagate(0) 
@@ -123,12 +123,35 @@ class PantallaIngreso:
         self.frameJugarInfo['bg']=color
         self.frameJugarInfo.pack_propagate(0)
 
-        self.frameJugarBoton = tk.Frame(self.frameIngreso, width = 264, height = 50)
-        self.frameJugarBoton.pack(side=tk.BOTTOM)
+
+        self.frameJugarSalir = tk.Frame(self.frameIngreso, width = 264, height = 120)
+        self.frameJugarSalir.pack(side=tk.BOTTOM)
+        self.frameJugarSalir['bg']=color
+        self.frameJugarSalir.pack_propagate(0)
+
+        
+        self.frameJugarBoton = tk.Frame(self.frameJugarSalir, width = 264, height = 50)
+        self.frameJugarBoton.pack(side=tk.TOP)
         self.frameJugarBoton['bg']=color
         self.frameJugarBoton.pack_propagate(0)
 
+        self.frameSalir = tk.Frame(self.frameJugarSalir, width = 264, height = 70)
+        self.frameSalir.pack(side=tk.BOTTOM)
+        self.frameSalir['bg']=color
+        self.frameSalir.pack_propagate(0)
 
+
+        self.frameSalirAuxiliar = tk.Frame(self.frameSalir, width = 264, height = 20)
+        self.frameSalirAuxiliar.pack(side=tk.TOP)
+        self.frameSalirAuxiliar['bg']=color
+        self.frameSalirAuxiliar.pack_propagate(0)
+
+        self.frameSalirBoton = tk.Frame(self.frameSalir, width = 264, height = 50)
+        self.frameSalirBoton.pack(side=tk.BOTTOM)
+        self.frameSalirBoton['bg']=color
+        self.frameSalirBoton.pack_propagate(0)
+
+        
         self.frameServidorTitulo = tk.Frame(self.frameServidorInfo, width = 264, height = 50)
         self.frameServidorTitulo.pack(side=tk.TOP)
         self.frameServidorTitulo['bg']=color
@@ -227,6 +250,7 @@ class PantallaIngreso:
         self.model.ee.on("connectErrorEvent", self.onConnectErrorEvent)
         self.model.ee.on("soyAceptadoEvent", self.onSoyAceptadoEvent)
         self.model.ee.on("soyRechazadoEvent", self.onSoyRechazadoEvent)
+        #self.model.ee.on("cierreEvent", self.btSalirOnDemand)
 
         return
     
@@ -280,7 +304,10 @@ class PantallaIngreso:
     def onSoyAceptadoEvent(self):
         
         print("Aceptado")
-        self.model.onEntered()
+        #self.model.onEntered()
+        self.model.Validado = True
+        self.btSalirOnDemand()
+        
         #self.root.quit()
         #for widget in self.root.winfo_children():
            #widget.destroy()
@@ -330,6 +357,21 @@ class PantallaIngreso:
         self.model.onSoy(self.usuario)
        
         return
+
+
+    def btSalir(self):
+
+        self.root.quit()
+    
+        return  
+    
+    
+    def btSalirOnDemand(self):
+
+        self.buttonSalir.invoke()
+        #os._exit(0)
+    
+        return  
 
     
     def notificacion(self, usuario):
@@ -462,6 +504,16 @@ class PantallaIngreso:
                            command=self.btJugar)
         self.buttonJugar.bind("<Tab>", self.focus_next_window)
         self.buttonJugar.pack(side=tk.TOP)
+
+        self.buttonSalir = tk.Button(self.frameSalirBoton, width = ancho, height = 50,
+                           text="SALIR", 
+                           fg=colorFront,
+                           bg=colorBack,
+                           font=("Arial Bold", tamLetraLabel),
+                           command=self.btSalir)
+        self.buttonSalir.bind("<Tab>", self.focus_next_window)
+        self.buttonSalir.pack(side=tk.TOP)
+
                 
         return
 
