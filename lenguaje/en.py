@@ -50,5 +50,17 @@
     "Diez": "Ten",
     "Jack": "Jack",
     "Reina": "Queen",
-    "Rey": "King"
+    "Rey": "King",
+    "compuestoPor": "{0} formed by {1}",
+    "descripcionCarta": "{0} of {1}",
+    "cartaBocaAbajo": "and a card face down",
+    "esTurnoDe": "It is {0} turn",
+    "dineroInsuficiente": "You have not enough money",
+    "apuestaYaRealizada": "You have already placed a bet",
+    "ganador": "Congratulations! You Won!",
+    "empate": "It is a draw, you got back what you bet!",
+    "perdedor": "You lost against bank!",
+    "noEsTurno": "It is not your turn",
+    "puntajeObtenido": "{0} has got {1}",
+    "jugadorPerdio": "{0} has lost, with a score of {1}"
 }

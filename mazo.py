@@ -94,7 +94,7 @@ class Mano():
         self.cartas.append(carta)
 
     def obtenerDescripcionCompleta(self, idioma):
-        return self.diccionario[idioma]["compuestoPor"].replace("{0}", str(self.obtenerPuntaje())).replace("{1}", str(self.obtenerDescripcion()))
+        return self.diccionario[idioma]["compuestoPor"].replace("{0}", str(self.obtenerPuntaje())).replace("{1}", str(self.obtenerDescripcion(idioma)))
         #return str(self.obtenerPuntaje()) + " compuestos por " + str(self.obtenerDescripcion())
 
     def obtenerDescripcionCartas(self, idioma):
