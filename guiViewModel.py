@@ -15,7 +15,7 @@ class GuiViewModel():
         self.Jugadores = []
 
     def onRequestConnection(self, servidor, puerto):
-        self.ee.emit("requestConnectionEvent", servidor, puerto)
+        return self.ee.emit("requestConnectionEvent", servidor, puerto)
 
     def onSoy(self, soy):
         self.ee.emit("soyEvent", soy)

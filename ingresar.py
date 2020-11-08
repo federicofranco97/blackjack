@@ -283,7 +283,7 @@ class PantallaIngreso:
     
     def btConectar(self):
         
-        if self.model.onRequestConnection('190.55.116.66', '3039'):
+        if self.model.onRequestConnection('192.168.0.8', '3039'):
             self.botones= ['jugar']
             self.habilitarBotones() 
         else:
