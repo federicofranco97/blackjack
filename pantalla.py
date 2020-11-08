@@ -222,7 +222,7 @@ class PantallaPrincipal:
 
     def cargarBotones(self, botones):
         
-        self.botones = botones
+        self.botones = self.model.Acciones
         self.habilitarBotones()
         self.modificarEstado(self.estadoStr)
         
