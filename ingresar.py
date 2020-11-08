@@ -13,7 +13,7 @@ class PantallaIngreso:
         
         self.root = tk.Tk()
         self.model = model
-        self.botones = ['conectar']
+        self.botones = ['direccion', 'puerto', 'conectar']
 
         self.inicializarFrames()
         self.inicializarBotones()
@@ -171,8 +171,11 @@ class PantallaIngreso:
 
     def habilitarBotones(self):
 
-        self.botonesActivados = {"conectar": False,
-                                 "jugar": False}
+        self.botonesActivados = {'direccion': False,
+                                 'puerto': False,
+                                 'conectar': False,
+                                 'usuario': False,
+                                 'jugar': False}
         
         
         for boton in self.botones:
@@ -192,9 +195,15 @@ class PantallaIngreso:
         if activar:
             estado = "normal"
 
-        if boton == "conectar":
+        if boton == 'direccion':
+            self.textlDireccionIP.config(state=estado)
+        elif boton == 'puerto':
+            self.textPuerto.config(state=estado)
+        elif boton == 'conectar':
             self.buttonConectar.config(state=estado)
-        elif boton == "jugar":
+        elif boton == 'usuario':
+            self.textUsuario.config(state=estado)
+        elif boton == 'jugar':
             self.buttonJugar.config(state=estado)
         
         return
@@ -213,7 +222,7 @@ class PantallaIngreso:
     def onConnectEvent(self):
         
         print("Conectado")
-        self.botones= ['jugar']
+        self.botones= ['usuario', 'jugar']
         self.habilitarBotones()
         
         return
@@ -222,7 +231,7 @@ class PantallaIngreso:
     def onConnectErrorEvent(self, mensaje):
                 
         print("Error Conectando")
-        self.botones= ['conectar']
+        self.botones= ['direccion', 'puerto', 'conectar']
         self.habilitarBotones()
         print(mensaje)
         
@@ -233,7 +242,7 @@ class PantallaIngreso:
         
         #Error
         print("Rechazado")
-        self.botones= ['jugar']
+        self.botones= ['usuario', 'jugar']
         self.habilitarBotones()
         
         return
@@ -246,7 +255,7 @@ class PantallaIngreso:
         #self.root.quit()
         for widget in self.root.winfo_children():
            widget.destroy()
-        self.root.hide()
+        #self.root.hide()
         self.root.update()
         self.root.deiconify()
         self.root.destroy()
@@ -256,12 +265,27 @@ class PantallaIngreso:
         return
 
 
+    def limpiarTexto(self, texto):
+        
+        i = 0
+        for char in texto:
+            if char not in "abcdefghijglmnopqrstuvwqyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_.-":
+                break
+            i = i + 1
+            
+        return texto[0:i]
+
     def btConectar(self):
         
         print("Conectar")
         self.botones=[]
         self.habilitarBotones()
-        self.model.onRequestConnection('127.0.0.1', '3039')
+        self.direccionIP = self.limpiarTexto(self.textlDireccionIP.get("1.0", tk.END))
+        #self.textlDireccionIP.delete("0.0", tk.END)
+        self.puerto = self.limpiarTexto(self.textPuerto.get("1.0", tk.END).replace("\n ", ""))
+        #self.puerto = self.textPuerto.delete("0.0", tk.END)
+        print('Direccion: ' + self.direccionIP + ' Puerto: ' + self.puerto)
+        self.model.onRequestConnection(self.direccionIP, self.puerto)
         #self.model.onRequestConnection('190.55.116.66', '3039')
        
         return
@@ -272,15 +296,16 @@ class PantallaIngreso:
         print("Jugar")
         self.botones=[]
         self.habilitarBotones()
-        self.model.onSoy('quique')
+        self.usuario = self.limpiarTexto(self.textUsuario.get("1.0", tk.END))
+        #self.textUsuario.delete("0.0", tk.END)
+        self.model.onSoy(self.usuario)
        
         return
 
     
     def notificacion(self, usuario):
         
-        if (usuario == self.usuario):
-            start_new_thread(self.play, ())
+        start_new_thread(self.play, ())
         
         return
 
