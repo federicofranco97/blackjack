@@ -8,7 +8,7 @@ class GuiViewModel():
         self.MisCartas = []
         self.MiSaldo = 0
         self.MiEstado = ""
-        self.model.Validado = False
+        self.Validado = False
 
         self.esMiTurno = False
         self.Turno = ""

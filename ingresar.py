@@ -6,12 +6,29 @@ from PIL import Image, ImageTk
 from guiViewModel import GuiViewModel
 from tkinter.scrolledtext import ScrolledText
 from _thread import *
+import time
+
+
+class PantallaBase:
+
+    def __init__(self):
+        
+        self.root = tk.Tk()
+        self.root.withdraw()
+        
+    def getRoot(self):
+        
+        return self.root
+
 
 class PantallaIngreso:
 
-    def __init__(self, model):
+    def __init__(self, model, tkroot):
         
-        self.root = tk.Tk()
+        self.dobleroot = tkroot
+        #self.dobleroot.withdraw()
+        #self.dobleroot.hide()
+        self.root = tk.Toplevel(self.dobleroot)
         self.model = model
         self.botones = ['direccion', 'puerto', 'conectar']
         self.error = tk.StringVar()
@@ -304,9 +321,12 @@ class PantallaIngreso:
     def onSoyAceptadoEvent(self):
         
         print("Aceptado")
-        #self.model.onEntered()
         self.model.Validado = True
         self.btSalirOnDemand()
+        #self.model.onEntered()
+        #self.root.update_idletasks()
+        #self.root.update()
+        #self.root.destroy()
         
         #self.root.quit()
         #for widget in self.root.winfo_children():
@@ -366,12 +386,12 @@ class PantallaIngreso:
         return  
     
     
-    def btSalirOnDemand(self):
+    #def btSalirOnDemand(self):
 
-        self.buttonSalir.invoke()
-        #os._exit(0)
+    #    self.buttonSalir.invoke()
+    #    #os._exit(0)
     
-        return  
+    #    return  
 
     
     def notificacion(self, usuario):
@@ -521,6 +541,15 @@ class PantallaIngreso:
     def mostrar(self):
         
         self.root.mainloop()
+        #while True:
+        #    if self.model.Validado:
+        #        break
+        #    self.root.update_idletasks()
+        #    self.root.update()
+        #    time.sleep(0.01)
+
+        # or whatever your login check looks like
+        #self.root.destroy()
         
         return
 
