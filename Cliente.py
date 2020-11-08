@@ -205,8 +205,8 @@ def conectar(ip, puerto):
         start_new_thread(escucharServidor, ())
         vm.ee.onConnected()
     except Exception as e:
-        print(diccionario["errorConexion"], e)
-        vm.onConnectError("")
+        print(diccionario["errorConexion"] + e)
+        vm.onConnectError(diccionario["errorConexion"] + str(e))
         return False
     return True
 
