@@ -285,5 +285,5 @@ if __name__ == "__main__":
     vm.ee.on("enviarMensajeEvent", enviarMensaje)
     vm.ee.on("requestConnectionEvent", conectar)
     vm.ee.on("soyEvent", soy)
-    vm.ee.on("enteredEvent", )
+    vm.ee.on("enteredEvent", clienteConectado)
     inicioCliente()
