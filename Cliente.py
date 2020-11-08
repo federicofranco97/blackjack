@@ -203,7 +203,7 @@ def conectar(ip, puerto):
     try:
         sock.connect((ip, int(puerto)))
         start_new_thread(escucharServidor, ())
-        vm.ee.onConnected()
+        vm.onConnected()
     except Exception as e:
         print(diccionario["errorConexion"] + str(e))
         vm.onConnectError(diccionario["errorConexion"] + str(e))
