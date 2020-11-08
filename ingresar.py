@@ -386,12 +386,12 @@ class PantallaIngreso:
         return  
     
     
-    #def btSalirOnDemand(self):
+    def btSalirOnDemand(self):
 
-    #    self.buttonSalir.invoke()
-    #    #os._exit(0)
+        self.buttonSalir.invoke()
+        #os._exit(0)
     
-    #    return  
+        return  
 
     
     def notificacion(self, usuario):
@@ -560,7 +560,8 @@ def testPantallaInicializadorIngreso():
     model = GuiViewModel()
     #model.MiSaldo = 3000
     #model.ee.on("pedirCartaEvent", testPantallaPedirCarta)
-    bjScreen = PantallaIngreso(model)
+    bjbase = PantallaBase()
+    bjScreen = PantallaIngreso(model, bjbase.getRoot())
     bjScreen.mostrar()
 
     '''    

@@ -14,6 +14,7 @@ import time
 from pip._vendor.distlib.compat import raw_input
 from gui import *
 from guiViewModel import GuiViewModel
+from ingresar import PantallaBase
 from ingresar import PantallaIngreso
 from pantalla import PantallaPrincipal
 
@@ -27,8 +28,21 @@ sock = None
 
 # Iniciamos la GUI
 def iniciarPantalla():
-    pantallainicial = PantallaIngreso(vm)
+    pantallaBase = PantallaBase()
+    pantallainicial = PantallaIngreso(vm, pantallaBase.getRoot())
     pantallainicial.mostrar()
+    pantallainicial.root.withdraw()
+    if vm.Validado:
+        print("Entrando a jugar\n")
+        pantallaPrincipal = PantallaPrincipal(vm)
+        pantallaPrincipal.mostrar()
+        pantallaPrincipal.root.withdraw()
+    else:
+        print("Saliendo del juego\n")
+        os._exit(0)
+        
+    return
+
 
 def threadEscucharServidor():
     start_new_thread(escucharServidor, ())
