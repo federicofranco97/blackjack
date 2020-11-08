@@ -377,6 +377,9 @@ class PantallaPrincipal:
     def btIngresar(self):
         
         #self.modificarEstado(self.estado.get())
+
+
+
         self.modificarEstado(self.estadoStr)
         
         monto = self.scrolledMonto.get("1.0", tk.END)
@@ -477,10 +480,9 @@ class PantallaPrincipal:
         
         self.usuario = self.model.MiNombre
         self.estadoStr = estado.replace('[', '').replace(']', '')
-        self.estado.set(self.usuario + " "  + "$" + str(self.model.MiSaldo) + " (" + self.estadoStr + ")")
-        self.modificarScore(self.model.MiPuntaje)
-        self.cargarCartas(self.model.MisCartas)
-        self.root.update()
+        #self.estado.set(self.usuario + " "  + "$" + str(self.model.MiSaldo) + " (" + self.estadoStr + ")")
+        #self.modificarScore(self.model.MiPuntaje)
+        #self.cargarCartas(self.model.MisCartas)
         return
         
     

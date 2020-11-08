@@ -51,10 +51,11 @@ class Carta():
 """
 class Mano():
 
-    def __init__(self):
+    def __init__(self, pDiccionario):
         self.apuesta = 0
         self.estado = "sin_apuesta"
         self.cartas = []
+        self.diccionario = pDiccionario
 
         self.valores = {
             14: "As",
@@ -73,10 +74,10 @@ class Mano():
         }
 
         self.palos = {
-            1: "Corazon",
-            2: "Picas",
-            3: "Diamante",
-            4: "Trebol"
+            1: "corazones",
+            2: "picas",
+            3: "diamantes",
+            4: "treboles"
         }
 
     def agregarApuesta(self, monto):
@@ -92,28 +93,35 @@ class Mano():
     def agregarCarta(self, carta):
         self.cartas.append(carta)
 
-    def obtenerDescripcionCompleta(self):
-        return str(self.obtenerPuntaje()) + " compuestos por " + str(self.obtenerDescripcion())
+    def obtenerDescripcionCompleta(self, idioma):
+        return self.diccionario[idioma]["compuestoPor"].replace("{0}", str(self.obtenerPuntaje())).replace("{1}", str(self.obtenerDescripcion()))
+        #return str(self.obtenerPuntaje()) + " compuestos por " + str(self.obtenerDescripcion())
 
-    def obtenerDescripcionCartas(self):
+    def obtenerDescripcionCartas(self, idioma):
         descripciones = []
         for carta in self.cartas:
             nombre = self.valores[carta.valor]
+            nombre = self.diccionario[idioma][nombre]
             palo = self.palos[carta.palo]
-            nombreFinal = nombre + " de " + palo
+            palo = self.diccionario[idioma][palo]
+            #nombreFinal = nombre + " de " + palo
+            nombreFinal = self.diccionario[idioma]["descripcionCarta"].replace("{0}", nombre).replace("{1}", palo)
             descripciones.append(nombreFinal)
         return descripciones
 
-    def obtenerDescripcion(self):
+    def obtenerDescripcion(self, idioma):
         descripciones = []
         for carta in self.cartas:
             if carta.visible == True:
                 nombre = self.valores[carta.valor]
+                nombre = self.diccionario[idioma][nombre]
                 palo = self.palos[carta.palo]
-                nombreFinal = nombre + " de " + palo
+                palo = self.diccionario[idioma][palo]
+                #nombreFinal = nombre + " de " + palo
+                nombreFinal = self.diccionario[idioma]["descripcionCarta"].replace("{0}", nombre).replace("{1}", palo)
                 descripciones.append(nombreFinal)
             else:
-                descripciones.append('y una carta boca abajo')
+                descripciones.append(self.diccionario[idioma]["cartaBocaAbajo"])
         return ', '.join(descripciones)
 
     def mostrarTodas(self):

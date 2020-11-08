@@ -18,8 +18,6 @@ from ingresar import PantallaIngreso
 from pantalla import PantallaPrincipal
 
 usarGUI = True
-hayJugadoresEnEspera = False
-hayPartidaEnCurso = True
 lenguaje = "es"
 diccionario = {}
 vm = GuiViewModel()
@@ -31,12 +29,16 @@ sock = None
 def iniciarPantalla():
     pantallainicial = PantallaIngreso(vm)
     pantallainicial.mostrar()
-    return
 
+def threadEscucharServidor():
+    start_new_thread(escucharServidor, ())
 
 # Este metodo corre permanentemente escuchando el socket para recibir los mensajes del servidor
 def escucharServidor():
     while 1:
+        if sock is None:
+            time.sleep(2)
+            continue
         try:
             data = sock.recv(4096)
             if not data:
@@ -78,7 +80,9 @@ def parsearMensajeServidor(mensajeRecibido):
     elif comando == "mensaje":
         formateo = str(argumentos[0])
         if formateo == diccionario["ingresarSaldo"]:
+            print("lanzo el evento soyAceptado")
             vm.onSoyAceptado()
+            print("termina el evento soy aceptado")
         print(formateo)
         vm.onMensajeEntrante(formateo)
     elif comando == "status":
@@ -202,7 +206,6 @@ def conectar(ip, puerto):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         sock.connect((ip, int(puerto)))
-        start_new_thread(escucharServidor, ())
         global estado
         estado = 1
         vm.onConnected()
@@ -213,7 +216,10 @@ def conectar(ip, puerto):
     return True
 
 
-def clienteConectado():
+def jugadorEnSala():
+    start_new_thread(threadJugadorEnSala, ())
+
+def threadJugadorEnSala():
     pantalla = PantallaPrincipal(vm)
     pantalla.mostrar()
 
@@ -259,9 +265,11 @@ def inicioCliente():
 
 
     if usarGUI:
+        start_new_thread(escucharServidor, ())
         iniciarPantalla()
-        while estado != 0:
-
+        print('pantalla iniciada')
+        while True:
+            time.sleep(2)
             continue
             #start_new_thread(iniciarPantalla, (vm, ""))
 
@@ -273,7 +281,7 @@ def inicioCliente():
             analizarComandoEnviado(newMsg)
         sock.close()
 
-
+    print("Exit")
 
 #Punto de entrada del Cliente
 if __name__ == "__main__":
@@ -289,5 +297,6 @@ if __name__ == "__main__":
     vm.ee.on("enviarMensajeEvent", enviarMensaje)
     vm.ee.on("requestConnectionEvent", conectar)
     vm.ee.on("soyEvent", soy)
-    vm.ee.on("enteredEvent", clienteConectado)
+    vm.ee.on("enteredEvent", jugadorEnSala)
+    #vm.ee.on("connectedEvent", threadEscucharServidor)
     inicioCliente()

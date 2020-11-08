@@ -69,11 +69,12 @@ class Jugador():
 
 class Banca():
 
-    def __init__(self):
+    def __init__(self, pDiccionario):
         self.mano = None
+        self.diccionario = pDiccionario
 
     def iniciarTurno(self):
-        self.mano = Mano()
+        self.mano = Mano(self.diccionario)
 
     def esBanca(self):
         return True

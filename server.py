@@ -68,9 +68,9 @@ class Ejecutor:
     def ejecutar(self, comando, argumentos, socket, juego, cliente):
         ejecutorComando = self.comandos.get(comando)
         if ejecutorComando == None:
-            return cliente.enviarMensaje("No conozco ese comando")
+            return cliente.enviarMensaje(diccionario[cliente.idioma]["comandoDesconocido"])
         if comando != "soy" and cliente.nombre == None:
-            return cliente.enviarMensaje("Primero tenes que identificarte con el comando soy <nombre>")
+            return cliente.enviarMensaje(diccionario[cliente.idioma]["errorFaltaIdentificarse"])
         ejecutorComando(comando, argumentos, socket, juego, cliente)
 
 """
@@ -110,7 +110,8 @@ def comIdentificarUsuario(nombreComando, argumentos, socket, juego, cliente):
         cliente.nombre = argumentos[0]
         cliente.enviarMensaje(diccionario[cliente.idioma]["ingresarSaldo"])
     else:
-        socket.send("Ya te conozco. Te llamas " + cliente.nombre + ", no " + argumentos[0] + "\n")
+        socket.send(diccionario[cliente.idioma]["errorYaTeConozco"].replace("{0}", cliente.nombre).replace("{1}", argumentos[0]) + "\n")
+        #socket.send("Ya te conozco. Te llamas " + cliente.nombre + ", no " + argumentos[0] + "\n")
 
 """
     El comando <ingresar> es para ingresar dinero a la cuenta
@@ -166,7 +167,7 @@ def iniciarServidor():
 
 
     puerto = 3039
-    blackGame = Blackjack()
+    blackGame = Blackjack(diccionario)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(('',puerto))
     print(crearMensajeLog("Socket bindeado"))

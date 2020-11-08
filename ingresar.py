@@ -253,12 +253,12 @@ class PantallaIngreso:
         print("Aceptado")
         self.model.onEntered()
         #self.root.quit()
-        for widget in self.root.winfo_children():
-           widget.destroy()
+        #for widget in self.root.winfo_children():
+           #widget.destroy()
         #self.root.hide()
-        self.root.update()
-        self.root.deiconify()
-        self.root.destroy()
+        #self.root.update()
+        #self.root.deiconify()
+        #self.root.destroy()
         #exit()
         #sys.exit()
         
@@ -333,7 +333,7 @@ class PantallaIngreso:
  
         return
 
-    def focus_next_window(event): 
+    def focus_next_window(self, event):
         
         event.widget.tk_focusNext().focus()
          
