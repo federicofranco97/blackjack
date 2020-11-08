@@ -169,7 +169,7 @@ def iniciarServidor():
     puerto = 3039
     blackGame = Blackjack(diccionario)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.bind(('',puerto))
+    sock.bind(('', puerto))
     print(crearMensajeLog("Socket bindeado"))
     sock.listen(5)
     print(crearMensajeLog("Socket escuchando"))

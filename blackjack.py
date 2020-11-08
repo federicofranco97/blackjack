@@ -21,7 +21,7 @@ class Blackjack():
         self.interrumpirTimer = False
         self.jugadorActual = None
         self.timerIniciado = False
-        self.banca = Banca()
+        self.banca = Banca(pDiccionario)
         self.segundosTotales = 0
         self.mazo = None
         self.diccionario = pDiccionario
