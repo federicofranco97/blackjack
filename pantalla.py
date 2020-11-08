@@ -17,12 +17,14 @@ class MostrarImagenes(tk.Frame):
 
         return
 
-    def agregar(self, img, x=0, y=0):
+    def agregar(self, img, x=0, y=0, width=0, height=0):
     
         self.img.append(img)
         pos = len(self.img)-1
         
         load = Image.open(self.img[pos])
+        if width > 0 and height > 0:
+            load = load.resize((width, height), Image.ANTIALIAS)
         render = ImageTk.PhotoImage(load)
         self.img[pos] = tk.Label(self.master, image=render)
         self.img[pos].image = render

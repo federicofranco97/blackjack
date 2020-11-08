@@ -2,10 +2,10 @@ import tkinter as tk
 import os
 import playsound
 from pantalla import MostrarImagenes
-#from PIL import Image, ImageTk
+from PIL import Image, ImageTk
 from guiViewModel import GuiViewModel
-#from tkinter.scrolledtext import ScrolledText
-#from _thread import *
+from tkinter.scrolledtext import ScrolledText
+from _thread import *
 
 class PantallaIngreso:
 
@@ -17,7 +17,7 @@ class PantallaIngreso:
 
         self.inicializarFrames()
         self.inicializarBotones()
-        #self.cargarImagen()
+        self.cargarImagen()
         self.configurarEventos()
         self.cargarBotones()
 
@@ -31,91 +31,132 @@ class PantallaIngreso:
         self.root.geometry("1024x768")
         self.root['bg']="green"
  
-        self.framePanelTitulo = tk.Frame(self.root, width = 1024, height = 150)
+        self.framePanelTitulo = tk.Frame(self.root, width = 1024, height = 120)
         self.framePanelTitulo.pack(side=tk.TOP)
-        self.framePanelTitulo['bg']="white"
+        self.framePanelTitulo['bg']=color
         self.framePanelTitulo.pack_propagate(0)
         
-        self.framePanelConexion = tk.Frame(self.root, width = 1024, height = 618)
-        self.framePanelConexion.pack(side=tk.BOTTOM)
-        self.framePanelConexion['bg']="white"
+        self.framePanelPrincipal = tk.Frame(self.root, width = 1024, height = 638)
+        self.framePanelPrincipal.pack(side=tk.BOTTOM)
+        self.framePanelPrincipal['bg']=color
+        self.framePanelPrincipal.pack_propagate(0)
+
+        self.framePanelAuxiliar = tk.Frame(self.framePanelPrincipal, width = 50, height = 638)
+        self.framePanelAuxiliar.pack(side=tk.LEFT)
+        self.framePanelAuxiliar['bg']=color
+        self.framePanelAuxiliar.pack_propagate(0)
+                
+        self.framePanelConexion = tk.Frame(self.framePanelPrincipal, width = 974, height = 638)
+        self.framePanelConexion.pack(side=tk.RIGHT)
+        self.framePanelConexion['bg']=color
         self.framePanelConexion.pack_propagate(0)
     
     
-        self.framePanelDatos = tk.Frame(self.framePanelConexion, width = 324, height = 618)
+        self.framePanelDatos = tk.Frame(self.framePanelConexion, width = 264, height = 638)
         self.framePanelDatos.pack(side=tk.LEFT)
         self.framePanelDatos['bg']=color
         self.framePanelDatos.pack_propagate(0)
         
-        self.framePanelImagen = tk.Frame(self.framePanelConexion, width = 700, height = 618)
+        self.framePanelImagen = tk.Frame(self.framePanelConexion, width = 700, height = 638)
         self.framePanelImagen.pack(side=tk.RIGHT)
         self.framePanelImagen['bg']=color
         self.framePanelImagen.pack_propagate(0)
 
-        self.frameConexion = tk.Frame(self.framePanelDatos, width = 324, height = 250)
+        self.frameConexion = tk.Frame(self.framePanelDatos, width = 264, height = 300)
         self.frameConexion.pack(side=tk.TOP)
         self.frameConexion['bg']=color
         self.frameConexion.pack_propagate(0)
 
-        self.frameIngreso = tk.Frame(self.framePanelDatos, width = 324, height = 150)
+        self.frameIngreso = tk.Frame(self.framePanelDatos, width = 264, height = 150)
         self.frameIngreso.pack(side=tk.TOP)
         self.frameIngreso['bg']=color
         self.frameIngreso.pack_propagate(0) 
 
 
-        self.frameConexionDatos = tk.Frame(self.frameConexion, width = 324, height = 200)
+        self.frameConexionDatos = tk.Frame(self.frameConexion, width = 264, height = 200)
         self.frameConexionDatos.pack(side=tk.TOP)
         self.frameConexionDatos['bg']=color
         self.frameConexionDatos.pack_propagate(0)
 
-        self.frameConexionBoton = tk.Frame(self.frameConexion, width = 324, height = 50)
-        self.frameConexionBoton.pack(side=tk.BOTTOM)
-        self.frameConexionBoton['bg']=color
-        self.frameConexionBoton.pack_propagate(0)
+        self.frameConexionBotonInfo = tk.Frame(self.frameConexion, width = 264, height = 100)
+        self.frameConexionBotonInfo.pack(side=tk.BOTTOM)
+        self.frameConexionBotonInfo['bg']=color
+        self.frameConexionBotonInfo.pack_propagate(0)
 
 
-        self.frameServidorInfo = tk.Frame(self.frameConexionDatos, width = 324, height = 100)
+        self.frameServidorInfo = tk.Frame(self.frameConexionDatos, width = 264, height = 100)
         self.frameServidorInfo.pack(side=tk.TOP)
-        self.frameServidorInfo['bg']=color
+        self.frameServidorInfo['bg']="blue"
         self.frameServidorInfo.pack_propagate(0)
 
-        self.framePuertoInfo = tk.Frame(self.frameConexionDatos, width = 324, height = 100)
+        self.framePuertoInfo = tk.Frame(self.frameConexionDatos, width = 264, height = 100)
         self.framePuertoInfo.pack(side=tk.BOTTOM)
-        self.framePuertoInfo['bg']=color
+        self.framePuertoInfo['bg']="blue"
         self.framePuertoInfo.pack_propagate(0)
 
 
-        self.frameJugarInfo = tk.Frame(self.frameIngreso, width = 324, height = 100)
+        self.frameConexionBoton = tk.Frame(self.frameConexionBotonInfo, width = 264, height = 50)
+        self.frameConexionBoton.pack(side=tk.TOP)
+        self.frameConexionBoton['bg']=color
+        self.frameConexionBoton.pack_propagate(0)
+
+        self.frameConexionAuxiliar = tk.Frame(self.frameConexionBotonInfo, width = 264, height = 50)
+        self.frameConexionAuxiliar.pack(side=tk.BOTTOM)
+        self.frameConexionAuxiliar['bg']=color
+        self.frameConexionAuxiliar.pack_propagate(0)
+
+        
+        self.frameJugarInfo = tk.Frame(self.frameIngreso, width = 264, height = 100)
         self.frameJugarInfo.pack(side=tk.TOP)
         self.frameJugarInfo['bg']=color
         self.frameJugarInfo.pack_propagate(0)
 
-        self.frameJugarBoton = tk.Frame(self.frameIngreso, width = 324, height = 50)
+        self.frameJugarBoton = tk.Frame(self.frameIngreso, width = 264, height = 50)
         self.frameJugarBoton.pack(side=tk.BOTTOM)
         self.frameJugarBoton['bg']=color
         self.frameJugarBoton.pack_propagate(0)
 
 
-        self.frameDireccionIP = tk.Frame(self.frameServidorInfo, width = 324, height = 50)
-        self.frameDireccionIP.pack(side=tk.TOP)
-        self.frameDireccionIP['bg']=color
-        self.frameDireccionIP.pack_propagate(0)
+        self.frameServidorTitulo = tk.Frame(self.frameServidorInfo, width = 264, height = 50)
+        self.frameServidorTitulo.pack(side=tk.TOP)
+        self.frameServidorTitulo['bg']=color
+        self.frameServidorTitulo.pack_propagate(0)
 
-        self.framePuerto = tk.Frame(self.frameServidorInfo, width = 324, height = 50)
-        self.framePuerto.pack(side=tk.BOTTOM)
-        self.framePuerto['bg']=color
-        self.framePuerto.pack_propagate(0)
+        self.frameServidorIP = tk.Frame(self.frameServidorInfo, width = 264, height = 50)
+        self.frameServidorIP.pack(side=tk.BOTTOM)
+        self.frameServidorIP['bg']=color
+        self.frameServidorIP.pack_propagate(0)
+
+        self.framePuertoTitulo = tk.Frame(self.framePuertoInfo, width = 264, height = 50)
+        self.framePuertoTitulo.pack(side=tk.TOP)
+        self.framePuertoTitulo['bg']=color
+        self.framePuertoTitulo.pack_propagate(0)
+
+        self.framePuertoNumero = tk.Frame(self.framePuertoInfo, width = 264, height = 50)
+        self.framePuertoNumero.pack(side=tk.BOTTOM)
+        self.framePuertoNumero['bg']=color
+        self.framePuertoNumero.pack_propagate(0)
 
         
-        self.frameUsuario = tk.Frame(self.frameJugarInfo, width = 324, height = 50)
-        self.frameUsuario.pack(side=tk.TOP)
-        self.frameUsuario['bg']=color
-        self.frameUsuario.pack_propagate(0)
+        self.frameUsuarioInfo = tk.Frame(self.frameJugarInfo, width = 264, height = 100)
+        self.frameUsuarioInfo.pack(side=tk.TOP)
+        self.frameUsuarioInfo['bg']=color
+        self.frameUsuarioInfo.pack_propagate(0)
 
-        self.frameJugar = tk.Frame(self.frameJugarInfo, width = 324, height = 50)
+        self.frameJugar = tk.Frame(self.frameJugarInfo, width = 264, height = 50)
         self.frameJugar.pack(side=tk.BOTTOM)
         self.frameJugar['bg']=color
         self.frameJugar.pack_propagate(0)
+
+        self.frameUsuarioTitulo = tk.Frame(self.frameUsuarioInfo, width = 264, height = 50)
+        self.frameUsuarioTitulo.pack(side=tk.TOP)
+        self.frameUsuarioTitulo['bg']=color
+        self.frameUsuarioTitulo.pack_propagate(0)
+
+        self.frameUsuarioNombre = tk.Frame(self.frameUsuarioInfo, width = 264, height = 50)
+        self.frameUsuarioNombre.pack(side=tk.BOTTOM)
+        self.frameUsuarioNombre['bg']=color
+        self.frameUsuarioNombre.pack_propagate(0)
         
         return
 
@@ -203,6 +244,11 @@ class PantallaIngreso:
         print("Aceptado")
         self.model.onEntered()
         #self.root.quit()
+        for widget in self.root.winfo_children():
+           widget.destroy()
+        self.root.hide()
+        self.root.update()
+        self.root.deiconify()
         self.root.destroy()
         #exit()
         #sys.exit()
@@ -215,7 +261,7 @@ class PantallaIngreso:
         print("Conectar")
         self.botones=[]
         self.habilitarBotones()
-        self.model.onRequestConnection('192.168.0.8', '3039')
+        self.model.onRequestConnection('127.0.0.1', '3039')
         #self.model.onRequestConnection('190.55.116.66', '3039')
        
         return
@@ -250,56 +296,68 @@ class PantallaIngreso:
     def cargarImagen(self):
 
         self.app = MostrarImagenes(self.framePanelImagen)
-        self.app['bg']='green'
+        self.app['bg']='medium blue'
         self.imagen = 'blackjack'
         self.cwd = os.getcwd()
         images = 'images'
-        x = 400
-        y = 400
+        x = 0
+        y = 0
         
         self.imagen = os.path.join(os.path.join(self.cwd, images), self.imagen + '.jpg')
-        self.app.agregar(self.imagen, x, y)
+        self.app.agregar(self.imagen, x = x, y = y, width = 650, height = 568)
  
         return
 
+    def focus_next_window(event): 
+        
+        event.widget.tk_focusNext().focus()
+         
+        return("break")
+     
 
     def inicializarBotones(self):
 
         ancho = 100
         colorFront = "white"
         colorBack = "medium blue"
-        tamLetra = 13
+        tamLetra = 20
         tamMonto = 15
 
         self.labelTitulo = tk.Label(self.framePanelTitulo, text="Blackjack UB",width = 100, height = 50,
                            fg=colorFront,
                            bg=colorBack,
-                           font=("Arial Bold", 80))
+                           font=("Arial Bold", 70))
+        self.labelTitulo.bind("<Tab>", self.focus_next_window)
         self.labelTitulo.pack(side=tk.TOP)
 
-        self.labelDireccionIP = tk.Label(self.frameDireccionIP, text="Direccion IP Servidor",width = 100, height = 50,
+        self.labelDireccionIP = tk.Label(self.frameServidorTitulo, text="Direccion IP Servidor",width = 100, height = 50,
                            fg=colorFront,
                            bg=colorBack,
                            font=("Arial Bold", tamLetra))
         self.labelDireccionIP.pack(side=tk.TOP)
-        self.textlDireccionIP = tk.Text(self.frameDireccionIP, width = 100, height = 50, 
-                           fg=colorFront,
-                           bg=colorBack,
-                           font=("Arial Bold", 15))
-        #self.textlDireccionIP.bind('<Return>', self.procesarMonto)
-        self.textlDireccionIP.pack(side=tk.BOTTOM)
+        self.textlDireccionIP = tk.Text(self.frameServidorIP, width = 100, height = 50, 
+                           fg="black",
+                           bg="white",
+                           font=("Arial Bold", 25))
+        #self.textlDireccionIP.bind('<Tab>', self.procesarMonto)
+        self.textlDireccionIP.bind("<Tab>", self.focus_next_window)
+        self.textlDireccionIP.pack(side=tk.TOP)
         #self.textlDireccionIP = tk.Text(self.frameDireccionIP, width = 100, height = 50,
         #                        font=("Arial Bold", 15), fg="black", bg="white")
         #self.textlDireccionIP.pack(side=tk.BOTTOM)
 
-        self.labelPuerto = tk.Label(self.framePuerto, text="Puerto",width = 100, height = 50,
+        self.labelPuerto = tk.Label(self.framePuertoTitulo, text="Puerto",width = 100, height = 50,
                            fg=colorFront,
                            bg=colorBack,
                            font=("Arial Bold", tamLetra))
+        self.labelPuerto.bind("<Tab>", self.focus_next_window)
         self.labelPuerto.pack(side=tk.TOP)
-        self.textPuerto = tk.Text(self.framePuerto, width = 100, height = 50,
-                                font=("Arial Bold", 15), fg="black", bg="white")
-        self.textPuerto.pack(side=tk.BOTTOM)
+        self.textPuerto = tk.Text(self.framePuertoNumero, width = 100, height = 50,
+                           fg="black",
+                           bg="white",
+                           font=("Arial Bold", 25))
+        self.textPuerto.bind("<Tab>", self.focus_next_window)
+        self.textPuerto.pack(side=tk.TOP)
 
         self.buttonConectar = tk.Button(self.frameConexionBoton, width = ancho, height = 50,
                            text="CONECTAR", 
@@ -307,17 +365,22 @@ class PantallaIngreso:
                            bg=colorBack,
                            font=("Arial Bold", tamLetra),
                            command=self.btConectar)
-        self.buttonConectar.pack(side=tk.RIGHT)
+        self.buttonConectar.bind("<Tab>", self.focus_next_window)
+        self.buttonConectar.pack(side=tk.TOP)
 
 
-        self.labelUsuario = tk.Label(self.frameUsuario, text="Usuario",width = 100, height = 50,
+        self.labelUsuario = tk.Label(self.frameUsuarioTitulo, text="Usuario",width = 100, height = 50,
                            fg=colorFront,
                            bg=colorBack,
                            font=("Arial Bold", tamLetra))
+        self.labelUsuario.bind("<Tab>", self.focus_next_window)
         self.labelUsuario.pack(side=tk.TOP)
-        self.textUsuario = tk.Text(self.frameUsuario, width = 100, height = 50,
-                                font=("Arial Bold", 15), fg="black", bg="white")
-        self.textUsuario.pack(side=tk.BOTTOM)
+        self.textUsuario = tk.Text(self.frameUsuarioNombre, width = 100, height = 50,
+                           fg="black",
+                           bg="white",
+                           font=("Arial Bold", 25))
+        self.textUsuario.bind("<Tab>", self.focus_next_window)
+        self.textUsuario.pack(side=tk.TOP)
 
         self.buttonJugar = tk.Button(self.frameJugarBoton, width = ancho, height = 50,
                            text="JUGAR", 
@@ -325,7 +388,8 @@ class PantallaIngreso:
                            bg=colorBack,
                            font=("Arial Bold", tamLetra),
                            command=self.btJugar)
-        self.buttonJugar.pack(side=tk.RIGHT)
+        self.buttonJugar.bind("<Tab>", self.focus_next_window)
+        self.buttonJugar.pack(side=tk.TOP)
                 
         return
 
