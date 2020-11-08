@@ -202,14 +202,17 @@ class PantallaIngreso:
         
         print("Aceptado")
         self.model.onEntered()
-        self.root.quit()
+        #self.root.quit()
+        self.root.destroy()
+        #exit()
+        #sys.exit()
         
         return
 
 
     def btConectar(self):
         
-        print("Conetar")
+        print("Conectar")
         self.botones=[]
         self.habilitarBotones()
         self.model.onRequestConnection('190.55.116.66', '3039')
@@ -224,7 +227,7 @@ class PantallaIngreso:
         self.habilitarBotones()
         self.model.onSoy('quique')
        
-        return    
+        return
 
     
     def notificacion(self, usuario):
