@@ -14,6 +14,7 @@ class PantallaIngreso:
         self.root = tk.Tk()
         self.model = model
         self.botones = ['direccion', 'puerto', 'conectar']
+        self.error = tk.StringVar()
 
         self.inicializarFrames()
         self.inicializarBotones()
@@ -62,7 +63,7 @@ class PantallaIngreso:
         self.framePanelImagen['bg']=color
         self.framePanelImagen.pack_propagate(0)
 
-        self.frameConexion = tk.Frame(self.framePanelDatos, width = 264, height = 300)
+        self.frameConexion = tk.Frame(self.framePanelDatos, width = 264, height = 350)
         self.frameConexion.pack(side=tk.TOP)
         self.frameConexion['bg']=color
         self.frameConexion.pack_propagate(0)
@@ -78,7 +79,7 @@ class PantallaIngreso:
         self.frameConexionDatos['bg']=color
         self.frameConexionDatos.pack_propagate(0)
 
-        self.frameConexionBotonInfo = tk.Frame(self.frameConexion, width = 264, height = 100)
+        self.frameConexionBotonInfo = tk.Frame(self.frameConexion, width = 264, height = 150)
         self.frameConexionBotonInfo.pack(side=tk.BOTTOM)
         self.frameConexionBotonInfo['bg']=color
         self.frameConexionBotonInfo.pack_propagate(0)
@@ -100,10 +101,21 @@ class PantallaIngreso:
         self.frameConexionBoton['bg']=color
         self.frameConexionBoton.pack_propagate(0)
 
-        self.frameConexionAuxiliar = tk.Frame(self.frameConexionBotonInfo, width = 264, height = 50)
+        self.frameConexionAuxiliar = tk.Frame(self.frameConexionBotonInfo, width = 264, height = 100)
         self.frameConexionAuxiliar.pack(side=tk.BOTTOM)
         self.frameConexionAuxiliar['bg']=color
         self.frameConexionAuxiliar.pack_propagate(0)
+
+
+        self.frameErrorAuxiliar = tk.Frame(self.frameConexionAuxiliar, width = 264, height = 25)
+        self.frameErrorAuxiliar.pack(side=tk.TOP)
+        self.frameErrorAuxiliar['bg']=color
+        self.frameErrorAuxiliar.pack_propagate(0)
+
+        self.frameError = tk.Frame(self.frameConexionAuxiliar, width = 264, height = 75)
+        self.frameError.pack(side=tk.BOTTOM)
+        self.frameError['bg']=color
+        self.frameError.pack_propagate(0)
 
         
         self.frameJugarInfo = tk.Frame(self.frameIngreso, width = 264, height = 100)
@@ -218,7 +230,22 @@ class PantallaIngreso:
 
         return
     
+    def modificarError(self, error):
+        
+        #self.jugadores.set(jugadores)
+        self.textError.delete("0.0", tk.END)
+        self.textError.insert(tk.END, error)
+        self.textError.see(tk.END)
+                
+        return
+
+    #def modificarError(self, error):
+        
+    #    self.error.set(error)
+
+    #    return
     
+
     def onConnectEvent(self):
         
         print("Conectado")
@@ -234,16 +261,18 @@ class PantallaIngreso:
         self.botones= ['direccion', 'puerto', 'conectar']
         self.habilitarBotones()
         print(mensaje)
+        self.modificarError(mensaje)
         
         return
 
     
-    def onSoyRechazadoEvent(self):
+    def onSoyRechazadoEvent(self, mensaje):
         
         #Error
         print("Rechazado")
         self.botones= ['usuario', 'jugar']
         self.habilitarBotones()
+        self.modificarError(mensaje)
         
         return
 
@@ -290,7 +319,7 @@ class PantallaIngreso:
        
         return
     
-    
+        
     def btJugar(self):
         
         print("Jugar")
@@ -394,6 +423,23 @@ class PantallaIngreso:
         self.buttonConectar.bind("<Tab>", self.focus_next_window)
         self.buttonConectar.pack(side=tk.TOP)
 
+        self.scrollbarError = tk.Scrollbar(self.frameError)
+        self.textError = tk.Text(self.frameError,
+                                font=("Arial Bold", 10), bg="medium blue", fg="white")
+        self.scrollbarError.pack(side=tk.RIGHT, fill=tk.Y)
+        self.textError.pack(side=tk.LEFT, fill=tk.Y)
+        self.scrollbarError.config(command=self.textError.yview)
+        self.textError.config(yscrollcommand=self.scrollbarError.set)
+
+        self.modificarError("")
+        self.textError.pack(side=tk.LEFT)
+
+        
+        #self.labelError = tk.Label(self.frameError, textvariable=self.error, 
+        #                           font=("Arial Bold", 15), bg="medium blue", fg="white")
+        #self.labelError.bind("<Tab>", self.focus_next_window)
+        #self.labelError.pack(side=tk.BOTTOM)
+
 
         self.labelUsuario = tk.Label(self.frameUsuarioTitulo, text="Usuario",width = 100, height = 50,
                            fg=colorFront,
@@ -425,6 +471,7 @@ class PantallaIngreso:
         self.root.mainloop()
         
         return
+
 
 
 def testPantallaInicializadorIngreso():
