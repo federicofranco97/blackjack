@@ -17,13 +17,17 @@ from guiViewModel import GuiViewModel
 from ingresar import PantallaBase
 from ingresar import PantallaIngreso
 from pantalla import PantallaPrincipal
+import cbQueue
+import threading
 
-usarGUI = True
-lenguaje = "es"
+usarGUI = False
+lenguaje = "en"
 diccionario = {}
 vm = GuiViewModel()
 estado = 0
 sock = None
+
+pantallaInicial = None
 
 
 # Iniciamos la GUI
@@ -40,7 +44,7 @@ def iniciarPantalla():
     else:
         print("Saliendo del juego\n")
         os._exit(0)
-        
+
     return
 
 
@@ -58,17 +62,17 @@ def escucharServidor():
             if not data:
                 continue
             else:
-                print(data)
                 # Imprimo los mensajes del servidor
                 mensajes = getMensajesServidor(data)
                 for m in mensajes:
-                    print(m)
+                    #print(m)
                     mensajeParseado = parsearMensajeServidor(m)
 
         except socket.timeout:
             mensajeError = lenguaje["conexionPerdida"]
             print(mensajeError)
             vm.onMensajeEntrante(mensajeError)
+
 
 # Recibe todos los mensajes del socket, que entren en el buffer, y los parte para analizarlos posteriormente
 def getMensajesServidor(mensajeRecibido):
@@ -94,9 +98,8 @@ def parsearMensajeServidor(mensajeRecibido):
     elif comando == "mensaje":
         formateo = str(argumentos[0])
         if formateo == diccionario["ingresarSaldo"]:
-            print("lanzo el evento soyAceptado")
+            #cbQueue.from_dummy_thread(lambda: pantallaInicial.onSoyAceptadoEvent())
             vm.onSoyAceptado()
-            print("termina el evento soy aceptado")
         print(formateo)
         vm.onMensajeEntrante(formateo)
     elif comando == "status":
@@ -107,26 +110,22 @@ def parsearMensajeServidor(mensajeRecibido):
         vm.onPuntajeBancaChanged(formateo[1])
     elif comando == "jugadores":
         jugadores = argumentos[0].split("#")
-        print("Lista jugadores")
-        print(jugadores)
         vm.Jugadores = []
         estadisticas = ""
         for j in jugadores:
             datosJugador = j.replace("{", "[").replace("}", "]")
             datosJugador = datosJugador.strip('][').split(', ')
-            print(datosJugador)
-            print(datosJugador[4])
             if datosJugador[0] == vm.MiNombre:
                 vm.MiPuntaje = datosJugador[4]
                 vm.MiSaldo = datosJugador[1]
                 vm.MiEstado = datosJugador[2]
                 if len(datosJugador[3]) > 2:
                     tempCartas = datosJugador[3].strip('][').split(',')
-                    vm.MisCartas = tempCartas
+                    if vm.MisCartas != tempCartas:
+                        vm.MisCartas = tempCartas
+                        print(imprimirMano(tempCartas))
                 else:
                     vm.MisCartas = []
-                print(datosJugador[3])
-                print(type(datosJugador[3]))
                 vm.onEstadoChanged(vm.MiEstado)
                 if vm.MiEstado == "activo":
                     if vm.Turno != vm.MiNombre:
@@ -137,41 +136,18 @@ def parsearMensajeServidor(mensajeRecibido):
                 estadisticas += datosJugador[0] + ' $' + datosJugador[1] + ' (' + datosJugador[2] + ')' + '\n'
 
         vm.onJugadoresRefreshed(estadisticas)
-        print(estadisticas)
     else:
         return str(argumentos)
 
 
-"""
-Metodo que se encarga de parsear los subcomandos que lleguen a lo largo de la partida
-"""
-def parsearSubComando(subcom, args):
-    if subcom == "mano":
-        mano = parsearMano(args)
-        puntaje = str(args).split('#')[1]
-        return mano + " Y su puntaje es: " + puntaje
-    elif subcom == "jugadores":
-        listadoJugadores = str(args).split("#")
-        return ""
-    elif subcom == "":
-        return ""
-    else:
-        return ""
+def imprimirMano(pMano):
+    mensaje = str(pMano)
+    return diccionario["tuMano"].replace("{0}", mensaje)
 
-
-def parsearJugadores(jugs):
-    for j in jugs:
-        props = (str(j).replace("{", "").replace("}", "")).split(",")
-
-
-def parsearMano(arg):
-    mensaje = "Su mano es: "
-    manoparse = (str(arg).split('#')[0]).replace("{", "").replace("}", "")
-    return mensaje + manoparse
 
 # Envia el comando soy
-def soy(usr):
-    comando = "soy " + usr
+def soy(usr, idioma="es"):
+    comando = "soy " + usr + " " + idioma
     sock.send(comando.encode())
     vm.MiNombre = usr.replace('\n', '')
 
@@ -182,19 +158,27 @@ def pedirCarta():
     comando = "pedir"
     sock.send(comando.encode())
 
+
 # Envia el pedido de plantarse
 def plantarse():
     print("me planto")
     comando = "plantarse"
     sock.send(comando.encode())
 
+
 # Envia la solicitud de doblar
 def doblar():
     print("doblar apuesta")
+    comando = "doblar"
+    sock.send(comando.encode())
+
 
 # Envia la solicitud de split
 def separar():
     print("separar")
+    comando = "separar"
+    sock.send(comando.encode())
+
 
 # Envia el fondeo
 def fondear(monto):
@@ -202,17 +186,20 @@ def fondear(monto):
     comando = "ingresar " + monto
     sock.send(comando.encode())
 
+
 # Envia la apuesta
 def apostar(monto):
     print("apostando " + monto)
     comando = "apostar " + monto
     sock.send(comando.encode())
 
+
 # Envia un mensaje por el socket
 def enviarMensaje(mensaje):
     print("enviando mensaje: " + mensaje)
     comando = "mensaje " + mensaje
     sock.send(comando.encode())
+
 
 # Se conecta al servidor con los parametros solicitados
 def conectar(ip, puerto):
@@ -232,6 +219,7 @@ def conectar(ip, puerto):
 
 def jugadorEnSala():
     start_new_thread(threadJugadorEnSala, ())
+
 
 def threadJugadorEnSala():
     pantalla = PantallaPrincipal(vm)
@@ -266,8 +254,7 @@ def analizarComandoEnviado(linea):
         print(diccionario["errorComando"])
 
 
-
-#Metodo que inicializa el cliente, y decide si entrar en modo consola o con GUI
+# Metodo que inicializa el cliente, y decide si entrar en modo consola o con GUI
 def inicioCliente():
     if not usarGUI:
         while True:
@@ -277,16 +264,13 @@ def inicioCliente():
                 break
         print(diccionario["mensajeBienvenida"])
 
-
     if usarGUI:
         start_new_thread(escucharServidor, ())
         iniciarPantalla()
-        print('pantalla iniciada')
-        while True:
-            time.sleep(2)
-            continue
-            #start_new_thread(iniciarPantalla, (vm, ""))
-
+        #while True:
+            #time.sleep(1)
+            #continue
+            # start_new_thread(iniciarPantalla, (vm, ""))
 
     if not usarGUI:
         start_new_thread(escucharServidor, ())
@@ -297,7 +281,8 @@ def inicioCliente():
 
     print("Exit")
 
-#Punto de entrada del Cliente
+
+# Punto de entrada del Cliente
 if __name__ == "__main__":
     with open(os.path.join("lenguaje", lenguaje + ".py")) as json_file:
         diccionario = json.load(json_file)
@@ -311,6 +296,6 @@ if __name__ == "__main__":
     vm.ee.on("enviarMensajeEvent", enviarMensaje)
     vm.ee.on("requestConnectionEvent", conectar)
     vm.ee.on("soyEvent", soy)
-    vm.ee.on("enteredEvent", jugadorEnSala)
-    #vm.ee.on("connectedEvent", threadEscucharServidor)
+    #vm.ee.on("enteredEvent", jugadorEnSala)
+    # vm.ee.on("connectedEvent", threadEscucharServidor)
     inicioCliente()

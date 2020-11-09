@@ -15,16 +15,16 @@ class PantallaBase:
         
         self.root = tk.Tk()
         self.root.withdraw()
-        
+
     def getRoot(self):
-        
+
         return self.root
 
 
 class PantallaIngreso:
 
     def __init__(self, model, tkroot):
-        
+
         self.dobleroot = tkroot
         #self.dobleroot.withdraw()
         #self.dobleroot.hide()
@@ -38,7 +38,6 @@ class PantallaIngreso:
         self.cargarImagen()
         self.configurarEventos()
         self.cargarBotones()
-
         return
     
 
@@ -327,7 +326,7 @@ class PantallaIngreso:
         #self.root.update_idletasks()
         #self.root.update()
         #self.root.destroy()
-        
+
         #self.root.quit()
         #for widget in self.root.winfo_children():
            #widget.destroy()
@@ -537,9 +536,7 @@ class PantallaIngreso:
                 
         return
 
-    
     def mostrar(self):
-        
         self.root.mainloop()
         #while True:
         #    if self.model.Validado:
@@ -550,7 +547,7 @@ class PantallaIngreso:
 
         # or whatever your login check looks like
         #self.root.destroy()
-        
+
         return
 
 

@@ -3,6 +3,8 @@ import tkinter as tk
 import os
 import playsound
 from PIL import Image, ImageTk
+
+import cbQueue
 from guiViewModel import GuiViewModel
 from tkinter.scrolledtext import ScrolledText
 from _thread import *
@@ -274,12 +276,9 @@ class PantallaPrincipal:
             self.buttonEnviarMensaje.config(state=estado)
         
         return
-    
 
     def mostrar(self):
-        
         self.root.mainloop()
-        
         return
     
     def procesarMonto(self, monto):
@@ -475,12 +474,10 @@ class PantallaPrincipal:
 
     #    return
 
-
     def modificarEstado(self, estado):
-        
         self.usuario = self.model.MiNombre
         self.estadoStr = estado.replace('[', '').replace(']', '')
-        #self.estado.set(self.usuario + " "  + "$" + str(self.model.MiSaldo) + " (" + self.estadoStr + ")")
+        #self.estado.set(self.usuario + " " + "$" + str(self.model.MiSaldo) + " (" + self.estadoStr + ")")
         #self.modificarScore(self.model.MiPuntaje)
         #self.cargarCartas(self.model.MisCartas)
         return

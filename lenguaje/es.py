@@ -62,5 +62,7 @@
     "perdedor": "Perdiste contra la banca!",
     "noEsTurno": "No es tu turno",
     "puntajeObtenido": "{0} ha obtenido {1}",
-    "jugadorPerdio": "{0} perdio con un puntaje de {1}"
+    "jugadorPerdio": "{0} perdio con un puntaje de {1}",
+    "detalleApuesta": "Hiciste una apuesta de ${0}. Tu saldo actual es de ${1}",
+    "tuMano": "Tu mano es: {0}"
 }

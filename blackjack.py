@@ -267,9 +267,9 @@ class Blackjack():
             _jugador.apostar(monto)
             self._deberiaEmpezar()
         except DineroInsuficiente:
-            self.notificarJugador(_jugador, self.diccionario[usuario.idioma]["dineroInsuficiente"])
+            self.notificarJugador(_jugador, self.diccionario[_jugador.usuario.idioma]["dineroInsuficiente"])
         except ApuestaRealizada:
-            self.notificarJugador(_jugador, self.diccionario[usuario.idioma]["apuestaYaRealizada"])
+            self.notificarJugador(_jugador, self.diccionario[_jugador.usuario.idioma]["apuestaYaRealizada"])
 
     """
         Funcion que rota los jugadores y, en caso que ya no queden mas para rotar, hace jugar a la banca.

@@ -70,7 +70,7 @@ class ManejadorDB():
         self.loguear("Partida registrada con ID " + str(idConexion))
         for i in range(len(jugadores)):
             sqlCursor.execute("INSERT INTO partida_jugadores (partida_id, jugador_id, estado) VALUES (?,?,?)", (idConexion, jugadores[i].usuario.nombre, jugadores[i].estadoActual))
-            descripciones = jugadores[i].manoActual.obtenerDescripcionCartas()
+            descripciones = jugadores[i].manoActual.obtenerDescripcionCartas("es")
             for desc in descripciones:
                 sqlCursor.execute("INSERT INTO partida_cartas (partida_id, carta) VALUES (?, ?)", (idConexion, desc))
         conexion.commit()

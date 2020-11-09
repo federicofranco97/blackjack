@@ -108,6 +108,7 @@ def comJuegoComando(nombreComando, argumentos, socket, juego, cliente):
 def comIdentificarUsuario(nombreComando, argumentos, socket, juego, cliente):
     if (cliente.nombre == None):
         cliente.nombre = argumentos[0]
+        cliente.idioma = argumentos[1] if len(argumentos) > 1 else "es"
         cliente.enviarMensaje(diccionario[cliente.idioma]["ingresarSaldo"])
     else:
         socket.send(diccionario[cliente.idioma]["errorYaTeConozco"].replace("{0}", cliente.nombre).replace("{1}", argumentos[0]) + "\n")

@@ -42,7 +42,9 @@ class Jugador():
         if self.apuestaInicial == None:
             self.apuestaInicial = int(monto)
             self.usuario.dinero = self.usuario.dinero - int(monto)
-            self.enviarMensaje("hiciste una apuesta de $" + str(monto) + ". Tu saldo actual es de $" + str(self.usuario.dinero))
+            ##self.enviarMensaje("hiciste una apuesta de $" + str(monto) + ". Tu saldo actual es de $" + str(self.usuario.dinero))
+            self.enviarMensaje(self.diccionario[self.usuario.idioma]["detalleApuesta"].replace("{0}", str(monto)).replace("{1}", str(self.usuario.dinero)))
+
             self.estadoActual = "esperando_turno"
             self.manoActual = Mano(self.diccionario)
         else:
