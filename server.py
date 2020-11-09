@@ -28,7 +28,7 @@ class Usuario:
         except:
             pass
 
-    def enviarMensaje(self, mensajeArg, comandos = [], jugadores = [], banca = [], mano = []):
+    def enviarMensaje(self, mensajeArg, comandos = [], jugadores = [], banca = [], mano = [], finalizado = False, ganadores = []):
         mensaje = ""
         _comm = comandos.copy()
         _comm.append("mensaje")
@@ -43,6 +43,8 @@ class Usuario:
             mensaje += ("|banca:"+",".join(banca))
         if len(mano) > 0:
             mensaje += ("|mano:"+",".join(mano))
+        estadoPartida = "|partida:" + str(finalizado) + "," + "#".join(ganadores)
+        mensaje += estadoPartida
         mensaje += ("|mensaje:" + mensajeArg + "\n")
         self.enviarData(mensaje)
 

@@ -10,6 +10,7 @@ import logging
 import re
 from datetime import date, datetime
 import time
+from pathlib import Path
 
 from pip._vendor.distlib.compat import raw_input
 from gui import *
@@ -62,14 +63,13 @@ def escucharServidor():
             if not data:
                 continue
             else:
-                # Imprimo los mensajes del servidor
+                #Imprimo los mensajes del servidor
                 mensajes = getMensajesServidor(data)
                 for m in mensajes:
-                    #print(m)
                     mensajeParseado = parsearMensajeServidor(m)
 
         except socket.timeout:
-            mensajeError = lenguaje["conexionPerdida"]
+            mensajeError = diccionario[lenguaje]["conexionPerdida"]
             print(mensajeError)
             vm.onMensajeEntrante(mensajeError)
 
@@ -97,10 +97,10 @@ def parsearMensajeServidor(mensajeRecibido):
         vm.onRefreshButtons(formateo)
     elif comando == "mensaje":
         formateo = str(argumentos[0])
-        if formateo == diccionario["ingresarSaldo"]:
+        print(formateo)
+        if formateo == diccionario[lenguaje]["ingresarSaldo"]:
             #cbQueue.from_dummy_thread(lambda: pantallaInicial.onSoyAceptadoEvent())
             vm.onSoyAceptado()
-        print(formateo)
         vm.onMensajeEntrante(formateo)
     elif comando == "status":
         formateo = str(argumentos).split("#")[1]
@@ -108,6 +108,11 @@ def parsearMensajeServidor(mensajeRecibido):
     elif comando == "banca":
         formateo = str(argumentos).split("#")
         vm.onPuntajeBancaChanged(formateo[1])
+    elif comando == "partida":
+        formateo = str(argumentos[0]).split(",")
+        if formateo[0] is True:
+            ganadores = str(formateo[0]).split("#")
+            vm.onJuegoTerminado("")
     elif comando == "jugadores":
         jugadores = argumentos[0].split("#")
         vm.Jugadores = []
@@ -142,12 +147,14 @@ def parsearMensajeServidor(mensajeRecibido):
 
 def imprimirMano(pMano):
     mensaje = str(pMano)
-    return diccionario["tuMano"].replace("{0}", mensaje)
+    return diccionario[lenguaje]["tuMano"].replace("{0}", mensaje)
 
 
 # Envia el comando soy
 def soy(usr, idioma="es"):
     comando = "soy " + usr + " " + idioma
+    global lenguaje
+    lenguaje = idioma
     sock.send(comando.encode())
     vm.MiNombre = usr.replace('\n', '')
 
@@ -211,8 +218,8 @@ def conectar(ip, puerto):
         estado = 1
         vm.onConnected()
     except Exception as e:
-        print(diccionario["errorConexion"] + str(e))
-        vm.onConnectError(diccionario["errorConexion"] + str(e))
+        print(diccionario[lenguaje]["errorConexion"] + str(e))
+        vm.onConnectError(diccionario[lenguaje]["errorConexion"] + str(e))
         return False
     return True
 
@@ -251,18 +258,18 @@ def analizarComandoEnviado(linea):
         elif comando == "doblar":
             doblar()
     except:
-        print(diccionario["errorComando"])
+        print(diccionario[lenguaje]["errorComando"])
 
 
 # Metodo que inicializa el cliente, y decide si entrar en modo consola o con GUI
 def inicioCliente():
     if not usarGUI:
         while True:
-            host = raw_input(diccionario["solicitarIp"])
-            port = raw_input(diccionario["solicitarPuerto"])
+            host = raw_input(diccionario[lenguaje]["solicitarIp"])
+            port = raw_input(diccionario[lenguaje]["solicitarPuerto"])
             if conectar(host, port):
                 break
-        print(diccionario["mensajeBienvenida"])
+        print(diccionario[lenguaje]["mensajeBienvenida"])
 
     if usarGUI:
         start_new_thread(escucharServidor, ())
@@ -284,8 +291,11 @@ def inicioCliente():
 
 # Punto de entrada del Cliente
 if __name__ == "__main__":
-    with open(os.path.join("lenguaje", lenguaje + ".py")) as json_file:
-        diccionario = json.load(json_file)
+    files = os.listdir("lenguaje")
+    for f in files:
+        with open(os.path.join("lenguaje", f)) as json_file:
+            name = Path(f).resolve().stem
+            diccionario[name] = json.load(json_file)
 
     vm.ee.on("pedirCartaEvent", pedirCarta)
     vm.ee.on("plantarseEvent", plantarse)
