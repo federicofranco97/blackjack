@@ -549,11 +549,11 @@ class PantallaPrincipal:
                     
         self.cartas = cartas
         
-        #if self.app == None:
-        self.app = PantallaImagenes(self.frameCartas)
-        self.app['bg']='green'
-        #else:
-        #    self.app.borrar()
+        if self.app == None:
+            self.app = PantallaImagenes(self.frameCartas)
+            self.app['bg']='green'
+        else:
+            self.app.borrar()
         
         self.cwd = os.getcwd()
         mazo = 'mazo'
