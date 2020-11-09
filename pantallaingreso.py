@@ -1,24 +1,15 @@
-import tkinter as tk
+#import tkinter as tk
+from mttkinter import mtTkinter as tk
 import os
 import playsound
-from pantalla import MostrarImagenes
 from PIL import Image, ImageTk
 from guiViewModel import GuiViewModel
 from tkinter.scrolledtext import ScrolledText
 from _thread import *
 import time
 
-
-class PantallaBase:
-
-    def __init__(self):
-        
-        self.root = tk.Tk()
-        self.root.withdraw()
-
-    def getRoot(self):
-
-        return self.root
+from pantallautil import PantallaImagenes
+from pantallautil import PantallaBase
 
 
 class PantallaIngreso:
@@ -410,7 +401,7 @@ class PantallaIngreso:
 
     def cargarImagen(self):
 
-        self.app = MostrarImagenes(self.framePanelImagen)
+        self.app = PantallaImagenes(self.framePanelImagen)
         self.app['bg']='medium blue'
         self.imagen = 'blackjack'
         self.cwd = os.getcwd()

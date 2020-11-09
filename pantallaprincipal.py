@@ -1,52 +1,31 @@
 import json
-import tkinter as tk
+#import mkTkinter as tk
+from mttkinter import mtTkinter as tk
 import os
 import playsound
 from PIL import Image, ImageTk
-
 import cbQueue
 from guiViewModel import GuiViewModel
 from tkinter.scrolledtext import ScrolledText
 from _thread import *
 
-class MostrarImagenes(tk.Frame):
-    
-    def __init__(self, master=None):
-        tk.Frame.__init__(self, master)
-        self.master = master
-        self.pack(fill=tk.BOTH, expand=1)
-        self.img = []
-
-        return
-
-    def agregar(self, img, x=0, y=0, width=0, height=0):
-    
-        self.img.append(img)
-        pos = len(self.img)-1
-        
-        load = Image.open(self.img[pos])
-        if width > 0 and height > 0:
-            load = load.resize((width, height), Image.ANTIALIAS)
-        render = ImageTk.PhotoImage(load)
-        self.img[pos] = tk.Label(self.master, image=render)
-        self.img[pos].image = render
-        self.img[pos].place(x=x, y=y)
-        
-        return
-
-    def borrar(self):
-        for widget in self.master.winfo_children():
-            widget.destroy()
-        
-        return
+from pantallautil import PantallaImagenes
+from pantallautil import PantallaBase
 
 
 class PantallaPrincipal:
 
-    def __init__(self, model):
+    def __init__(self, model, tkroot):
+
+        self.dobleroot = tkroot
+        #self.dobleroot.withdraw()
+        #self.dobleroot.hide()
+        self.root = tk.Toplevel(self.dobleroot)
+
+    #def __init__(self, model, ):
         self.lenguaje = "es"
         self.diccionario = {}
-        self.root = tk.Tk()
+    #    self.root = tk.Tk()
         self.cartas = []
         self.score = tk.StringVar()
         self.usuario = model.MiNombre
@@ -56,7 +35,7 @@ class PantallaPrincipal:
         self.mensajes = tk.StringVar()
         self.app = None
         self.labelScore = None
-        self.cartas = None
+        #self.cartas = None
         self.model = model
         self.textChat = None
         #self.modificarUsuario(self.usuario)
@@ -115,40 +94,40 @@ class PantallaPrincipal:
         #https://www.tutorialspoint.com/python/tk_button.htm
         self.root.wm_title("Blackjac UB version Betal Alfa Centauri v1.0.1")
         self.root.geometry("1024x768")
-        self.root['bg']='green'
+        self.root['bg']='medium blue'
  
 
         self.framePanelSuperior = tk.Frame(self.root, width = 1024, height = 718)
         self.framePanelSuperior.pack(side=tk.TOP)
-        self.framePanelSuperior['bg']='green'
+        self.framePanelSuperior['bg']='medium blue'
 
         self.framePanelInferior = tk.Frame(self.root, width = 1024, height = 50)
         self.framePanelInferior.pack(side=tk.BOTTOM)
-        self.framePanelInferior['bg']='green'
+        self.framePanelInferior['bg']='medium blue'
 
 
         self.frameBotones = tk.Frame(self.framePanelSuperior, width = 1024, height = 30)
         self.frameBotones.pack(side=tk.TOP)
-        self.frameBotones['bg']='green'
+        self.frameBotones['bg']='medium blue'
         self.frameBotones.pack_propagate(0) 
         
 
         self.framePanel = tk.Frame(self.framePanelSuperior, width = 1024, height = 668)
         self.framePanel.pack(side=tk.BOTTOM)
-        self.framePanel['bg']='green'
+        self.framePanel['bg']='medium blue'
         
  
         self.frameTablero = tk.Frame(self.framePanel, width = 624, height = 668)
         self.frameTablero.pack(side=tk.LEFT)
-        self.frameTablero['bg']='green'
+        self.frameTablero['bg']='medium blue'
 
         self.frameInfo = tk.Frame(self.framePanel, width = 400, height = 668)
         self.frameInfo.pack(side=tk.RIGHT)
-        self.frameInfo['bg']='green'       
+        self.frameInfo['bg']='medium blue'       
 
         self.frameJuego = tk.Frame(self.frameTablero, width = 624, height = 518)
         self.frameJuego.pack(side=tk.TOP)
-        self.frameJuego['bg']='green'
+        self.frameJuego['bg']='medium blue'
         
         self.frameCartas = tk.Frame(self.frameJuego, width = 624, height = 468)
         self.frameCartas.pack(side=tk.TOP)
@@ -178,11 +157,11 @@ class PantallaPrincipal:
  
         self.frameInfoAuxiliar = tk.Frame(self.frameInfo, width = 2, height = 668)
         self.frameInfoAuxiliar.pack(side=tk.LEFT)
-        self.frameInfoAuxiliar['bg']='green'
+        self.frameInfoAuxiliar['bg']='medium blue'
 
         self.frameInfoDatos = tk.Frame(self.frameInfo, width = 398, height = 668)
         self.frameInfoDatos.pack(side=tk.RIGHT)
-        self.frameInfoDatos['bg']='green'
+        self.frameInfoDatos['bg']='medium blue'
 
         self.frameScoreContexto = tk.Frame(self.frameInfoDatos, width = 390, height = 150)
         self.frameScoreContexto.pack(side=tk.TOP)
@@ -194,7 +173,7 @@ class PantallaPrincipal:
 
         self.frameScoreSeparador = tk.Frame(self.frameScoreContexto, width = 390, height = 2)
         self.frameScoreSeparador.pack(side=tk.BOTTOM)
-        self.frameScoreSeparador['bg']='green'
+        self.frameScoreSeparador['bg']='medium blue'
 
         self.frameMenuChat = tk.Frame(self.frameInfoDatos, width = 390, height = 511)
         self.frameMenuChat.pack(side=tk.BOTTOM)
@@ -477,9 +456,9 @@ class PantallaPrincipal:
     def modificarEstado(self, estado):
         self.usuario = self.model.MiNombre
         self.estadoStr = estado.replace('[', '').replace(']', '')
-        #self.estado.set(self.usuario + " " + "$" + str(self.model.MiSaldo) + " (" + self.estadoStr + ")")
-        #self.modificarScore(self.model.MiPuntaje)
-        #self.cargarCartas(self.model.MisCartas)
+        self.estado.set(self.usuario + " " + "$" + str(self.model.MiSaldo) + " (" + self.estadoStr + ")")
+        self.modificarScore(self.model.MiPuntaje)
+        self.cargarCartas(self.model.MisCartas)
         return
         
     
@@ -552,13 +531,30 @@ class PantallaPrincipal:
     
     def cargarCartas(self, cartas):
 
-        if self.app == None:
-            self.app = MostrarImagenes(self.frameCartas)
-            self.app['bg']='green'
-        else:
-            self.app.borrar()
-        
+        if len(cartas) == 0:
+            print('no hay cartas')
+            return
+
+        if len(cartas) == len(self.cartas):
+            iguales = True
+            for i in range(0, len(cartas)):
+                if cartas[i] != self.cartas[i]:
+                    print('cartas diferentes')
+                    iguales = False
+                    break
+            
+            if iguales == True:
+                print('Ya se estan mostrando esas cartas')
+                return
+                    
         self.cartas = cartas
+        
+        #if self.app == None:
+        self.app = PantallaImagenes(self.frameCartas)
+        self.app['bg']='green'
+        #else:
+        #    self.app.borrar()
+        
         self.cwd = os.getcwd()
         mazo = 'mazo'
         self.imgList = []
@@ -572,7 +568,7 @@ class PantallaPrincipal:
         cartasPorLinea = 7
         for i in range(0, len(self.cartas)):
             self.imgList.append(os.path.join(os.path.join(self.cwd, mazo), self.cartas[i] + '.jpg'))
-            self.app.agregar(self.imgList[i], x, y)
+            self.app.agregar(self.imgList[i], x=x, y=y)
 
             x = x + xOffset
             y = y + yOffset
@@ -624,12 +620,14 @@ def testPantallaInicializador2():
     
 
 def testPantallaInicializador():
-    #cartas1 = ['1-3', '2-4', '3-5']
+    cartas1 = ['1-3', '2-4', '3-5']
     listaCartas = []
     model = GuiViewModel()
     model.MiSaldo = 3000
     model.ee.on("pedirCartaEvent", testPantallaPedirCarta)
-    bjScreen = PantallaPrincipal(model)
+    bjbase = PantallaBase()
+    bjScreen = PantallaPrincipal(model, bjbase.getRoot())
+    bjScreen.cargarCartas(cartas1)
     bjScreen.modificarEstado("Jugar")
     bjScreen.modificarScore("12")
     bjScreen.mostrar()

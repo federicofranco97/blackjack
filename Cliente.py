@@ -14,14 +14,14 @@ import time
 from pip._vendor.distlib.compat import raw_input
 from gui import *
 from guiViewModel import GuiViewModel
-from ingresar import PantallaBase
-from ingresar import PantallaIngreso
-from pantalla import PantallaPrincipal
+from pantallautil import PantallaBase
+from pantallaingreso import PantallaIngreso
+from pantallaprincipal import PantallaPrincipal
 import cbQueue
 import threading
 
-usarGUI = False
-lenguaje = "en"
+usarGUI = True
+lenguaje = "es"
 diccionario = {}
 vm = GuiViewModel()
 estado = 0
@@ -38,7 +38,7 @@ def iniciarPantalla():
     pantallainicial.root.withdraw()
     if vm.Validado:
         print("Entrando a jugar\n")
-        pantallaPrincipal = PantallaPrincipal(vm)
+        pantallaPrincipal = PantallaPrincipal(vm, pantallaBase.getRoot())
         pantallaPrincipal.mostrar()
         pantallaPrincipal.root.withdraw()
     else:
