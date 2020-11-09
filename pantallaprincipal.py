@@ -18,33 +18,32 @@ class PantallaPrincipal:
     def __init__(self, model, tkroot):
 
         self.dobleroot = tkroot
-        #self.dobleroot.withdraw()
-        #self.dobleroot.hide()
         self.root = tk.Toplevel(self.dobleroot)
 
-    #def __init__(self, model, ):
         self.lenguaje = "es"
         self.diccionario = {}
-    #    self.root = tk.Tk()
         self.cartas = []
-        self.score = tk.StringVar()
+        self.nombreJugador = tk.StringVar()
+        self.scoreJugador = tk.StringVar()
+        self.scoreBanca = tk.StringVar()
         self.usuario = model.MiNombre
+        self.nombreJugador.set(self.usuario)
         self.estado = tk.StringVar()
         self.estadoStr = ""
         self.jugadores = tk.StringVar()
         self.mensajes = tk.StringVar()
         self.app = None
-        self.labelScore = None
-        #self.cartas = None
+        self.labelScoreJugador = None
+        self.labelScoreBanca = None
         self.model = model
         self.textChat = None
-        #self.modificarUsuario(self.usuario)
         
         self.cambiarIdioma('es')
         self.inicializarFrames()
         self.inicializarBotones()
         self.inicializarEnvioMensajes()  
-        self.cargarScore("0")
+        self.cargarScoreJugador("0")
+        self.cargarScoreBanca("0")
         self.cargarEstado("...")
         self.cargarJugadores("")
         self.cargarBotones("")
@@ -79,7 +78,7 @@ class PantallaPrincipal:
         self.model.ee.on("juegoComenzadoEvent", self.modificarEstado)
         self.model.ee.on("juegoTerminadoEvent", self.modificarEstado)
         self.model.ee.on("jugadoresRefreshedEvent", self.modificarJugadores)
-        #self.model.ee.on("puntajeBancaChangedEvent", self.modificarScore)
+        #self.model.ee.on("puntajeBancaChangedEvent", self.modificarScoreJugador)
 
         return
     
@@ -163,18 +162,54 @@ class PantallaPrincipal:
         self.frameInfoDatos.pack(side=tk.RIGHT)
         self.frameInfoDatos['bg']='medium blue'
 
-        self.frameScoreContexto = tk.Frame(self.frameInfoDatos, width = 390, height = 150)
+        self.frameScoreContexto = tk.Frame(self.frameInfoDatos, width = 398, height = 150)
         self.frameScoreContexto.pack(side=tk.TOP)
         self.frameScoreContexto['bg']='medium blue'
         
-        self.frameScore = tk.Frame(self.frameScoreContexto, width = 390, height = 148)
-        self.frameScore.pack(side=tk.TOP)
-        self.frameScore['bg']='medium blue'
+        self.frameScoreSeccion = tk.Frame(self.frameScoreContexto, width = 398, height = 148)
+        self.frameScoreSeccion.pack(side=tk.TOP)
+        self.frameScoreSeccion['bg']='medium blue'
 
-        self.frameScoreSeparador = tk.Frame(self.frameScoreContexto, width = 390, height = 2)
+        self.frameScoreSeparador = tk.Frame(self.frameScoreContexto, width = 398, height = 2)
         self.frameScoreSeparador.pack(side=tk.BOTTOM)
         self.frameScoreSeparador['bg']='medium blue'
 
+        self.frameScorePanelJugador = tk.Frame(self.frameScoreSeccion, width = 164, height = 148)
+        self.frameScorePanelJugador.pack(side=tk.LEFT)
+        self.frameScorePanelJugador['bg']='medium blue'
+
+        self.frameScorePanelOponente = tk.Frame(self.frameScoreSeccion, width = 234, height = 148)
+        self.frameScorePanelOponente.pack(side=tk.RIGHT)
+        self.frameScorePanelOponente['bg']='medium blue'
+
+
+        self.frameScorePanelVS = tk.Frame(self.frameScorePanelOponente, width = 70, height = 148)
+        self.frameScorePanelVS.pack(side=tk.LEFT)
+        self.frameScorePanelVS['bg']='medium blue'
+
+        self.frameScorePanelBanca = tk.Frame(self.frameScorePanelOponente, width = 164, height = 148)
+        self.frameScorePanelBanca.pack(side=tk.RIGHT)
+        self.frameScorePanelBanca['bg']='medium blue'
+
+
+        self.frameScoreTituloJugador = tk.Frame(self.frameScorePanelJugador, width = 164, height = 30)
+        self.frameScoreTituloJugador.pack(side=tk.TOP)
+        self.frameScoreTituloJugador['bg']='medium blue'
+
+        self.frameScorePuntajeJugador = tk.Frame(self.frameScorePanelJugador, width = 164, height = 118)
+        self.frameScorePuntajeJugador.pack(side=tk.TOP)
+        self.frameScorePuntajeJugador['bg']='medium blue'
+
+
+        self.frameScoreTituloBanca = tk.Frame(self.frameScorePanelBanca, width = 164, height = 30)
+        self.frameScoreTituloBanca.pack(side=tk.TOP)
+        self.frameScoreTituloBanca['bg']='medium blue'
+
+        self.frameScorePuntajeBanca = tk.Frame(self.frameScorePanelBanca, width = 164, height = 118)
+        self.frameScorePuntajeBanca.pack(side=tk.BOTTOM)
+        self.frameScorePuntajeBanca['bg']='medium blue'
+
+        
         self.frameMenuChat = tk.Frame(self.frameInfoDatos, width = 390, height = 511)
         self.frameMenuChat.pack(side=tk.BOTTOM)
         self.frameMenuChat['bg']='white'
@@ -270,7 +305,7 @@ class PantallaPrincipal:
 
     def inicializarBotones(self):
 
-        ancho = 14
+        ancho = 13
         colorFront = "white"
         colorBack = "medium blue"
         tamLetra = 13
@@ -292,54 +327,54 @@ class PantallaPrincipal:
         self.labelPesos = tk.Label(self.frameBotones, text="$",width = 1, height = 20,
                            fg=colorFront,
                            bg=colorBack,
-                           font=("Arial Bold", tamLetra))
+                           font=("Arial Bold", tamLetra, "bold"))
         self.labelPesos.pack(side=tk.LEFT)
         self.scrolledMonto = tk.Text(self.frameBotones, width = 6, height = 18, 
                            fg=colorFront,
                            bg=colorBack,
-                           font=("Arial Bold", tamMonto))
+                           font=("Arial Bold", tamMonto, "bold"))
         self.scrolledMonto.bind('<Return>', self.procesarMonto)
         self.scrolledMonto.pack(side=tk.LEFT)
         self.buttonApostar = tk.Button(self.frameBotones, width = ancho, height = 20,
                            text=self.diccionario["apostar"],
                            fg=colorFront,
                            bg=colorBack,
-                           font=("Arial Bold", tamLetra),
+                           font=("Arial Bold", tamLetra, "bold"),
                            command=self.btApostar)
         self.buttonApostar.pack(side=tk.LEFT)
         self.buttonPedir = tk.Button(self.frameBotones, width = ancho, height = 20,
                            text=self.diccionario["pedir"],
                            fg=colorFront,
                            bg=colorBack,
-                           font=("Arial Bold", tamLetra),
+                           font=("Arial Bold", tamLetra, "bold"),
                            command=self.btPedir)
         self.buttonPedir.pack(side=tk.LEFT)
         self.buttonPlantarse = tk.Button(self.frameBotones, width = ancho, height = 20,
                            text=self.diccionario["plantarse"],
                            fg=colorFront,
                            bg=colorBack,
-                           font=("Arial Bold", tamLetra),
+                           font=("Arial Bold", tamLetra, "bold"),
                            command=self.btPlantarse)
         self.buttonPlantarse.pack(side=tk.LEFT)
         self.buttonSeparar = tk.Button(self.frameBotones, width = ancho, height = 20,
                            text=self.diccionario["separar"],
                            fg=colorFront,
                            bg=colorBack,
-                           font=("Arial Bold", tamLetra),
+                           font=("Arial Bold", tamLetra, "bold"),
                            command=self.btSeparar)
         self.buttonSeparar.pack(side=tk.LEFT)
         self.buttonDoblar = tk.Button(self.frameBotones, width = ancho, height = 20,
                            text=self.diccionario["doblar"],
                            fg=colorFront,
                            bg=colorBack,
-                           font=("Arial Bold", tamLetra),
+                           font=("Arial Bold", tamLetra, "bold"),
                            command=self.btDoblar)
         self.buttonDoblar.pack(side=tk.LEFT)
         self.buttonSalir = tk.Button(self.frameBotones, width = ancho, height = 20,
                            text=self.diccionario["salir"],
                            fg=colorFront,
                            bg=colorBack,
-                           font=("Arial Bold", tamLetra),
+                           font=("Arial Bold", tamLetra, "bold"),
                            command=self.btSalir)
         self.buttonSalir.pack(side=tk.LEFT)
         
@@ -422,21 +457,44 @@ class PantallaPrincipal:
         return
 
 
-    def modificarScore(self, score):
-        self.score.set(score)
+    def modificarScoreJugador(self, score):
+        self.scoreJugador.set(score)
         return
         
+
+    def modificarScoreBanca(self, score):
+        self.scoreBanca.set(score)
+        return
+
     
-    def cargarScore(self, score):
+    def cargarScoreJugador(self, score):
         
-        self.modificarScore(score)
-        self.labelScore = tk.Label(self.frameScore, textvariable=self.score, 
-                                   font=("Arial Bold", 100), bg="medium blue", fg="white")
-        self.labelScore.pack(side=tk.TOP)
+        self.modificarScoreJugador(score)
+        self.labelTituloJugador = tk.Label(self.frameScoreTituloJugador, textvariable=self.nombreJugador, 
+                                   font=("Arial Bold", 20, "bold"), bg="medium blue", fg="white")
+        self.labelTituloJugador.pack(side=tk.TOP)
+        self.labelScoreJugador = tk.Label(self.frameScorePuntajeJugador, textvariable=self.scoreJugador, 
+                                   font=("Arial Bold", 80, "bold"), bg="medium blue", fg="white")
+        self.labelScoreJugador.pack(side=tk.BOTTOM)
 
         return
 
     
+    def cargarScoreBanca(self, score):
+        
+        self.modificarScoreBanca(score)
+        self.labelTituloVS = tk.Label(self.frameScorePanelVS, text=" - ", 
+                                   font=("Arial Bold", 80, "bold"), bg="medium blue", fg="white")
+        self.labelTituloVS.pack(side=tk.TOP)
+        self.labelTituloBanca = tk.Label(self.frameScoreTituloBanca, text="BANCA", 
+                                   font=("Arial Bold", 20, "bold"), bg="medium blue", fg="white")
+        self.labelTituloBanca.pack(side=tk.TOP)
+        self.labelScoreBanca = tk.Label(self.frameScorePuntajeBanca, textvariable=self.scoreBanca, 
+                                   font=("Arial Bold", 80, "bold"), bg="medium blue", fg="white")
+        self.labelScoreBanca.pack(side=tk.BOTTOM)
+
+        return
+
     #def modificarUsuario(self, usuario):
         
     #    self.usuario.set("[" + usuario + "]")
@@ -457,7 +515,7 @@ class PantallaPrincipal:
         self.usuario = self.model.MiNombre
         self.estadoStr = estado.replace('[', '').replace(']', '')
         self.estado.set(self.usuario + " " + "$" + str(self.model.MiSaldo) + " (" + self.estadoStr + ")")
-        self.modificarScore(self.model.MiPuntaje)
+        self.modificarScoreJugador(self.model.MiPuntaje)
         self.cargarCartas(self.model.MisCartas)
         return
         
@@ -583,8 +641,7 @@ def testPantallaEjemplos(self):
     
     self.cartas = ['1-3', '2-4', '3-5', '4-2', '1-4', '2-2', '1-3', '2-4', '3-5', '4-2', '1-4', '2-2', '1-3', '2-4', '3-5', '4-2', '1-4', '2-2']
     self.cargarCartas(self.cartas)
-    #self.modificarScore("20")
-    self.modificarScore("20")
+    self.modificarScoreJugador("20")
     self.modificarEstado("Plantado")
     self.modificarJugadores("Quique: Esperando\nSeba: Esperando\nFede G: Jugando\nFede F: Perdio\nRichard: Esperando")
     self.modificarMensajes("Seba: Esperando...\nQuique: me abuurroonnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn....")
@@ -608,7 +665,7 @@ def testPantallaInicializador2():
     
     bjScreen = PantallaPrincipal(model, "quique")
     bjScreen.cargarCartas(listaCartas)
-    bjScreen.cargarScore("12")
+    bjScreen.cargarScoreJugador("12")
     bjScreen.cargarEstado("Jug")
     #bjScreen.cargarUsuario("quique")
     bjScreen.cargarJugadores("Quique: Esperando\nSeba: Esperando\nFede G: Esperando\nFede F: Jugando\nRichard: Esperando")
@@ -629,12 +686,12 @@ def testPantallaInicializador():
     bjScreen = PantallaPrincipal(model, bjbase.getRoot())
     bjScreen.cargarCartas(cartas1)
     bjScreen.modificarEstado("Jugar")
-    bjScreen.modificarScore("12")
+    bjScreen.modificarScoreJugador("12")
     bjScreen.mostrar()
 
     '''    
     bjScreen.cargarCartas(listaCartas)
-    bjScreen.cargarScore("12")
+    bjScreen.cargarScoreJugador("12")
     bjScreen.cargarEstado("Jugar")
     bjScreen.cargarJugadores("Quique: Esperando\nSeba: Esperando\nFede G: Esperando\nFede F: Jugando\nRichard: Esperando")
     bjScreen.cargarMensajes("Quique: Esperando...\n")
