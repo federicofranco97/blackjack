@@ -133,16 +133,7 @@ class PantallaPrincipal:
         self.frameCartas['bg']='green'
         self.frameCartas.pack_propagate(0)      
  
-        #self.frameEstadoUsuario = tk.Frame(self.frameJuego, width = 624, height = 50)
-        #self.frameEstadoMenu.pack(side=tk.BOTTOM)
-        #self.frameEstadoMenu['bg']='medium blue' 
-        #self.frameEstadoMenu.pack_propagate(0)      
-
-        #self.frameNombreUsuario = tk.Frame(self.frameEstadoMenu, width = 200, height = 50)
-        #self.frameNombreUsuario.pack(side=tk.LEFT)
-        #self.frameNombreUsuario['bg']='medium blue' 
-        #self.frameNombreUsuario.pack_propagate(0)  
-        
+         
         self.frameEstadoUsuario = tk.Frame(self.frameJuego, width = 624, height = 50)
         self.frameEstadoUsuario.pack(side=tk.RIGHT)
         self.frameEstadoUsuario['bg']='medium blue' 
@@ -152,7 +143,7 @@ class PantallaPrincipal:
         self.frameJugadores.pack(side=tk.BOTTOM)
         self.frameJugadores['bg']='white'
         self.frameJugadores.pack_propagate(0)
- 
+
  
         self.frameInfoAuxiliar = tk.Frame(self.frameInfo, width = 2, height = 668)
         self.frameInfoAuxiliar.pack(side=tk.LEFT)
@@ -305,18 +296,12 @@ class PantallaPrincipal:
 
     def inicializarBotones(self):
 
-        ancho = 13
+        ancho = 12
         colorFront = "white"
         colorBack = "medium blue"
         tamLetra = 13
         tamMonto = 15
-        #self.buttonConectar= tk.Button(self.frameBotones, width = ancho, height = 20,
-        #                   text="CONECTAR",
-        #                   fg=colorFront,
-        #                   bg=colorBack,
-        #                   font=("Arial Bold", 9),
-        #                   command=self.btConectar)
-        #self.buttonConectar.pack(side=tk.LEFT)
+ 
         self.buttonIngresar = tk.Button(self.frameBotones, width = ancho, height = 20, 
                            text=self.diccionario["ingresar"],
                            fg=colorFront,
@@ -329,7 +314,7 @@ class PantallaPrincipal:
                            bg=colorBack,
                            font=("Arial Bold", tamLetra, "bold"))
         self.labelPesos.pack(side=tk.LEFT)
-        self.scrolledMonto = tk.Text(self.frameBotones, width = 6, height = 18, 
+        self.scrolledMonto = tk.Text(self.frameBotones, width = 10, height = 18, 
                            fg=colorFront,
                            bg=colorBack,
                            font=("Arial Bold", tamMonto, "bold"))
@@ -516,7 +501,7 @@ class PantallaPrincipal:
         self.estadoStr = estado.replace('[', '').replace(']', '')
         self.estado.set(self.usuario + " " + "$" + str(self.model.MiSaldo) + " (" + self.estadoStr + ")")
         self.modificarScoreJugador(self.model.MiPuntaje)
-        self.cargarCartas(self.model.MisCartas)
+        self.cargarCartas(self.model.MisCartas, False, 20, 5)
         return
         
     
@@ -587,7 +572,7 @@ class PantallaPrincipal:
         return
 
     
-    def cargarCartas(self, cartas):
+    def cargarCartas(self, cartas, reducir=False, x0=0, y0=0):
 
         if len(cartas) == 0:
             print('no hay cartas')
@@ -616,8 +601,8 @@ class PantallaPrincipal:
         self.cwd = os.getcwd()
         mazo = 'mazo'
         self.imgList = []
-        x0 = 20
-        y0 = 5
+        #x0 = 20
+        #y0 = 5
         xOffset = 60
         yOffset = 5
         yLineOffset = 60
@@ -626,7 +611,10 @@ class PantallaPrincipal:
         cartasPorLinea = 7
         for i in range(0, len(self.cartas)):
             self.imgList.append(os.path.join(os.path.join(self.cwd, mazo), self.cartas[i] + '.jpg'))
-            self.app.agregar(self.imgList[i], x=x, y=y)
+            if reducir:
+                self.app.agregar(self.imgList[i], x=x, y=y, width = 135, height = 189)
+            else:
+                self.app.agregar(self.imgList[i], x=x, y=y)
 
             x = x + xOffset
             y = y + yOffset
@@ -640,7 +628,7 @@ class PantallaPrincipal:
 def testPantallaEjemplos(self):
     
     self.cartas = ['1-3', '2-4', '3-5', '4-2', '1-4', '2-2', '1-3', '2-4', '3-5', '4-2', '1-4', '2-2', '1-3', '2-4', '3-5', '4-2', '1-4', '2-2']
-    self.cargarCartas(self.cartas)
+    self.cargarCartas(self.cartas, False, 20, 5)
     self.modificarScoreJugador("20")
     self.modificarEstado("Plantado")
     self.modificarJugadores("Quique: Esperando\nSeba: Esperando\nFede G: Jugando\nFede F: Perdio\nRichard: Esperando")
@@ -664,7 +652,7 @@ def testPantallaInicializador2():
     model.ee.on("pedirCartaEvent", testPantallaPedirCarta)
     
     bjScreen = PantallaPrincipal(model, "quique")
-    bjScreen.cargarCartas(listaCartas)
+    bjScreen.cargarCartas(listaCartas, False, 20, 5)
     bjScreen.cargarScoreJugador("12")
     bjScreen.cargarEstado("Jug")
     #bjScreen.cargarUsuario("quique")
@@ -684,7 +672,7 @@ def testPantallaInicializador():
     model.ee.on("pedirCartaEvent", testPantallaPedirCarta)
     bjbase = PantallaBase()
     bjScreen = PantallaPrincipal(model, bjbase.getRoot())
-    bjScreen.cargarCartas(cartas1)
+    bjScreen.cargarCartas(cartas1, False, 20, 5)
     bjScreen.modificarEstado("Jugar")
     bjScreen.modificarScoreJugador("12")
     bjScreen.mostrar()
