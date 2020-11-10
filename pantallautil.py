@@ -28,7 +28,7 @@ class PantallaImagenes(tk.Frame):
 
     def agregar(self, imagen, x=0, y=0, width=0, height=0):
     
-        print(imagen)
+        #print(imagen)
         load = Image.open(imagen)
         if width > 0 and height > 0:
             load = load.resize((width, height), Image.ANTIALIAS)

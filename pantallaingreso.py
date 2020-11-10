@@ -29,6 +29,8 @@ class PantallaIngreso:
         self.cargarImagen()
         self.configurarEventos()
         self.cargarBotones()
+        self.textlDireccionIP.focus()
+
         return
     
 
@@ -282,6 +284,8 @@ class PantallaIngreso:
         print("Conectado")
         self.botones= ['usuario', 'jugar']
         self.habilitarBotones()
+        self.modificarError('Conectado')
+        self.textUsuario.focus()
         
         return
 
@@ -310,23 +314,9 @@ class PantallaIngreso:
 
     def onSoyAceptadoEvent(self):
         
-        print("Aceptado")
         self.model.Validado = True
         self.btSalirOnDemand()
-        #self.model.onEntered()
-        #self.root.update_idletasks()
-        #self.root.update()
-        #self.root.destroy()
-
-        #self.root.quit()
-        #for widget in self.root.winfo_children():
-           #widget.destroy()
-        #self.root.hide()
-        #self.root.update()
-        #self.root.deiconify()
-        #self.root.destroy()
-        #exit()
-        #sys.exit()
+        self.modificarError('Ingresando...')
         
         return
 
@@ -341,6 +331,12 @@ class PantallaIngreso:
             
         return texto[0:i]
 
+    def cbConectar(self, event):
+        
+        self.btConectar()
+        
+        return
+
     def btConectar(self):
         
         print("Conectar")
@@ -349,7 +345,10 @@ class PantallaIngreso:
         self.direccionIP = self.limpiarTexto(self.textlDireccionIP.get("1.0", tk.END))
         #self.textlDireccionIP.delete("0.0", tk.END)
         self.puerto = self.limpiarTexto(self.textPuerto.get("1.0", tk.END).replace("\n ", ""))
-        #self.puerto = self.textPuerto.delete("0.0", tk.END)
+        self.textPuerto.delete(0,tk.END)
+        self.textPuerto.insert(tk.END,self.puerto)
+        #self.textPuerto.delete("0.0", tk.END)
+        
         print('Direccion: ' + self.direccionIP + ' Puerto: ' + self.puerto)
         self.model.onRequestConnection(self.direccionIP, self.puerto)
         #self.model.onRequestConnection('190.55.116.66', '3039')
@@ -357,12 +356,19 @@ class PantallaIngreso:
         return
     
         
+    def cbJugar(self, event):
+        
+        self.btJugar()
+        
+        
     def btJugar(self):
         
         print("Jugar")
         self.botones=[]
         self.habilitarBotones()
-        self.usuario = self.limpiarTexto(self.textUsuario.get("1.0", tk.END))
+        self.usuario = self.limpiarTexto(self.textUsuario.get("1.0", tk.END).replace("\n ", ""))
+        self.textUsuario.delete(0,tk.END)
+        self.textUsuario.insert(tk.END,self.usuario)
         #self.textUsuario.delete("0.0", tk.END)
         self.model.onSoy(self.usuario)
        
@@ -426,26 +432,25 @@ class PantallaIngreso:
         ancho = 100
         colorFront = "white"
         colorBack = "medium blue"
-        tamLetraLabel = 20
+        tamLetraLabel = 18
         tamLetraText = 25
-        tamMonto = 15
 
         self.labelTitulo = tk.Label(self.framePanelTitulo, text="Blackjack UB",width = 100, height = 50,
                            fg=colorFront,
                            bg=colorBack,
                            font=("Arial Bold", 70, "bold"))
-        self.labelTitulo.bind("<Tab>", self.focus_next_window)
+        #self.labelTitulo.bind("<Tab>", self.focus_next_window)
         self.labelTitulo.pack(side=tk.TOP)
 
         self.labelDireccionIP = tk.Label(self.frameServidorTitulo, text="Direccion IP Servidor",width = 100, height = 50,
                            fg=colorFront,
                            bg=colorBack,
-                           font=("Arial Bold", tamLetraLabel))
+                           font=("Arial Bold", tamLetraLabel, "bold"))
         self.labelDireccionIP.pack(side=tk.TOP)
         self.textlDireccionIP = tk.Text(self.frameServidorIP, width = 100, height = 50, 
                            fg="black",
                            bg="white",
-                           font=("Arial Bold", tamLetraText))
+                           font=("Arial Bold", tamLetraText, "bold"))
         #self.textlDireccionIP.bind('<Tab>', self.procesarMonto)
         self.textlDireccionIP.bind("<Tab>", self.focus_next_window)
         self.textlDireccionIP.pack(side=tk.TOP)
@@ -456,28 +461,29 @@ class PantallaIngreso:
         self.labelPuerto = tk.Label(self.framePuertoTitulo, text="Puerto",width = 100, height = 50,
                            fg=colorFront,
                            bg=colorBack,
-                           font=("Arial Bold", tamLetraLabel))
-        self.labelPuerto.bind("<Tab>", self.focus_next_window)
+                           font=("Arial Bold", tamLetraLabel, "bold"))
+        #self.labelPuerto.bind("<Tab>", self.focus_next_window)
         self.labelPuerto.pack(side=tk.TOP)
         self.textPuerto = tk.Text(self.framePuertoNumero, width = 100, height = 50,
                            fg="black",
                            bg="white",
-                           font=("Arial Bold", tamLetraText))
+                           font=("Arial Bold", tamLetraText, "bold"))
         self.textPuerto.bind("<Tab>", self.focus_next_window)
+        self.textPuerto.bind("<Return>", self.cbConectar)
         self.textPuerto.pack(side=tk.TOP)
 
         self.buttonConectar = tk.Button(self.frameConexionBoton, width = ancho, height = 50,
                            text="CONECTAR", 
                            fg=colorFront,
                            bg=colorBack,
-                           font=("Arial Bold", tamLetraLabel),
+                           font=("Arial Bold", tamLetraLabel, "bold"),
                            command=self.btConectar)
         self.buttonConectar.bind("<Tab>", self.focus_next_window)
         self.buttonConectar.pack(side=tk.TOP)
 
         self.scrollbarError = tk.Scrollbar(self.frameError)
         self.textError = tk.Text(self.frameError,
-                                font=("Arial Bold", 10), bg="medium blue", fg="white")
+                                font=("Arial Bold", 10, "bold"), bg="medium blue", fg="white")
         self.scrollbarError.pack(side=tk.RIGHT, fill=tk.Y)
         self.textError.pack(side=tk.LEFT, fill=tk.Y)
         self.scrollbarError.config(command=self.textError.yview)
@@ -496,21 +502,22 @@ class PantallaIngreso:
         self.labelUsuario = tk.Label(self.frameUsuarioTitulo, text="Usuario",width = 100, height = 50,
                            fg=colorFront,
                            bg=colorBack,
-                           font=("Arial Bold", tamLetraLabel))
-        self.labelUsuario.bind("<Tab>", self.focus_next_window)
+                           font=("Arial Bold", tamLetraLabel, "bold"))
+        #self.labelUsuario.bind("<Tab>", self.focus_next_window)
         self.labelUsuario.pack(side=tk.TOP)
         self.textUsuario = tk.Text(self.frameUsuarioNombre, width = 100, height = 50,
                            fg="black",
                            bg="white",
-                           font=("Arial Bold", tamLetraText))
+                           font=("Arial Bold", tamLetraText, "bold"))
         self.textUsuario.bind("<Tab>", self.focus_next_window)
+        self.textUsuario.bind("<Return>", self.cbJugar)
         self.textUsuario.pack(side=tk.TOP)
 
         self.buttonJugar = tk.Button(self.frameJugarBoton, width = ancho, height = 50,
                            text="JUGAR", 
                            fg=colorFront,
                            bg=colorBack,
-                           font=("Arial Bold", tamLetraLabel),
+                           font=("Arial Bold", tamLetraLabel, "bold"),
                            command=self.btJugar)
         self.buttonJugar.bind("<Tab>", self.focus_next_window)
         self.buttonJugar.pack(side=tk.TOP)
@@ -519,7 +526,7 @@ class PantallaIngreso:
                            text="SALIR", 
                            fg=colorFront,
                            bg=colorBack,
-                           font=("Arial Bold", tamLetraLabel),
+                           font=("Arial Bold", tamLetraLabel, "bold"),
                            command=self.btSalir)
         self.buttonSalir.bind("<Tab>", self.focus_next_window)
         self.buttonSalir.pack(side=tk.TOP)

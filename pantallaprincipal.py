@@ -52,6 +52,7 @@ class PantallaPrincipal:
         self.cargarMensajes("")
         
         self.configurarEventos()
+        self.scrolledMonto.focus()
         
         return
 
@@ -76,7 +77,7 @@ class PantallaPrincipal:
         self.model.ee.on("turnoChangedEvent", self.cambioTurno)
         self.model.ee.on("mensajeEntranteEvent", self.modificarMensajes)
         self.model.ee.on("estadoChangedEvent", self.modificarEstado)
-        self.model.ee.on("juegoComenzadoEvent", self.modificarEstado)
+        self.model.ee.on("juegoComenzadoEvent", self.juegoComenzado)
         self.model.ee.on("juegoTerminadoEvent", self.juegoTerminado)
         self.model.ee.on("jugadoresRefreshedEvent", self.modificarJugadores)
         self.model.ee.on("puntajeBancaChangedEvent", self.modificarScoreBanca)
@@ -308,7 +309,7 @@ class PantallaPrincipal:
                            text=self.diccionario["ingresar"],
                            fg=colorFront,
                            bg=colorBack,
-                           font=("Arial Bold", tamLetra),
+                           font=("Arial Bold", tamLetra, "bold"),
                            command=self.btIngresar)
         self.buttonIngresar.pack(side=tk.LEFT)
         self.labelPesos = tk.Label(self.frameBotones, text="$",width = 1, height = 20,
@@ -439,14 +440,18 @@ class PantallaPrincipal:
 
 
     def modificarScoreJugador(self, score):
+        
+        self.scoreJugadorStr = score
         self.scoreJugador.set(score)
+        
         return
         
 
-    def modificarScoreBanca(self, puntaje):
-    #def modificarScoreBanca(self, puntaje, cartasBanca):
+    def modificarScoreBanca(self, puntaje, cartas):
+
+        self.scoreBancaStr = puntaje
         self.scoreBanca.set(puntaje)
-        #self.cartasBanca = cartasBanca
+        self.cartasBanca = cartas
         
         return
 
@@ -466,7 +471,7 @@ class PantallaPrincipal:
     
     def cargarScoreBanca(self, score):
         
-        self.modificarScoreBanca(score)
+        self.modificarScoreBanca(score, [])
         self.labelTituloVS = tk.Label(self.frameScorePanelVS, text=" - ", 
                                    font=("Arial Bold", 80, "bold"), bg="medium blue", fg="white")
         self.labelTituloVS.pack(side=tk.TOP)
@@ -482,30 +487,53 @@ class PantallaPrincipal:
 
     def juegoTerminado(self):
         
-        #self.modificarEstado()
-        #self.scoreBanca.set(puntaje)
-        self.cargarCartas(self.cartas,      reducir=True, borrar=True, x0=160, y0=20)
-        self.cargarCartas(self.cartasBanca, reducir=True,              x0=160, y0=230)
-        self.labelYo = tk.Label(self.frameTablero, text=self.usuario, 
-                                   font=("Arial Bold", 15, "bold"), bg="yellow", fg="green")
-        self.labelYo.place(x=5, y=30)
-        self.labelYo.pack(side=tk.LEFT)
-        self.labelBanca = tk.Label(self.frameTablero, text=self.usuario, 
-                                   font=("Arial Bold", 15, "bold"), bg="yellow", fg="green")
-        self.labelBanca.place(x=5, y=240)
-        self.labelBanca.pack(side=tk.LEFT)
+        scoreBanca = self.scoreBanca
+        scoreJugador = self.scoreJugador
+        
+        estado = ""
+        if self.estadoStr == "finalizado_perdido":
+            estado = " (PERDISTE)"
+        elif self.estadoStr == "finalizado_empate":
+            estado = " (EMPATASTE)"
+        elif self.estadoStr == "finalizado_ganador":
+            estado = " (GANASTE)"
+
+        estadoBanca = "BANCA: " + str(self.scoreBancaStr)
+        estadoJugador = self.usuario + ": " + str(self.scoreJugadorStr) + estado
+        
+        self.cargarCartas(self.cartasBanca, reducir=True, borrar=True, x0=100, y0=40)
+        y0 = 230
+        if len(self.cartas) > 7:
+            y0 = y0 + 60
+        self.cargarCartas(self.cartas     , reducir=True,              x0=100, y0=230)
+        self.labelBanca = tk.Label(self.frameCartas, text=estadoBanca, 
+                                   font=("Arial Bold", 20, "bold"), bg="green", fg="yellow")
+        self.labelBanca.pack(side=tk.TOP)
+        self.labelBanca = tk.Label(self.frameCartas, text=estadoJugador, 
+                                   font=("Arial Bold", 20, "bold"), bg="green", fg="yellow")
+        self.labelBanca.pack(side=tk.BOTTOM)
 
         #self.cargarCartas(self.cartasBanca, reducir=False, borrar=True, x0=20, y0=80)
         
         return
 
 
+    def juegoComenzado(self, estado):
+
+        self.scrolledMonto.focus()
+        self.modificarEstado("")
+        
+        return
+
     def modificarEstado(self, estado):
+        
         self.usuario = self.model.MiNombre
         self.estadoStr = estado.replace('[', '').replace(']', '')
         self.estado.set(self.usuario + " " + "$" + str(self.model.MiSaldo) + " (" + self.estadoStr + ")")
         self.modificarScoreJugador(self.model.MiPuntaje)
-        self.cargarCartas(self.cartas, borrar=True, comparar=True, x0=20, y0=5)
+        cartas = self.model.MisCartas
+        self.cargarCartas(cartas, borrar=True, comparar=True, x0=20, y0=5)
+        self.cartas = cartas
         return
         
     
@@ -593,7 +621,9 @@ class PantallaPrincipal:
             if iguales == True:
                 print('Ya se estan mostrando esas cartas')
                 return
-                    
+            
+        print('Tengo cartas')
+        print(cartas)
         #self.cartas = cartas
         
         if self.app == None:
@@ -619,7 +649,7 @@ class PantallaPrincipal:
         cartasPorLinea = 7
         for i in range(0, len(cartas)):
             
-            self.imgList.append(os.path.join(os.path.join(self.cwd, mazo), cartas + '.jpg'))
+            self.imgList.append(os.path.join(os.path.join(self.cwd, mazo), cartas[i] + '.jpg'))
             #self.imgList.append(os.path.join(os.path.join(self.cwd, mazo), self.cartas[i] + '.jpg'))
             if reducir:
                 self.app.agregar(self.imgList[i], x=x, y=y, width = 90, height = 126)
@@ -642,19 +672,26 @@ def testPantallaPedirCarta():
 
 def testPantallaInicializador():
     cartas1 = ['1-3', '2-4', '3-5']
+    cartas2 = ['1-3', '2-4', '3-5']
     cartas = ['1-3', '2-4', '3-5', '4-2', '1-4', '2-2', '1-3', '2-4', '3-5', '4-2', '1-4', '2-2', '1-3', '2-4']
     listaCartas = []
     model = GuiViewModel()
     model.MiSaldo = 3000
+    model.MisCartas = cartas
+    model.MiNombre = "test"
+
     model.ee.on("pedirCartaEvent", testPantallaPedirCarta)
     bjbase = PantallaBase()
     bjScreen = PantallaPrincipal(model, bjbase.getRoot())
-    bjScreen.cargarCartas(cartas, reducir=True, borrar=True, invertir=False, x0=160, y0=20)
-    bjScreen.cargarCartas(cartas[1:], reducir=True, borrar=False, invertir=False, x0=160, y0=230)
+    bjScreen.usuario = "test"
+    bjScreen.scoreBancaStr = "12"
+    bjScreen.scoreJugadorStr = "12"
+    bjScreen.modificarScoreJugador("12")
+    bjScreen.modificarScoreBanca("12", cartas)
+    bjScreen.modificarEstado("Jugar")
+    bjScreen.juegoTerminado()
     #668-90-20, 20
     #20, 320
-    bjScreen.modificarEstado("Jugar")
-    bjScreen.modificarScoreJugador("12")
     bjScreen.mostrar()
 
     '''    
