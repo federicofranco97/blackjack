@@ -76,7 +76,7 @@ class PantallaPrincipal:
         self.model.ee.on("mensajeEntranteEvent", self.modificarMensajes)
         self.model.ee.on("estadoChangedEvent", self.modificarEstado)
         self.model.ee.on("juegoComenzadoEvent", self.modificarEstado)
-        self.model.ee.on("juegoTerminadoEvent", self.modificarEstado)
+        #self.model.ee.on("juegoTerminadoEvent", self.modificarEstado)
         self.model.ee.on("jugadoresRefreshedEvent", self.modificarJugadores)
         #self.model.ee.on("puntajeBancaChangedEvent", self.modificarScoreJugador)
 

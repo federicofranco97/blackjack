@@ -65,5 +65,7 @@
     "jugadorPerdio": "{0} perdio con un puntaje de {1}",
     "detalleApuesta": "Hiciste una apuesta de ${0}. Tu saldo actual es de ${1}",
     "tuMano": "Tu mano es: {0}",
-    "partidaFinalizada": "Partida Finalizada"
+    "partidaFinalizada": "Partida Finalizada",
+    "banca": "Banca",
+    "errorNombreIgualBanca": "No te podes llamar igual que la Banca"
 }

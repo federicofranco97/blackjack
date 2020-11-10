@@ -26,7 +26,6 @@ class Blackjack():
         self.mazo = None
         self.diccionario = pDiccionario
         self.finalizado = False
-        self.ganadores = []
 
     """
         Esta funcion se llama desde el thread que esta escuchando el socket de los usuarios cuando no puede enviar un mensaje porque el socket
@@ -118,7 +117,7 @@ class Blackjack():
         for jug in range(len(jugadores)):
             jugSel = jugadores[jug]
             comandos = self.calcularComandos(jugSel.usuario.nombre)
-            jugadores[jug].enviarMensaje(mensaje, comandos, jugadoresEstados, banca, self.finalizado, self.ganadores)
+            jugadores[jug].enviarMensaje(mensaje, comandos, jugadoresEstados, banca, [], self.finalizado)
 
     def notificarJugador(self, jugador, mensaje):
         self._notificarJugadores([jugador], mensaje)
@@ -159,6 +158,7 @@ class Blackjack():
     """
     def empezarTimer(self):
         self.timerIniciado = True
+        self.finalizado = False
         segundosRestantes = 5-self.segundosTotales
         if segundosRestantes % 10 == 0:
             for d in self.diccionario:
@@ -307,14 +307,12 @@ class Blackjack():
                                                                                                                 self.banca.mano.obtenerDescripcionCompleta(
                                                                                                                     d)))
             puntaje = self.banca.mano.obtenerPuntaje()
-            self.ganadores = []
             for jugador in range(len(self.jugadoresJugando)):
                 _jug = self.jugadoresJugando[jugador]
                 if _jug.estadoActual == "finalizado_pendiente" and (_jug.manoActual.obtenerPuntaje() > puntaje or puntaje > 21):
                     _jug.darGanancia(2)
                     _jug.marcarComoGanador()
                     _jug.enviarMensaje(self.diccionario[_jug.usuario.idioma]["ganador"])
-                    ganadores.append(_jug.usuario.nombre)
                 elif puntaje == _jug.manoActual.obtenerPuntaje():
                     _jug.darGanancia(1)
                     _jug.marcarComoEmpate()
@@ -322,9 +320,6 @@ class Blackjack():
                 else:
                     _jug.marcarComoPerdedor()
                     _jug.enviarMensaje(self.diccionario[_jug.usuario.idioma]["perdedor"])
-
-            if len(self.ganadores) == 0 and puntaje <= 21:
-                self.ganadores.append("banca")
 
             self.finalizado = True
             for d in self.diccionario:

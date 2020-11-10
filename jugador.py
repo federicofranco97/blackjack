@@ -16,8 +16,8 @@ class Jugador():
     def dineroSuficiente(self, monto):
         return self.usuario.dinero >= int(monto)
 
-    def enviarMensaje(self, mensaje, comandos = [], jugadores= [], banca = [], mano = [], finalizado = False, ganadores = []):
-        self.usuario.enviarMensaje("[Servidor] " + mensaje, comandos, jugadores, banca, mano, finalizado, ganadores)
+    def enviarMensaje(self, mensaje, comandos = [], jugadores= [], banca = [], mano = [], finalizado = False):
+        self.usuario.enviarMensaje("[Servidor] " + mensaje, comandos, jugadores, banca, mano, finalizado)
 
     def esperandoApuesta(self):
         self.apuestaInicial = None

@@ -22,7 +22,6 @@ import cbQueue
 import threading
 
 usarGUI = True
-lenguaje = "es"
 diccionario = {}
 vm = GuiViewModel()
 estado = 0
@@ -69,7 +68,7 @@ def escucharServidor():
                     mensajeParseado = parsearMensajeServidor(m)
 
         except socket.timeout:
-            mensajeError = diccionario[lenguaje]["conexionPerdida"]
+            mensajeError = diccionario[vm.lenguaje]["conexionPerdida"]
             print(mensajeError)
             vm.onMensajeEntrante(mensajeError)
 
@@ -98,7 +97,7 @@ def parsearMensajeServidor(mensajeRecibido):
     elif comando == "mensaje":
         formateo = str(argumentos[0])
         print(formateo)
-        if formateo == diccionario[lenguaje]["ingresarSaldo"]:
+        if formateo == diccionario[vm.lenguaje]["ingresarSaldo"]:
             #cbQueue.from_dummy_thread(lambda: pantallaInicial.onSoyAceptadoEvent())
             vm.onSoyAceptado()
         vm.onMensajeEntrante(formateo)
@@ -106,13 +105,15 @@ def parsearMensajeServidor(mensajeRecibido):
         formateo = str(argumentos).split("#")[1]
         return formateo.replace("\\n", "")
     elif comando == "banca":
-        formateo = str(argumentos).split("#")
-        vm.onPuntajeBancaChanged(formateo[1])
+        formateo = str(argumentos[0]).split("#")
+        cartasBanca = str(formateo[0])
+        cartasBanca = cartasBanca.replace("{", "").replace("}", "").split(",")
+        vm.onPuntajeBancaChanged(formateo[1], cartasBanca)
     elif comando == "partida":
         formateo = str(argumentos[0]).split(",")
-        if formateo[0] is True:
-            ganadores = str(formateo[0]).split("#")
-            vm.onJuegoTerminado("")
+        if formateo[0] == "True":
+            vm.Turno = ""
+            vm.onJuegoTerminado()
     elif comando == "jugadores":
         jugadores = argumentos[0].split("#")
         vm.Jugadores = []
@@ -147,14 +148,12 @@ def parsearMensajeServidor(mensajeRecibido):
 
 def imprimirMano(pMano):
     mensaje = str(pMano)
-    return diccionario[lenguaje]["tuMano"].replace("{0}", mensaje)
+    return diccionario[vm.lenguaje]["tuMano"].replace("{0}", mensaje)
 
 
 # Envia el comando soy
-def soy(usr, idioma="es"):
-    comando = "soy " + usr + " " + idioma
-    global lenguaje
-    lenguaje = idioma
+def soy(usr):
+    comando = "soy " + usr + " " + vm.lenguaje
     sock.send(comando.encode())
     vm.MiNombre = usr.replace('\n', '')
 
@@ -218,8 +217,8 @@ def conectar(ip, puerto):
         estado = 1
         vm.onConnected()
     except Exception as e:
-        print(diccionario[lenguaje]["errorConexion"] + str(e))
-        vm.onConnectError(diccionario[lenguaje]["errorConexion"] + str(e))
+        print(diccionario[vm.lenguaje]["errorConexion"] + str(e))
+        vm.onConnectError(diccionario[vm.lenguaje]["errorConexion"] + str(e))
         return False
     return True
 
@@ -258,26 +257,22 @@ def analizarComandoEnviado(linea):
         elif comando == "doblar":
             doblar()
     except:
-        print(diccionario[lenguaje]["errorComando"])
+        print(diccionario[vm.lenguaje]["errorComando"])
 
 
 # Metodo que inicializa el cliente, y decide si entrar en modo consola o con GUI
 def inicioCliente():
     if not usarGUI:
         while True:
-            host = raw_input(diccionario[lenguaje]["solicitarIp"])
-            port = raw_input(diccionario[lenguaje]["solicitarPuerto"])
+            host = raw_input(diccionario[vm.lenguaje]["solicitarIp"])
+            port = raw_input(diccionario[vm.lenguaje]["solicitarPuerto"])
             if conectar(host, port):
                 break
-        print(diccionario[lenguaje]["mensajeBienvenida"])
+        print(diccionario[vm.lenguaje]["mensajeBienvenida"])
 
     if usarGUI:
         start_new_thread(escucharServidor, ())
         iniciarPantalla()
-        #while True:
-            #time.sleep(1)
-            #continue
-            # start_new_thread(iniciarPantalla, (vm, ""))
 
     if not usarGUI:
         start_new_thread(escucharServidor, ())

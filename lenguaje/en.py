@@ -65,5 +65,7 @@
     "jugadorPerdio": "{0} has lost, with a score of {1}",
     "detalleApuesta": "You placed a bet of ${0}. Your current balance is ${1}",
     "tuMano": "Your hand: {0}",
-    "partidaFinalizada": "Game Finished"
+    "partidaFinalizada": "Game Finished",
+    "banca": "Bank",
+    "errorNombreIgualBanca": "You can not be named as Bank"
 }
