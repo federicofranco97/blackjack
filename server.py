@@ -28,7 +28,7 @@ class Usuario:
         except:
             pass
 
-    def enviarMensaje(self, mensajeArg, comandos = [], jugadores = [], banca = [], mano = []):
+    def enviarMensaje(self, mensajeArg, comandos = [], jugadores = [], banca = [], mano = [], finalizado = False):
         mensaje = ""
         _comm = comandos.copy()
         _comm.append("mensaje")
@@ -43,6 +43,7 @@ class Usuario:
             mensaje += ("|banca:"+",".join(banca))
         if len(mano) > 0:
             mensaje += ("|mano:"+",".join(mano))
+        mensaje += "|partida:" + str(finalizado)
         mensaje += ("|mensaje:" + mensajeArg + "\n")
         self.enviarData(mensaje)
 
@@ -107,12 +108,16 @@ def comJuegoComando(nombreComando, argumentos, socket, juego, cliente):
 """
 def comIdentificarUsuario(nombreComando, argumentos, socket, juego, cliente):
     if (cliente.nombre == None):
+        for d in diccionario:
+            if diccionario[d]["banca"] == argumentos[0]:
+                cliente.enviarMensaje(diccionario[cliente.idioma]["errorNombreIgualBanca"])
+                return
+
         cliente.nombre = argumentos[0]
         cliente.idioma = argumentos[1] if len(argumentos) > 1 else "es"
         cliente.enviarMensaje(diccionario[cliente.idioma]["ingresarSaldo"])
     else:
         socket.send(diccionario[cliente.idioma]["errorYaTeConozco"].replace("{0}", cliente.nombre).replace("{1}", argumentos[0]) + "\n")
-        #socket.send("Ya te conozco. Te llamas " + cliente.nombre + ", no " + argumentos[0] + "\n")
 
 """
     El comando <ingresar> es para ingresar dinero a la cuenta

@@ -14,6 +14,7 @@ class GuiViewModel():
         self.Turno = ""
         self.Acciones = []
         self.Jugadores = []
+        self.lenguaje = "es"
 
     def onRequestConnection(self, servidor, puerto):
         return self.ee.emit("requestConnectionEvent", servidor, puerto)
@@ -72,7 +73,7 @@ class GuiViewModel():
     def onJuegoComenzado(self):
         self.ee.emit("juegoComenzadoEvent", )
 
-    def onJuegoTerminado(self, ganador):
+    def onJuegoTerminado(self):
         self.ee.emit("juegoTerminadoEvent", )
 
     def onEstadoChanged(self, estado):
@@ -81,8 +82,8 @@ class GuiViewModel():
     def onJugadoresRefreshed(self, status):
         self.ee.emit("jugadoresRefreshedEvent", status)
 
-    def onPuntajeBancaChanged(self, puntaje):
-        self.ee.emit("puntajeBancaChangedEvent", puntaje)
+    def onPuntajeBancaChanged(self, puntaje, cartas):
+        self.ee.emit("puntajeBancaChangedEvent", puntaje, cartas)
 
 
 
