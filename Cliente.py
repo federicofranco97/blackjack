@@ -5,6 +5,7 @@ import select
 import socket
 import sys
 import json
+import codigoMesaje
 from _thread import *
 import logging
 import re
@@ -97,10 +98,15 @@ def parsearMensajeServidor(mensajeRecibido):
     elif comando == "mensaje":
         formateo = str(argumentos[0])
         print(formateo)
-        if formateo == diccionario[vm.lenguaje]["ingresarSaldo"]:
+        #if formateo == diccionario[vm.lenguaje]["ingresarSaldo"]:
             #cbQueue.from_dummy_thread(lambda: pantallaInicial.onSoyAceptadoEvent())
-            vm.onSoyAceptado()
+            #vm.onSoyAceptado()
         vm.onMensajeEntrante(formateo)
+    elif comando == "codigo":
+        if argumentos[0] == codigoMesaje.ALIAS_ACEPTADO:
+            vm.onSoyAceptado()
+        elif argumentos[0] == codigoMesaje.ALIAS_RECHAZADO:
+            vm.onSoyRechazado()
     elif comando == "status":
         formateo = str(argumentos).split("#")[1]
         return formateo.replace("\\n", "")
