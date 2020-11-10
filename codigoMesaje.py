@@ -1,0 +1,5 @@
+from typing import Final
+
+NORMAL: Final = "NORMAL"
+ALIAS_ACEPTADO: Final = "ALIAS_ACEPTADO"
+ALIAS_RECHAZADO: Final = "ALIAS_RECHAZADO"
