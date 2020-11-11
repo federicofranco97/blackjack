@@ -313,7 +313,7 @@ class Blackjack():
                     _jug.darGanancia(2)
                     _jug.marcarComoGanador()
                     _jug.enviarMensaje(self.diccionario[_jug.usuario.idioma]["ganador"])
-                elif puntaje == _jug.manoActual.obtenerPuntaje():
+                elif _jug.estadoActual != "finalizado_perdido" and puntaje == _jug.manoActual.obtenerPuntaje():
                     _jug.darGanancia(1)
                     _jug.marcarComoEmpate()
                     _jug.enviarMensaje(self.diccionario[_jug.usuario.idioma]["empate"])
