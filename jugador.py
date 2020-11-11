@@ -6,23 +6,24 @@ from mazo import Mano
 
 class Jugador():
 
-    def __init__(self, instanciaUsuario):
+    def __init__(self, instanciaUsuario, pDiccionario):
         self.usuario = instanciaUsuario
         self.apuestaInicial = None
         self.manoActual = None
         self.estadoActual = None
+        self.diccionario = pDiccionario
 
     def dineroSuficiente(self, monto):
         return self.usuario.dinero >= int(monto)
 
-    def enviarMensaje(self, mensaje, comandos = [], jugadores = [], banca = [], mano = []):
-        self.usuario.enviarMensaje("[Servidor] " + mensaje, comandos, jugadores, banca, mano)
+    def enviarMensaje(self, mensaje, comandos = [], jugadores= [], banca = [], mano = [], finalizado = False):
+        self.usuario.enviarMensaje("[Servidor] " + mensaje, comandos, jugadores, banca, mano, finalizado)
 
     def esperandoApuesta(self):
         self.apuestaInicial = None
         self.estadoActual = "apuesta_pendiente"
         self.usuario.estadoActual = "apuesta_pendiente"
-        self.manoActual = Mano()
+        self.manoActual = Mano(self.diccionario)
 
     def darGanancia(self, multiplicador = 1):
         self.usuario.dinero = self.usuario.dinero + int(self.apuestaInicial*multiplicador)
@@ -41,9 +42,11 @@ class Jugador():
         if self.apuestaInicial == None:
             self.apuestaInicial = int(monto)
             self.usuario.dinero = self.usuario.dinero - int(monto)
-            self.enviarMensaje("hiciste una apuesta de $" + str(monto) + ". Tu saldo actual es de $" + str(self.usuario.dinero))
+            ##self.enviarMensaje("hiciste una apuesta de $" + str(monto) + ". Tu saldo actual es de $" + str(self.usuario.dinero))
+            self.enviarMensaje(self.diccionario[self.usuario.idioma]["detalleApuesta"].replace("{0}", str(monto)).replace("{1}", str(self.usuario.dinero)))
+
             self.estadoActual = "esperando_turno"
-            self.manoActual = Mano()
+            self.manoActual = Mano(self.diccionario)
         else:
             raise ApuestaRealizada()
 
@@ -69,11 +72,12 @@ class Jugador():
 
 class Banca():
 
-    def __init__(self):
+    def __init__(self, pDiccionario):
         self.mano = None
+        self.diccionario = pDiccionario
 
     def iniciarTurno(self):
-        self.mano = Mano()
+        self.mano = Mano(self.diccionario)
 
     def esBanca(self):
         return True

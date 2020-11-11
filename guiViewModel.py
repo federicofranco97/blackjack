@@ -8,13 +8,34 @@ class GuiViewModel():
         self.MisCartas = []
         self.MiSaldo = 0
         self.MiEstado = ""
-
+        self.Validado = False
 
         self.esMiTurno = False
         self.Turno = ""
         self.Acciones = []
         self.Jugadores = []
-        #Observer.__init__(self)
+        self.lenguaje = "es"
+
+    def onRequestConnection(self, servidor, puerto):
+        return self.ee.emit("requestConnectionEvent", servidor, puerto)
+
+    def onSoy(self, soy):
+        self.ee.emit("soyEvent", soy)
+
+    def onSoyAceptado(self):
+        self.ee.emit("soyAceptadoEvent", )
+
+    def onSoyRechazado(self):
+        self.ee.emit("soyRechazadoEvent", )
+
+    def onConnected(self):
+        self.ee.emit("connectedEvent", )
+
+    def onConnectError(self, mensaje):
+        self.ee.emit("connectErrorEvent", mensaje)
+
+    def onEntered(self):
+        self.ee.emit("enteredEvent", )
 
     def onPedirCarta(self):
         self.ee.emit("pedirCartaEvent", )
@@ -52,7 +73,7 @@ class GuiViewModel():
     def onJuegoComenzado(self):
         self.ee.emit("juegoComenzadoEvent", )
 
-    def onJuegoTerminado(self, ganador):
+    def onJuegoTerminado(self):
         self.ee.emit("juegoTerminadoEvent", )
 
     def onEstadoChanged(self, estado):
@@ -61,11 +82,9 @@ class GuiViewModel():
     def onJugadoresRefreshed(self, status):
         self.ee.emit("jugadoresRefreshedEvent", status)
 
-    def onPuntajeBancaChanged(self, puntaje):
-        self.ee.emit("puntajeBancaChangedEvent", puntaje)
+    def onPuntajeBancaChanged(self, puntaje, cartas):
+        self.ee.emit("puntajeBancaChangedEvent", puntaje, cartas)
 
-    def onSalir(self):
-        self.ee.emit("salirEvent")
 
 
 

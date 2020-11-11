@@ -1,11 +1,17 @@
+import json
+import os
 import socket
 from _thread import *
 import threading
 import traceback
+import codigoMesaje
 import sqlite3
+from pathlib import Path
+
 from blackjack import Blackjack
 
 clientes = []
+diccionario = {}
 
 """
     La clase usuario representa la relacion entre un nombre (identificador unico del usuario) y el socket asociado al mismo.
@@ -15,6 +21,7 @@ class Usuario:
         self.nombre = None
         self.socket = socket
         self.dinero = 0
+        self.idioma = "es"
 
     def enviarData(self, data):
         try:
@@ -22,7 +29,7 @@ class Usuario:
         except:
             pass
 
-    def enviarMensaje(self, mensajeArg, comandos = [], jugadores = [], banca = [], mano = []):
+    def enviarMensaje(self, mensajeArg, comandos = [], jugadores = [], banca = [], mano = [], finalizado = False, pCodigoMensaje =codigoMesaje.NORMAL):
         mensaje = ""
         _comm = comandos.copy()
         _comm.append("mensaje")
@@ -37,6 +44,8 @@ class Usuario:
             mensaje += ("|banca:"+",".join(banca))
         if len(mano) > 0:
             mensaje += ("|mano:"+",".join(mano))
+        mensaje += "|partida:" + str(finalizado)
+        mensaje += "|codigo:" + pCodigoMensaje
         mensaje += ("|mensaje:" + mensajeArg + "\n")
         self.enviarData(mensaje)
 
@@ -62,9 +71,9 @@ class Ejecutor:
     def ejecutar(self, comando, argumentos, socket, juego, cliente):
         ejecutorComando = self.comandos.get(comando)
         if ejecutorComando == None:
-            return cliente.enviarMensaje("No conozco ese comando")
+            return cliente.enviarMensaje(diccionario[cliente.idioma]["comandoDesconocido"])
         if comando != "soy" and cliente.nombre == None:
-            return cliente.enviarMensaje("Primero tenes que identificarte con el comando soy <nombre>")
+            return cliente.enviarMensaje(diccionario[cliente.idioma]["errorFaltaIdentificarse"])
         ejecutorComando(comando, argumentos, socket, juego, cliente)
 
 """
@@ -97,14 +106,20 @@ def comJuegoComando(nombreComando, argumentos, socket, juego, cliente):
         return juego.enviarMensaje(cliente.nombre, " ".join(argumentos))
 
 """
-    El comando <soy> es para que el usuario s eidentifique
+    El comando <soy> es para que el usuario se identifique
 """
 def comIdentificarUsuario(nombreComando, argumentos, socket, juego, cliente):
     if (cliente.nombre == None):
+        for d in diccionario:
+            if diccionario[d]["banca"] == argumentos[0]:
+                cliente.enviarMensaje(mensajeArg=diccionario[cliente.idioma]["errorNombreIgualBanca"], pCodigoMensaje=codigoMesaje.ALIAS_RECHAZADO)
+                return
+
         cliente.nombre = argumentos[0]
-        cliente.enviarMensaje("Debes ingresar un saldo para iniciar")
+        cliente.idioma = argumentos[1] if len(argumentos) > 1 else "es"
+        cliente.enviarMensaje(mensajeArg=diccionario[cliente.idioma]["ingresarSaldo"], pCodigoMensaje=codigoMesaje.ALIAS_ACEPTADO)
     else:
-        socket.send("Ya te conozco. Te llamas " + cliente.nombre + ", no " + argumentos[0] + "\n")
+        socket.send(diccionario[cliente.idioma]["errorYaTeConozco"].replace("{0}", cliente.nombre).replace("{1}", argumentos[0]) + "\n")
 
 """
     El comando <ingresar> es para ingresar dinero a la cuenta
@@ -112,7 +127,7 @@ def comIdentificarUsuario(nombreComando, argumentos, socket, juego, cliente):
 def comIngresarDinero(nombreComando, argumentos, socket, juego, cliente):
     monto = int(argumentos[0])
     if monto <= 0:
-        cliente.enviarMensaje("Tienes que ingresar un monto mayor a 0")
+        cliente.enviarMensaje(diccionario[cliente.idioma]["ingresarMontoMayorCero"])
     else:
         cliente.dinero += monto
         juego.agregarJugador(cliente)
@@ -129,7 +144,7 @@ def crearMensajeLog(mensaje):
 def inicializarCliente(cliente, bg):
     usuario = Usuario(cliente)
     clientes.append(usuario)
-    usuario.enviarMensaje("Bienvenido al juego. Ingresa tu nombre con el comando soy <nombre>.")
+    usuario.enviarMensaje(diccionario[usuario.idioma]["bienvenidoAlJuego"])
     ejecutor = Ejecutor()
     while True:
         try:
@@ -151,10 +166,18 @@ def inicializarCliente(cliente, bg):
     Acepta las conexiones entrantes, y llama a inicializarCliente en un nuevo threado.
 """
 def iniciarServidor():
+    files = os.listdir("lenguaje")
+    for f in files:
+        with open(os.path.join("lenguaje", f)) as json_file:
+            name = Path(f).resolve().stem
+            diccionario[name] = json.load(json_file)
+
+
+
     puerto = 3039
-    blackGame = Blackjack()
+    blackGame = Blackjack(diccionario)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.bind(('',puerto))
+    sock.bind(('', puerto))
     print(crearMensajeLog("Socket bindeado"))
     sock.listen(5)
     print(crearMensajeLog("Socket escuchando"))

@@ -12,7 +12,7 @@ import copy
 
 class Blackjack():
 
-    def __init__(self):
+    def __init__(self, pDiccionario):
         self.manejadorDB = ManejadorDB(False)
         self.jugadoresTotales = []
         self.jugadoresJugando = []
@@ -21,15 +21,16 @@ class Blackjack():
         self.interrumpirTimer = False
         self.jugadorActual = None
         self.timerIniciado = False
-        self.banca = Banca()
+        self.banca = Banca(pDiccionario)
         self.segundosTotales = 0
         self.mazo = None
+        self.diccionario = pDiccionario
+        self.finalizado = False
 
     """
         Esta funcion se llama desde el thread que esta escuchando el socket de los usuarios cuando no puede enviar un mensaje porque el socket
         esta cerrado. Esto dispara remover al jugador del juego.
     """
-
     def obtenerJugadorActivo(self, nombreUsuario):
         for i in range(len(self.jugadoresJugando)):
             if self.jugadoresJugando[i].usuario.nombre == nombreUsuario:
@@ -44,16 +45,18 @@ class Blackjack():
                 return self.jugadoresTotales[i]
         return None
 
-
     def calcularComandos(self, nombreUsuario):
         comandos = []
         jugadorSeleccionado = self.obtenerJugadorTotal(nombreUsuario)
         esJugadorActivo = self._esJugadorActual(nombreUsuario)
-        if not jugadorSeleccionado == None:
-            if esJugadorActivo == True:
+        if jugadorSeleccionado is not None:
+            if esJugadorActivo is True:
                 comandos.append("pedir")
                 comandos.append("plantarse")
                 comandos.append("doblar")
+                if len(jugadorSeleccionado.manoActual.cartas) == 2:
+                    if jugadorSeleccionado.manoActual.cartas[0].valor == jugadorSeleccionado.manoActual.cartas[1].valor:
+                        comandos.append("separar")
             if jugadorSeleccionado.estadoActual == "apuesta_pendiente":
                 comandos.append("apostar")
         return comandos
@@ -69,7 +72,11 @@ class Blackjack():
             if self.jugadorActual.usuario.nombre == usuario:
                 self.jugadorActualIndice = self.jugadorActualIndice-1
                 self.rotarJugador()
-        self.notificarJugadores("el usuario " + usuario + " abandono la sala")
+
+        for d in self.diccionario:
+            jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresTotales, d)
+            self.notificarJugadores(jugadoresLenguaje, self.diccionario[d]["usuarioAbandono"].replace("{0}",usuario))
+
 
     def obtenerEstadoJugadores(self):
         estados = []
@@ -81,11 +88,6 @@ class Blackjack():
                 manoDesc = jugActual.manoActual.obtenerValores()
                 puntaje = jugActual.manoActual.obtenerPuntaje()
 
-            #estadoJugador = "{" + jugActual.usuario.nombre + "," + str(jugActual.usuario.dinero) + "," + jugActual.estadoActual
-            #if not manoDesc == None:
-            #    estadoJugador = estadoJugador + "," + "[" + ",".join(manoDesc) + "]"
-            #    estadoJugador = estadoJugador + "," + str(puntaje)
-
             estadoJugador = "{" + jugActual.usuario.nombre + ", " + str(jugActual.usuario.dinero) + ", " + jugActual.estadoActual
             if not manoDesc == None:
                 estadoJugador = estadoJugador + ", " + "[" + ",".join(manoDesc) + "]"
@@ -93,6 +95,13 @@ class Blackjack():
 
             estados.append(estadoJugador + "}")
         return estados
+
+    def obtenerJugadoresIdioma(self, jugadores, idioma):
+        jugadoresIdioma = []
+        for j in jugadores:
+            if j.usuario.idioma == idioma:
+                jugadoresIdioma.append(j)
+        return jugadoresIdioma
 
     """
         Esta funcion se utiliza para enviar un mensaje a una lista de jugadores. Es una funcion pseudo-privada, no deberia ser llamada directamente, sino
@@ -104,11 +113,11 @@ class Blackjack():
         if not self.banca.mano == None:
             bancaValores = self.banca.mano.obtenerValores()
             bancaPuntaje = self.banca.mano.obtenerPuntaje()
-            banca = [("{"+ ",".join(bancaValores) + "}" + "#" + str(bancaPuntaje))]
+            banca = [("{" + ",".join(bancaValores) + "}" + "#" + str(bancaPuntaje))]
         for jug in range(len(jugadores)):
             jugSel = jugadores[jug]
             comandos = self.calcularComandos(jugSel.usuario.nombre)
-            jugadores[jug].enviarMensaje(mensaje, comandos, jugadoresEstados, banca)
+            jugadores[jug].enviarMensaje(mensaje, comandos, jugadoresEstados, banca, [], self.finalizado)
 
     def notificarJugador(self, jugador, mensaje):
         self._notificarJugadores([jugador], mensaje)
@@ -116,14 +125,16 @@ class Blackjack():
     """
         Esta funcion envia un mensaje a todos los jugadores, activos o no.
     """
-    def notificarJugadores(self, mensaje):
-        self._notificarJugadores(self.jugadoresTotales, mensaje)
+    def notificarJugadores(self, jugadores, mensaje):
+        #self._notificarJugadores(self.jugadoresTotales, mensaje)
+        self._notificarJugadores(jugadores, mensaje)
 
     """
         Esta funcion envia un mensaje a los jugadores que estan participando de la ronda.
     """
-    def notificarJugadoresActivos(self, mensaje):
-        self._notificarJugadores(self.jugadoresJugando, mensaje)
+    def notificarJugadoresActivos(self, jugadores, mensaje):
+        #self._notificarJugadores(self.jugadoresJugando, mensaje)
+        self._notificarJugadores(jugadores, mensaje)
 
     """
         Obtiene la referencia de un jugador para utilizarlo.
@@ -147,9 +158,13 @@ class Blackjack():
     """
     def empezarTimer(self):
         self.timerIniciado = True
+        self.finalizado = False
         segundosRestantes = 5-self.segundosTotales
         if segundosRestantes % 10 == 0:
-            self.notificarJugadores("empieza el juego en " + str(segundosRestantes) + " segundos")
+            for d in self.diccionario:
+                jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresTotales, d)
+                self.notificarJugadores(jugadoresLenguaje, self.diccionario[d]["timerEmpiezaElJuego"].replace("{0}", str(segundosRestantes)))
+            #self.notificarJugadores("empieza el juego en " + str(segundosRestantes) + " segundos")
         self.segundosTotales += 1
         if segundosRestantes > 0:
             Timer(1.0, self.empezarTimer).start()
@@ -163,7 +178,7 @@ class Blackjack():
             for i in range(len(self.jugadoresJugando)):
                 self.jugadoresJugando[i].esperandoApuesta()
             for j in range(len(self.jugadoresJugando)):
-                self.notificarJugador(self.jugadoresJugando[j], "ingresa tu apuesta")
+                self.notificarJugador(self.jugadoresJugando[j], self.diccionario[self.jugadoresJugando[j].usuario.idioma]["solicitarApuesta"])
                 
 
     """
@@ -171,13 +186,13 @@ class Blackjack():
     """
     def decidirUsuario(self, jugador):
         if self.rondaActiva == True:
-            self.notificarJugador(jugador, "Hay una ronda activa, una vez finalizada se te unirá automaticamente. Puedes irte de la espera cerrando la conexion.")
+            self.notificarJugador(jugador, self.diccionario[jugador.usuario.idioma]["hayRondaActiva"])
         else:
             if self.timerIniciado == False:
-                self.notificarJugador(jugador, "Iniciaremos cuenta regresiva para iniciar el juego")
+                self.notificarJugador(jugador, self.diccionario[jugador.usuario.idioma]["iniciarCuentaRegresiva"])
                 self.empezarTimer()
             else:
-                self.notificarJugador(jugador, "Una vez finalizada la cuenta regresiva, comenzara la partida")
+                self.notificarJugador(jugador, self.diccionario[jugador.usuario.idioma]["finalizacionCuentaRegresiva"])
 
     """
         Esta funcion maneja la peticion de agregar un jugador al juego.
@@ -187,13 +202,18 @@ class Blackjack():
         jug = self.obtenerJugadorTotal(usuario.nombre)
         if jug == None:
             self.interrumpirTimer = True
-            nuevoJugador = Jugador(usuario)
-            nuevoJugador.enviarMensaje("Bienvenido " + usuario.nombre + "")
+            nuevoJugador = Jugador(usuario, self.diccionario)
+            nuevoJugador.enviarMensaje(self.diccionario[usuario.idioma]["bienvenido"] + usuario.nombre + "")
             self.jugadoresTotales.append(nuevoJugador)
-            self.notificarJugadores(usuario.nombre + " se unio al juego")
+            for d in self.diccionario:
+                jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresTotales, d)
+                self.notificarJugadores(jugadoresLenguaje, self.diccionario[d]["jugadorSeUnio"].replace("{0}", usuario.nombre))
             self.decidirUsuario(nuevoJugador)
         else:
-            self.notificarJugadores(usuario.nombre + " ha ingresado dinero")
+            #self.notificarJugadores(self.diccionario[usuario.idioma]["jugadorFondeo"].replace("{0}", usuario.nombre))
+            for d in self.diccionario:
+                jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresTotales, d)
+                self.notificarJugadores(jugadoresLenguaje, self.diccionario[d]["jugadorFondeo"].replace("{0}", usuario.nombre))
     
     """
         Devuelve la cantidad de jugadores
@@ -205,7 +225,7 @@ class Blackjack():
             mensaje += ("Jugador: " + fila[0] + ". Ganadas: " + str(fila[1]) + ". Empatadas: " + str(fila[2]) + ". Perdidas: " + str(fila[3]) + "\n")
         for f in estadCartas:
             mensaje += ("Carta: " + f[0] + ". Cantidad de aparaciones: " + str(f[1]) + "\n")
-        self.notificarJugadores(mensaje)
+        self.notificarJugadores(self.jugadoresTotales, mensaje)
 
     """
         Funciona que chequea si el juego debe comenzar, es decir, si el resto de los participanes ya hizo una apuesta.
@@ -226,11 +246,20 @@ class Blackjack():
                 if ronda == 1:
                     cartaBanca.visible = False
                 self.banca.mano.agregarCarta(cartaBanca)
-            self.notificarJugadores("La banca tiene " + self.banca.mano.obtenerDescripcionCompleta())
+
+            #self.notificarJugadores("La banca tiene " + self.banca.mano.obtenerDescripcionCompleta())
+            for d in self.diccionario:
+                jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresTotales, d)
+                descripcionManoIdioma = self.banca.mano.obtenerDescripcionCompleta(d)
+                self.notificarJugadores(jugadoresLenguaje, self.diccionario[d]["bancaTiene"].replace("{0}", descripcionManoIdioma))
+
             self.jugadorActualIndice = 0
             self.jugadorActual = self.jugadoresJugando[0]
             self.jugadorActual.estadoActual = "activo"
-            self.notificarJugadores("es el turno de " + self.jugadorActual.usuario.nombre)
+            #self.notificarJugadores("es el turno de " + self.jugadorActual.usuario.nombre)
+            for d in self.diccionario:
+                jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresTotales, d)
+                self.notificarJugadores(jugadoresLenguaje, self.diccionario[d]["esTurnoDe"].replace("{0}", self.jugadorActual.usuario.nombre))
 
 
     """
@@ -242,9 +271,9 @@ class Blackjack():
             _jugador.apostar(monto)
             self._deberiaEmpezar()
         except DineroInsuficiente:
-            self.notificarJugador(_jugador, "No tienes el dinero suficiente")
+            self.notificarJugador(_jugador, self.diccionario[_jugador.usuario.idioma]["dineroInsuficiente"])
         except ApuestaRealizada:
-            self.notificarJugador(_jugador, "Ya realizaste la apuesta de esta mano")
+            self.notificarJugador(_jugador, self.diccionario[_jugador.usuario.idioma]["apuestaYaRealizada"])
 
     """
         Funcion que rota los jugadores y, en caso que ya no queden mas para rotar, hace jugar a la banca.
@@ -252,28 +281,51 @@ class Blackjack():
     def rotarJugador(self):
         if len(self.jugadoresJugando) == (self.jugadorActualIndice+1):
             self.jugadorActual = None
-            self.notificarJugadoresActivos("ahora jugara la banca")
+            #self.notificarJugadoresActivos("Ahora jugara la banca")
+            for d in self.diccionario:
+                jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresJugando, d)
+                self.notificarJugadoresActivos(jugadoresLenguaje, self.diccionario[d]["juegaLaBanca"])
+
             self.banca.mano.mostrarTodas()
-            self.notificarJugadoresActivos("la banca mostrar su carta oculta")
-            self.notificarJugadoresActivos("la banca tiene: " + self.banca.mano.obtenerDescripcionCompleta())
+            #self.notificarJugadoresActivos("La banca mostrara su carta oculta")
+            for d in self.diccionario:
+                jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresJugando, d)
+                self.notificarJugadoresActivos(jugadoresLenguaje, self.diccionario[d]["bancaMuestraCartaOculta"])
+
+            #self.notificarJugadoresActivos("La banca tiene: " + self.banca.mano.obtenerDescripcionCompleta())
+            for d in self.diccionario:
+                jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresJugando, d)
+                self.notificarJugadoresActivos(jugadoresLenguaje, self.diccionario[d]["bancaTiene"].replace("{0}", self.banca.mano.obtenerDescripcionCompleta(d)))
+
             while self.banca.mano.obtenerPuntaje() <= 16:
                 proxCarta = self.mazo.proximaCarta()
                 self.banca.mano.agregarCarta(proxCarta)
-                self.notificarJugadoresActivos("la banca tiene: " + self.banca.mano.obtenerDescripcionCompleta())
+
+                for d in self.diccionario:
+                    jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresJugando, d)
+                    self.notificarJugadoresActivos(jugadoresLenguaje, self.diccionario[d]["bancaTiene"].replace("{0}",
+                                                                                                                self.banca.mano.obtenerDescripcionCompleta(
+                                                                                                                    d)))
             puntaje = self.banca.mano.obtenerPuntaje()
             for jugador in range(len(self.jugadoresJugando)):
                 _jug = self.jugadoresJugando[jugador]
                 if _jug.estadoActual == "finalizado_pendiente" and (_jug.manoActual.obtenerPuntaje() > puntaje or puntaje > 21):
                     _jug.darGanancia(2)
                     _jug.marcarComoGanador()
-                    _jug.enviarMensaje("Felicitaciones! Ganaste!")
+                    _jug.enviarMensaje(self.diccionario[_jug.usuario.idioma]["ganador"])
                 elif puntaje == _jug.manoActual.obtenerPuntaje():
                     _jug.darGanancia(1)
                     _jug.marcarComoEmpate()
-                    _jug.enviarMensaje("es un empate, recuperaste lo aposado!")
+                    _jug.enviarMensaje(self.diccionario[_jug.usuario.idioma]["empate"])
                 else:
                     _jug.marcarComoPerdedor()
-                    _jug.enviarMensaje("Perdiste contra la banca!")
+                    _jug.enviarMensaje(self.diccionario[_jug.usuario.idioma]["perdedor"])
+
+            self.finalizado = True
+            for d in self.diccionario:
+                jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresJugando, d)
+                self.notificarJugadoresActivos(jugadoresLenguaje, self.diccionario[d]["partidaFinalizada"])
+
             self.manejadorDB.registrarPartida(self.jugadoresJugando)
             self.segundosTotales = 0
             self.jugadorActual = None
@@ -283,7 +335,11 @@ class Blackjack():
             self.jugadorActualIndice += 1
             self.jugadorActual = self.jugadoresJugando[self.jugadorActualIndice]
             self.jugadorActual.estadoActual = "activo"
-            self.notificarJugadoresActivos("es el turno de " + self.jugadorActual.usuario.nombre)
+            #self.notificarJugadoresActivos("es el turno de " + self.jugadorActual.usuario.nombre)
+            for d in self.diccionario:
+                jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresJugando, d)
+                self.notificarJugadoresActivos(jugadoresLenguaje, self.diccionario[d]["esTurnoDe"].replace("{0}", self.jugadorActual.usuario.nombre))
+
 
     """
         Maneja la petición de una carta, y el escenario de perdida en caso de que se exceda de los puntos.
@@ -291,13 +347,18 @@ class Blackjack():
     def pedir(self, usuario):
         _jugador = self._obtenerJugador(usuario)
         if self._esJugadorActual(usuario) == False:
-            self.notificarJugador(_jugador, "No es tu turno")
+            self.notificarJugador(_jugador, self.diccionario[usuario.idioma]["noEsTurno"])
         else:
             proxima = self.mazo.proximaCarta()
             puntajeTotal = _jugador.pedir(proxima)
-            self.notificarJugadores(_jugador.usuario.nombre + " ha obtenido " + str(puntajeTotal))
+            for d in self.diccionario:
+                jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresJugando, d)
+                self.notificarJugadoresActivos(jugadoresLenguaje, self.diccionario[d]["puntajeObtenido"].replace("{0}", _jugador.usuario.nombre).replace("{1}", str(puntajeTotal)))
+
             if puntajeTotal > 21:
-                self.notificarJugadores(self.jugadorActual.usuario.nombre + " perdio con un puntaje de " + _jugador.manoActual.obtenerDescripcionCompleta())
+                for d in self.diccionario:
+                    jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresJugando, d)
+                    self.notificarJugadoresActivos(jugadoresLenguaje, self.diccionario[d]["jugadorPerdio"].replace("{0}", self.jugadorActual.usuario.nombre).replace("{1}", _jugador.manoActual.obtenerDescripcionCompleta(d)))
                 _jugador.marcarComoPerdedor()
                 self.rotarJugador()
 
@@ -306,8 +367,8 @@ class Blackjack():
     """
     def plantarse(self, usuario):
         _jugador = self._obtenerJugador(usuario)
-        if not self.jugadorActual.usuario.nombre  == usuario:
-            self.notificarJugador(_jugador, "No es tu turno")
+        if not self.jugadorActual.usuario.nombre == usuario:
+            self.notificarJugador(_jugador, self.diccionario[usuario.idioma]["noEsTurno"])
         else:
             self.jugadorActual.plantarse()
             self.rotarJugador()
@@ -318,7 +379,7 @@ class Blackjack():
     def doblar(self, usuario):
         _jugador = self._obtenerJugador(usuario)
         if not self.jugadorActual.usuario.nombre  == usuario:
-            self.notificarJugador(_jugador, "No es tu turno")
+            self.notificarJugador(_jugador, self.diccionario[usuario.idioma]["noEsTurno"])
         else:
             try:
                 self.jugadorActual.doblarApuesta()
@@ -326,12 +387,15 @@ class Blackjack():
                 puntajeTotal = self.jugadorActual.pedir(proxima)
                 if puntajeTotal > 21:
                     self.jugadorActual.marcarComoPerdedor()
-                    self.notificarJugadores(self.jugadorActual.usuario.nombre + " perdio con un puntaje de " + _jugador.manoActual.obtenerDescripcionCompleta())
+                    #self.notificarJugadores(self.jugadorActual.usuario.nombre + " perdio con un puntaje de " + _jugador.manoActual.obtenerDescripcionCompleta())
+                    for d in self.diccionario:
+                        jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresJugando, d)
+                        self.notificarJugadoresActivos(jugadoresLenguaje, self.diccionario[d]["jugadorPerdio"].replace("{0}", self.jugadorActual.usuario.nombre).replace("{1}", _jugador.manoActual.obtenerDescripcionCompleta(d)))
                 else:
                     self.jugadorActual.plantarse()
                 self.rotarJugador()    
             except DineroInsuficiente:
-                self.notificarJugador(_jugador, "No tienes el dinero suficiente")
+                self.notificarJugador(_jugador, self.diccionario[usuario.idioma]["dineroInsuficiente"])
 
     def enviarMensaje(self, nombreUsuario, mensaje):
         self.notificarJugadores("[" + nombreUsuario + "] " + mensaje)

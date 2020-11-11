@@ -16,7 +16,7 @@ def mostrarInterfaz(view):
     root.title("BLACKJACK")
     root.geometry("1000x700+50+50")
 
-    photo = tk.PhotoImage(file=os.path.join("images", "poker.png"))
+    photo = tk.PhotoImage(file=os.path.join("images", "icon.png"))
     root.iconphoto(False, photo)
 
     FrameBotones = tk.Frame(root)
@@ -55,12 +55,10 @@ def mostrarInterfaz(view):
 
     #view.observe('refreshButtonsEvent', lambda: RefreshButtonsStatus(view, btnApostar, btnPedir, btnPlantarse))
 
-    #start_new_thread(refreshGUI,(view, titulo, miscartas))
-    view.ee.on("mensajeEntranteEvent", MensajeRecibido )
+    view.ee.on("mensajeEntranteEvent", MensajeRecibido)
     root.mainloop()
 
 def TestMethod(view):
-    print('asd')
     start_new_thread(play, ())
     view.onPedirCarta()
 
