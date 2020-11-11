@@ -398,7 +398,7 @@ class Blackjack():
                 self.notificarJugador(_jugador, self.diccionario[usuario.idioma]["dineroInsuficiente"])
 
     def enviarMensaje(self, nombreUsuario, mensaje):
-        self.notificarJugadores("[" + nombreUsuario + "] " + mensaje)
+        self.notificarJugadores(self.jugadoresTotales, "[" + nombreUsuario + "] " + mensaje)
 
         
 

@@ -30,7 +30,7 @@
     "timerEmpiezaElJuego": "Empieza el juego en {0} segundos",
     "jugadorSeUnio": "{0} se unio al juego",
     "jugadorFondeo": "{0} ha ingresado dinero",
-    "hayRondaActiva": "Hay una ronda activa, una vez finalizada se te unirá automaticamente. Puedes irte de la espera cerrando la conexion.",
+    "hayRondaActiva": "Hay una ronda activa, una vez finalizada se te unira automaticamente. Puedes irte de la espera cerrando la conexion.",
     "iniciarCuentaRegresiva": "Iniciaremos cuenta regresiva para iniciar el juego",
     "finalizacionCuentaRegresiva": "Una vez finalizada la cuenta regresiva, comenzara la partida",
     "bancaTiene": "La banca tiene {0}",
