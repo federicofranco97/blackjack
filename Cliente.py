@@ -49,9 +49,6 @@ def iniciarPantalla():
     return
 
 
-def threadEscucharServidor():
-    start_new_thread(escucharServidor, ())
-
 # Este metodo corre permanentemente escuchando el socket para recibir los mensajes del servidor
 def escucharServidor():
     while 1:
@@ -227,15 +224,6 @@ def conectar(ip, puerto):
         vm.onConnectError(diccionario[vm.lenguaje]["errorConexion"] + str(e))
         return False
     return True
-
-
-def jugadorEnSala():
-    start_new_thread(threadJugadorEnSala, ())
-
-
-def threadJugadorEnSala():
-    pantalla = PantallaPrincipal(vm)
-    pantalla.mostrar()
 
 
 # Verifico que comando esta queriendo enviar en la consola y lo encapsulo en la funcion correspondiente (que tambien se invoca desde la GUI)

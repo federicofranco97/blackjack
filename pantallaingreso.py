@@ -451,7 +451,7 @@ class PantallaIngreso:
                            fg="black",
                            bg="white",
                            font=("Arial Bold", tamLetraText, "bold"))
-        #self.textlDireccionIP.bind('<Tab>', self.procesarMonto)
+        self.textlDireccionIP.bind('<Return>', self.focus_next_window)
         self.textlDireccionIP.bind("<Tab>", self.focus_next_window)
         self.textlDireccionIP.pack(side=tk.TOP)
         #self.textlDireccionIP = tk.Text(self.frameDireccionIP, width = 100, height = 50,
