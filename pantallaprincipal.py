@@ -65,8 +65,51 @@ class PantallaPrincipal:
             start_new_thread(self.play, ())
         return
     
+    def pIngresar(self):
+        start_new_thread(self.playIngresar, ())
+
+        return
+    
+    def pPierde(self):
+        start_new_thread(self.playPierde, ())
+
+        return
+    
+    def pEmpata(self):
+        start_new_thread(self.playEmpata, ())
+
+        return
+
+    def pGana(self):
+        start_new_thread(self.playGana, ())
+
+        return
+
     def play(self):
         soundurl = os.path.join("sounds", "myTurn.mp3")
+        playsound.playsound(soundurl)
+        return
+
+
+    def playIngresar(self):
+        soundurl = os.path.join("sounds", "apostar.mp3")
+        playsound.playsound(soundurl)
+        return
+
+    def playPierde(self):
+        soundurl = os.path.join("sounds", "pierde.mp3")
+        playsound.playsound(soundurl)
+        return
+
+
+    def playEmpata(self):
+        soundurl = os.path.join("sounds", "empata.mp3")
+        playsound.playsound(soundurl)
+        return
+
+
+    def playGana(self):
+        soundurl = os.path.join("sounds", "gana.mp3")
         playsound.playsound(soundurl)
         return
 
@@ -258,6 +301,8 @@ class PantallaPrincipal:
         
         for boton in self.botonesActivados:
             self.habilitarBoton(boton, self.botonesActivados[boton])
+            if (boton == 'ingresar' or boton == 'apostar') and self.botonesActivados[boton]:
+                self.pIngresar()
         
         return
     
@@ -291,10 +336,10 @@ class PantallaPrincipal:
     
     def procesarMonto(self, monto):
         
-        if self.botonesActivados['apostar']:
-            self.btApostar()
-        elif self.botonesActivados['ingresar']:
+        if self.botonesActivados['ingresar']:
             self.btIngresar()
+        elif self.botonesActivados['apostar']:
+            self.btApostar()
 
 
     def inicializarBotones(self):
@@ -515,6 +560,13 @@ class PantallaPrincipal:
 
         #self.cargarCartas(self.cartasBanca, reducir=False, borrar=True, x0=20, y0=80)
         
+        if self.estadoStr == "finalizado_perdido":
+            self.pPierde()
+        elif self.estadoStr == "finalizado_empate":
+            self.pEmpata()
+        elif self.estadoStr == "finalizado_ganador":
+            self.pGana()
+        
         return
 
 
@@ -641,12 +693,15 @@ class PantallaPrincipal:
         xOffset = 60
         yOffset = 5
         yLineOffset = 60
-        x = x0
-        y = y0
         factorInversion = 1
         if invertir:
             factorInversion = -1
         cartasPorLinea = 7
+        x = x0
+        y = y0
+        if len(cartas) <= cartasPorLinea and y0 > 200:
+            y = y + yLineOffset
+            
         for i in range(0, len(cartas)):
             
             self.imgList.append(os.path.join(os.path.join(self.cwd, mazo), cartas[i] + '.jpg'))
@@ -677,7 +732,7 @@ def testPantallaInicializador():
     listaCartas = []
     model = GuiViewModel()
     model.MiSaldo = 3000
-    model.MisCartas = cartas
+    model.MisCartas = cartas2
     model.MiNombre = "test"
 
     model.ee.on("pedirCartaEvent", testPantallaPedirCarta)
