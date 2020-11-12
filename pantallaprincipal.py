@@ -834,9 +834,13 @@ class PantallaPrincipal:
         Retorno: No retorna ningun valor. 
         '''
 
-        monto = self.scrolledMonto.get("1.0", tk.END)
-        self.model.onApostar(monto)
+        monto = self.scrolledMonto.get("1.0", tk.END).replace("\n","")
+        if self.isValidStr(monto, list("0123456789".strip())) and len(monto) > 0 and len(monto) <= 10:
+            if int(monto) > 0:
+                self.model.onApostar(monto)
+            
         self.scrolledMonto.delete("0.0", tk.END)
+
         
         return
     
