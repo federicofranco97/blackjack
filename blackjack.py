@@ -380,7 +380,7 @@ class Blackjack():
     def plantarse(self, usuario):
         _jugador = self._obtenerJugador(usuario)
         if not self.jugadorActual.usuario.nombre == usuario:
-            self.notificarJugador(_jugador, self.diccionario[usuario.idioma]["noEsTurno"])
+            self.notificarJugador(_jugador, self.diccionario[_jugador.idioma]["noEsTurno"])
         else:
             self.jugadorActual.plantarse()
             self.rotarJugador()
@@ -390,8 +390,8 @@ class Blackjack():
     """
     def doblar(self, usuario):
         _jugador = self._obtenerJugador(usuario)
-        if not self.jugadorActual.usuario.nombre  == usuario:
-            self.notificarJugador(_jugador, self.diccionario[usuario.idioma]["noEsTurno"])
+        if self.jugadorActual is None or not self.jugadorActual.usuario.nombre == usuario:
+            self.notificarJugador(_jugador, self.diccionario[_jugador.usuario.idioma]["noEsTurno"])
         else:
             try:
                 self.jugadorActual.doblarApuesta()
@@ -399,7 +399,6 @@ class Blackjack():
                 puntajeTotal = self.jugadorActual.pedir(proxima)
                 if puntajeTotal > 21:
                     self.jugadorActual.marcarComoPerdedor()
-                    #self.notificarJugadores(self.jugadorActual.usuario.nombre + " perdio con un puntaje de " + _jugador.manoActual.obtenerDescripcionCompleta())
                     for d in self.diccionario:
                         jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresJugando, d)
                         self.notificarJugadoresActivos(jugadoresLenguaje, self.diccionario[d]["jugadorPerdio"].replace("{0}", self.jugadorActual.usuario.nombre).replace("{1}", _jugador.manoActual.obtenerDescripcionCompleta(d)))
@@ -407,7 +406,7 @@ class Blackjack():
                     self.jugadorActual.plantarse()
                 self.rotarJugador()    
             except DineroInsuficiente:
-                self.notificarJugador(_jugador, self.diccionario[usuario.idioma]["dineroInsuficiente"])
+                self.notificarJugador(_jugador, self.diccionario[_jugador.idioma]["dineroInsuficiente"])
 
     def enviarMensaje(self, nombreUsuario, mensaje):
         self.notificarJugadores(self.jugadoresJugando, "[" + nombreUsuario + "] " + mensaje, codigoMensaje.MENSAJE)
