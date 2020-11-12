@@ -38,7 +38,8 @@ class PantallaPrincipal:
         self.labelScoreBanca = None
         self.model = model
         self.textChat = None
-        
+        self.comenzado = False
+                
         self.cambiarIdioma('es')
         self.inicializarFrames()
         self.inicializarBotones()
@@ -437,6 +438,13 @@ class PantallaPrincipal:
         return
 
 
+    def limpiarTablero(self):
+        
+        for widget in self.frameCartas.winfo_children():
+            widget.destroy()
+
+        return
+
     def isValidStr(self, cadena, filtro):
         
         for caracter in cadena:
@@ -581,10 +589,11 @@ class PantallaPrincipal:
         estadoBanca = "BANCA: " + str(self.scoreBancaStr)
         estadoJugador = self.usuario + ": " + str(self.scoreJugadorStr) + estado
         
-        self.cargarCartas(self.cartasBanca, reducir=True, borrar=True, x0=100, y0=0)
         y0 = 230
         if len(self.cartas) > 7:
             y0 = y0 + 60
+            
+        self.cargarCartas(self.cartasBanca, reducir=True, borrar=True, x0=100, y0=0)
         self.cargarCartas(self.cartas     , reducir=True,              x0=100, y0=200)
         
         for widget in self.frameCartasTitulo.winfo_children():
@@ -604,13 +613,16 @@ class PantallaPrincipal:
             self.pEmpata()
         elif self.estadoStr == "finalizado_ganador":
             self.pGana()
+        self.comenzado = False
         
         return
 
 
     def juegoComenzado(self, mensaje):
 
+        self.comenzado = True
         self.modificarMensajes("SERVIDOR", "\n\n" + "-------------------------\n" + "\n" + mensaje + "\n")
+        self.limpiarTablero()
         self.scrolledMonto.focus()
         self.modificarEstado("")
         
@@ -625,6 +637,8 @@ class PantallaPrincipal:
         cartas = self.model.MisCartas
         
         if len(self.cartas) != len(cartas):
+            for widget in self.frameCartasTitulo.winfo_children():
+                widget.destroy()
             self.cargarCartas([], borrar=True, comparar=False, x0=20, y0=120)
             self.labelTerminadoBanca = tk.Label(self.frameCartasTitulo, text="BANCA    ", 
                                font=("Arial Bold", 20, "bold"), bg="green", fg="yellow")
@@ -634,7 +648,7 @@ class PantallaPrincipal:
             self.cargarCartas(cartas, borrar=True, comparar=True, x0=20, y0=120)
 
         
-        if len(cartas) > 0:
+        if len(cartas) > 0 and self.comenzado:
             listaCartas = [cartas[0], 'reverso']
             self.cargarCartas(listaCartas, reducir=True, borrar=False, x0=450, y0=0)
 
@@ -811,7 +825,7 @@ def testPantallaInicializador():
     bjScreen.modificarScoreJugador("12")
     bjScreen.modificarScoreBanca("12", cartas)
     bjScreen.modificarEstado("Jugar")
-    bjScreen.juegoTerminado()
+    #bjScreen.juegoTerminado()
     #668-90-20, 20
     #20, 320
     bjScreen.mostrar()
