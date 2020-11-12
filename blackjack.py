@@ -3,6 +3,7 @@ from mazo import Mazo, Carta, Mano
 from excepciones import NombreUsado, DineroInsuficiente, ApuestaRealizada, JugadorInexistente, ComandoNoPermitido
 from jugador import Jugador, Banca
 from sql import ManejadorDB
+import codigoMensaje
 import copy
 
 """
@@ -107,7 +108,7 @@ class Blackjack():
         Esta funcion se utiliza para enviar un mensaje a una lista de jugadores. Es una funcion pseudo-privada, no deberia ser llamada directamente, sino
         a traves de notificarJugadores o notificarJugadoresActivos o notificarJugador.
     """
-    def _notificarJugadores(self, jugadores, mensaje):
+    def _notificarJugadores(self, jugadores, mensaje, codigo=codigoMensaje.NORMAL):
         banca = []
         jugadoresEstados = self.obtenerEstadoJugadores()
         if not self.banca.mano == None:
@@ -117,24 +118,22 @@ class Blackjack():
         for jug in range(len(jugadores)):
             jugSel = jugadores[jug]
             comandos = self.calcularComandos(jugSel.usuario.nombre)
-            jugadores[jug].enviarMensaje(mensaje, comandos, jugadoresEstados, banca, [], self.finalizado)
+            jugadores[jug].enviarMensaje(mensaje, comandos, jugadoresEstados, banca, [], self.finalizado, codigo)
 
-    def notificarJugador(self, jugador, mensaje):
-        self._notificarJugadores([jugador], mensaje)
+    def notificarJugador(self, jugador, mensaje, codigo=codigoMensaje.NORMAL):
+        self._notificarJugadores([jugador], mensaje, codigo)
 
     """
         Esta funcion envia un mensaje a todos los jugadores, activos o no.
     """
-    def notificarJugadores(self, jugadores, mensaje):
-        #self._notificarJugadores(self.jugadoresTotales, mensaje)
-        self._notificarJugadores(jugadores, mensaje)
+    def notificarJugadores(self, jugadores, mensaje, codigo=codigoMensaje.NORMAL):
+        self._notificarJugadores(jugadores, mensaje, codigo)
 
     """
         Esta funcion envia un mensaje a los jugadores que estan participando de la ronda.
     """
-    def notificarJugadoresActivos(self, jugadores, mensaje):
-        #self._notificarJugadores(self.jugadoresJugando, mensaje)
-        self._notificarJugadores(jugadores, mensaje)
+    def notificarJugadoresActivos(self, jugadores, mensaje, codigo=codigoMensaje.NORMAL):
+        self._notificarJugadores(jugadores, mensaje, codigo)
 
     """
         Obtiene la referencia de un jugador para utilizarlo.
@@ -398,7 +397,7 @@ class Blackjack():
                 self.notificarJugador(_jugador, self.diccionario[usuario.idioma]["dineroInsuficiente"])
 
     def enviarMensaje(self, nombreUsuario, mensaje):
-        self.notificarJugadores(self.jugadoresTotales, "[" + nombreUsuario + "] " + mensaje)
+        self.notificarJugadores(self.jugadoresJugando, "[" + nombreUsuario + "] " + mensaje, codigoMensaje.MENSAJE)
 
         
 

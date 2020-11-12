@@ -4,7 +4,7 @@ import socket
 from _thread import *
 import threading
 import traceback
-import codigoMesaje
+import codigoMensaje
 import sqlite3
 from pathlib import Path
 
@@ -29,7 +29,7 @@ class Usuario:
         except:
             pass
 
-    def enviarMensaje(self, mensajeArg, comandos = [], jugadores = [], banca = [], mano = [], finalizado = False, pCodigoMensaje =codigoMesaje.NORMAL):
+    def enviarMensaje(self, mensajeArg, comandos = [], jugadores = [], banca = [], mano = [], finalizado = False, pCodigoMensaje =codigoMensaje.NORMAL):
         mensaje = ""
         _comm = comandos.copy()
         _comm.append("mensaje")
@@ -112,12 +112,12 @@ def comIdentificarUsuario(nombreComando, argumentos, socket, juego, cliente):
     if (cliente.nombre == None):
         for d in diccionario:
             if diccionario[d]["banca"] == argumentos[0]:
-                cliente.enviarMensaje(mensajeArg=diccionario[cliente.idioma]["errorNombreIgualBanca"], pCodigoMensaje=codigoMesaje.ALIAS_RECHAZADO)
+                cliente.enviarMensaje(mensajeArg=diccionario[cliente.idioma]["errorNombreIgualBanca"], pCodigoMensaje=codigoMensaje.ALIAS_RECHAZADO)
                 return
 
         cliente.nombre = argumentos[0]
         cliente.idioma = argumentos[1] if len(argumentos) > 1 else "es"
-        cliente.enviarMensaje(mensajeArg=diccionario[cliente.idioma]["ingresarSaldo"], pCodigoMensaje=codigoMesaje.ALIAS_ACEPTADO)
+        cliente.enviarMensaje(mensajeArg=diccionario[cliente.idioma]["ingresarSaldo"], pCodigoMensaje=codigoMensaje.ALIAS_ACEPTADO)
     else:
         socket.send(diccionario[cliente.idioma]["errorYaTeConozco"].replace("{0}", cliente.nombre).replace("{1}", argumentos[0]) + "\n")
 

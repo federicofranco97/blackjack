@@ -67,5 +67,6 @@
     "tuMano": "Your hand: {0}",
     "partidaFinalizada": "Game Finished",
     "banca": "Bank",
-    "errorNombreIgualBanca": "You can not be named as Bank"
+    "errorNombreIgualBanca": "You can not be named as Bank",
+    "nombreVacio": "You must to give a name to enter"
 }

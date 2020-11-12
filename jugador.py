@@ -3,6 +3,7 @@
 """
 from excepciones import DineroInsuficiente, ApuestaRealizada, ComandoNoPermitido
 from mazo import Mano
+import codigoMensaje
 
 class Jugador():
 
@@ -16,8 +17,8 @@ class Jugador():
     def dineroSuficiente(self, monto):
         return self.usuario.dinero >= int(monto)
 
-    def enviarMensaje(self, mensaje, comandos = [], jugadores= [], banca = [], mano = [], finalizado = False):
-        self.usuario.enviarMensaje("[Servidor] " + mensaje, comandos, jugadores, banca, mano, finalizado)
+    def enviarMensaje(self, mensaje, comandos = [], jugadores= [], banca = [], mano = [], finalizado = False, codigo=codigoMensaje.NORMAL):
+        self.usuario.enviarMensaje("[Servidor] " + mensaje, comandos, jugadores, banca, mano, finalizado, codigo)
 
     def esperandoApuesta(self):
         self.apuestaInicial = None

@@ -5,7 +5,7 @@ import select
 import socket
 import sys
 import json
-import codigoMesaje
+import codigoMensaje
 from _thread import *
 import logging
 import re
@@ -19,6 +19,7 @@ from guiViewModel import GuiViewModel
 from pantallautil import PantallaBase
 from pantallaingreso import PantallaIngreso
 from pantallaprincipal import PantallaPrincipal
+from datosMensaje import DatosMensaje
 import cbQueue
 import threading
 
@@ -61,10 +62,10 @@ def escucharServidor():
                 continue
             else:
                 #Imprimo los mensajes del servidor
+                info = DatosMensaje()
                 mensajes = getMensajesServidor(data)
                 for m in mensajes:
-                    mensajeParseado = parsearMensajeServidor(m)
-
+                    mensajeParseado = parsearMensajeServidor(m, info)
         except socket.timeout:
             mensajeError = diccionario[vm.lenguaje]["conexionPerdida"]
             print(mensajeError)
@@ -83,7 +84,7 @@ def getMensajesServidor(mensajeRecibido):
 
 
 # Recibe el mensaje y lo parsea, informando a la GUI o a consola segun corresponda
-def parsearMensajeServidor(mensajeRecibido):
+def parsearMensajeServidor(mensajeRecibido, info):
     mensajeBase = mensajeRecibido.split(":")
     comando = mensajeBase[0] if len(mensajeBase) > 0 else mensajeRecibido
     argumentos = mensajeBase[1:] if len(mensajeBase) > 0 else []
@@ -94,16 +95,18 @@ def parsearMensajeServidor(mensajeRecibido):
         vm.onRefreshButtons(formateo)
     elif comando == "mensaje":
         formateo = str(argumentos[0])
+        info.Mensaje = formateo
         print(formateo)
-        #if formateo == diccionario[vm.lenguaje]["ingresarSaldo"]:
-            #cbQueue.from_dummy_thread(lambda: pantallaInicial.onSoyAceptadoEvent())
-            #vm.onSoyAceptado()
         vm.onMensajeEntrante(formateo)
     elif comando == "codigo":
-        if argumentos[0] == codigoMesaje.ALIAS_ACEPTADO:
+        if argumentos[0] == codigoMensaje.ALIAS_ACEPTADO:
             vm.onSoyAceptado()
-        elif argumentos[0] == codigoMesaje.ALIAS_RECHAZADO:
-            vm.onSoyRechazado()
+        elif argumentos[0] == codigoMensaje.ALIAS_RECHAZADO:
+            vm.onSoyRechazado(info.Mensaje)
+        elif argumentos[0] == codigoMensaje.PARTIDA_FINALIZADA:
+            vm.onJuegoTerminado()
+        #elif argumentos[0] == codigoMensaje.MENSAJE:
+            #vm.onMensajeEntrante(info.Mensaje)
     elif comando == "status":
         formateo = str(argumentos).split("#")[1]
         return formateo.replace("\\n", "")
@@ -156,6 +159,9 @@ def imprimirMano(pMano):
 
 # Envia el comando soy
 def soy(usr):
+    if usr is None or usr == "":
+        vm.onSoyRechazado(diccionario[vm.lenguaje]["nombreVacio"])
+        return
     comando = "soy " + usr + " " + vm.lenguaje
     sock.send(comando.encode())
     vm.MiNombre = usr.replace('\n', '')

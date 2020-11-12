@@ -67,5 +67,6 @@
     "tuMano": "Tu mano es: {0}",
     "partidaFinalizada": "Partida Finalizada",
     "banca": "Banca",
-    "errorNombreIgualBanca": "No te podes llamar igual que la Banca"
+    "errorNombreIgualBanca": "No te podes llamar igual que la Banca",
+    "nombreVacio": "Debe ingresar un nombre para iniciar"
 }
