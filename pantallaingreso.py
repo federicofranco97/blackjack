@@ -307,6 +307,7 @@ class PantallaIngreso:
         print("Rechazado")
         self.botones= ['usuario', 'jugar']
         self.habilitarBotones()
+        print('Rechazado ' + mensaje)
         self.modificarError(mensaje)
         
         return
@@ -360,17 +361,22 @@ class PantallaIngreso:
         
         self.btJugar()
         
+        return
+        
         
     def btJugar(self):
         
         print("Jugar")
-        self.botones=[]
-        self.habilitarBotones()
-        self.usuario = self.limpiarTexto(self.textUsuario.get("1.0", tk.END).replace("\n ", ""))
-        self.textUsuario.delete(0,tk.END)
-        self.textUsuario.insert(tk.END,self.usuario)
+        self.usuario = self.limpiarTexto(self.textUsuario.get("1.0", tk.END))
+        
         #self.textUsuario.delete("0.0", tk.END)
-        self.model.onSoy(self.usuario)
+        if len(self.usuario) > 0:
+            self.textUsuario.delete("0.0",tk.END)
+            self.textUsuario.insert(tk.END,self.usuario)
+            self.usuario = self.usuario.replace("\n", "")
+            self.model.onSoy(self.usuario)
+            self.botones=[]
+            self.habilitarBotones()
        
         return
 
@@ -451,7 +457,7 @@ class PantallaIngreso:
                            fg="black",
                            bg="white",
                            font=("Arial Bold", tamLetraText, "bold"))
-        #self.textlDireccionIP.bind('<Tab>', self.procesarMonto)
+        self.textlDireccionIP.bind('<Return>', self.focus_next_window)
         self.textlDireccionIP.bind("<Tab>", self.focus_next_window)
         self.textlDireccionIP.pack(side=tk.TOP)
         #self.textlDireccionIP = tk.Text(self.frameDireccionIP, width = 100, height = 50,

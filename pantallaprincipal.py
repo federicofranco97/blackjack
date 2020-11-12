@@ -38,7 +38,8 @@ class PantallaPrincipal:
         self.labelScoreBanca = None
         self.model = model
         self.textChat = None
-        
+        self.comenzado = False
+                
         self.cambiarIdioma('es')
         self.inicializarFrames()
         self.inicializarBotones()
@@ -65,8 +66,51 @@ class PantallaPrincipal:
             start_new_thread(self.play, ())
         return
     
+    def pIngresar(self):
+        start_new_thread(self.playIngresar, ())
+
+        return
+    
+    def pPierde(self):
+        start_new_thread(self.playPierde, ())
+
+        return
+    
+    def pEmpata(self):
+        start_new_thread(self.playEmpata, ())
+
+        return
+
+    def pGana(self):
+        start_new_thread(self.playGana, ())
+
+        return
+
     def play(self):
         soundurl = os.path.join("sounds", "myTurn.mp3")
+        playsound.playsound(soundurl)
+        return
+
+
+    def playIngresar(self):
+        soundurl = os.path.join("sounds", "apostar.mp3")
+        playsound.playsound(soundurl)
+        return
+
+    def playPierde(self):
+        soundurl = os.path.join("sounds", "pierde.mp3")
+        playsound.playsound(soundurl)
+        return
+
+
+    def playEmpata(self):
+        soundurl = os.path.join("sounds", "empata.mp3")
+        playsound.playsound(soundurl)
+        return
+
+
+    def playGana(self):
+        soundurl = os.path.join("sounds", "gana.mp3")
         playsound.playsound(soundurl)
         return
 
@@ -80,8 +124,7 @@ class PantallaPrincipal:
         self.model.ee.on("juegoComenzadoEvent", self.juegoComenzado)
         self.model.ee.on("juegoTerminadoEvent", self.juegoTerminado)
         self.model.ee.on("jugadoresRefreshedEvent", self.modificarJugadores)
-        self.model.ee.on("puntajeBancaChangedEvent", self.modificarScoreBanca)
-        
+        self.model.ee.on("puntajeBancaChangedEvent", self.modificarScoreBanca)        
 
         return
     
@@ -131,12 +174,24 @@ class PantallaPrincipal:
         self.frameJuego.pack(side=tk.TOP)
         self.frameJuego['bg']='medium blue'
         
-        self.frameCartas = tk.Frame(self.frameJuego, width = 624, height = 468)
-        self.frameCartas.pack(side=tk.TOP)
+
+        self.framePanelCartas = tk.Frame(self.frameJuego, width = 624, height = 468)
+        self.framePanelCartas.pack(side=tk.TOP)
+        self.framePanelCartas['bg']='green'
+        self.framePanelCartas.pack_propagate(0)      
+
+
+        self.frameCartasTitulo = tk.Frame(self.framePanelCartas, width = 624, height = 30)
+        self.frameCartasTitulo.pack(side=tk.TOP)
+        self.frameCartasTitulo['bg']='green'
+        self.frameCartasTitulo.pack_propagate(0)      
+
+        self.frameCartas = tk.Frame(self.framePanelCartas, width = 624, height = 438)
+        self.frameCartas.pack(side=tk.BOTTOM)
         self.frameCartas['bg']='green'
-        self.frameCartas.pack_propagate(0)      
- 
-         
+        self.frameCartas.pack_propagate(0)
+
+
         self.frameEstadoUsuario = tk.Frame(self.frameJuego, width = 624, height = 50)
         self.frameEstadoUsuario.pack(side=tk.RIGHT)
         self.frameEstadoUsuario['bg']='medium blue' 
@@ -204,16 +259,28 @@ class PantallaPrincipal:
         self.frameScorePuntajeBanca['bg']='medium blue'
 
         
-        self.frameMenuChat = tk.Frame(self.frameInfoDatos, width = 390, height = 511)
+        self.frameMenuChat = tk.Frame(self.frameInfoDatos, width = 390, height = 498)
         self.frameMenuChat.pack(side=tk.BOTTOM)
         self.frameMenuChat['bg']='white'
         self.frameMenuChat.pack_propagate(0)
 
-        self.frameChat = tk.Frame(self.frameMenuChat, width = 390, height = 451)
+        self.frameChat = tk.Frame(self.frameMenuChat, width = 390, height = 440)
         self.frameChat.pack(side=tk.TOP)
         self.frameChat['bg']='white'
         self.frameChat.pack_propagate(0)
         
+
+        self.frameChatPanelServidor = tk.Frame(self.frameChat, width = 390, height = 220)
+        self.frameChatPanelServidor.pack(side=tk.TOP)
+        self.frameChatPanelServidor['bg']='white'
+        self.frameChatPanelServidor.pack_propagate(0)
+
+        self.frameChatPanelMensajes = tk.Frame(self.frameChat, width = 390, height = 220)
+        self.frameChatPanelMensajes.pack(side=tk.BOTTOM)
+        self.frameChatPanelMensajes['bg']='white'
+        self.frameChatPanelMensajes.pack_propagate(0)
+        
+                
         self.frameMensaje = tk.Frame(self.frameMenuChat, width = 390, height = 60)
         self.frameMensaje.pack(side=tk.BOTTOM)
         self.frameMensaje['bg']='white'
@@ -258,6 +325,8 @@ class PantallaPrincipal:
         
         for boton in self.botonesActivados:
             self.habilitarBoton(boton, self.botonesActivados[boton])
+            if (boton == 'ingresar' or boton == 'apostar') and self.botonesActivados[boton]:
+                self.pIngresar()
         
         return
     
@@ -291,10 +360,10 @@ class PantallaPrincipal:
     
     def procesarMonto(self, monto):
         
-        if self.botonesActivados['apostar']:
-            self.btApostar()
-        elif self.botonesActivados['ingresar']:
+        if self.botonesActivados['ingresar']:
             self.btIngresar()
+        elif self.botonesActivados['apostar']:
+            self.btApostar()
 
 
     def inicializarBotones(self):
@@ -369,12 +438,31 @@ class PantallaPrincipal:
         return
 
 
+    def limpiarTablero(self):
+        
+        for widget in self.frameCartas.winfo_children():
+            widget.destroy()
+
+        return
+
+    def isValidStr(self, cadena, filtro):
+        
+        for caracter in cadena:
+            if caracter not in filtro:
+                return False
+            
+        return True
+
+
     def btIngresar(self):
         
         self.modificarEstado(self.estadoStr)
         
-        monto = self.scrolledMonto.get("1.0", tk.END)
-        self.model.onFondear(monto)
+        monto = self.scrolledMonto.get("1.0", tk.END).replace("\n","")
+        if self.isValidStr(monto, list("0123456789".strip())) and len(monto) > 0 and len(monto) <= 10:
+            if int(monto) > 0:
+                self.model.onFondear(monto)
+            
         self.scrolledMonto.delete("0.0", tk.END)
        
         return
@@ -421,6 +509,7 @@ class PantallaPrincipal:
         mensaje = self.entryEnvioMensajes.get("1.0", tk.END)
         self.entryEnvioMensajes.delete("0.0", tk.END)
         self.model.onEnviarMensaje(mensaje)
+        
         return
 
 
@@ -452,7 +541,7 @@ class PantallaPrincipal:
         self.scoreBancaStr = puntaje
         self.scoreBanca.set(puntaje)
         self.cartasBanca = cartas
-        
+            
         return
 
     
@@ -501,25 +590,40 @@ class PantallaPrincipal:
         estadoBanca = "BANCA: " + str(self.scoreBancaStr)
         estadoJugador = self.usuario + ": " + str(self.scoreJugadorStr) + estado
         
-        self.cargarCartas(self.cartasBanca, reducir=True, borrar=True, x0=100, y0=40)
         y0 = 230
         if len(self.cartas) > 7:
             y0 = y0 + 60
-        self.cargarCartas(self.cartas     , reducir=True,              x0=100, y0=230)
-        self.labelBanca = tk.Label(self.frameCartas, text=estadoBanca, 
+            
+        self.cargarCartas(self.cartasBanca, reducir=True, borrar=True, x0=100, y0=0)
+        self.cargarCartas(self.cartas     , reducir=True,              x0=100, y0=200)
+        
+        for widget in self.frameCartasTitulo.winfo_children():
+            widget.destroy()
+        self.labelTerminadoBanca = tk.Label(self.frameCartasTitulo, text=estadoBanca, 
                                    font=("Arial Bold", 20, "bold"), bg="green", fg="yellow")
-        self.labelBanca.pack(side=tk.TOP)
-        self.labelBanca = tk.Label(self.frameCartas, text=estadoJugador, 
+        self.labelTerminadoBanca.pack(side=tk.TOP)
+        self.labelTerminadoJugador = tk.Label(self.frameCartas, text=estadoJugador, 
                                    font=("Arial Bold", 20, "bold"), bg="green", fg="yellow")
-        self.labelBanca.pack(side=tk.BOTTOM)
+        self.labelTerminadoJugador.pack(side=tk.BOTTOM)
 
         #self.cargarCartas(self.cartasBanca, reducir=False, borrar=True, x0=20, y0=80)
+        
+        if self.estadoStr == "finalizado_perdido":
+            self.pPierde()
+        elif self.estadoStr == "finalizado_empate":
+            self.pEmpata()
+        elif self.estadoStr == "finalizado_ganador":
+            self.pGana()
+        self.comenzado = False
         
         return
 
 
-    def juegoComenzado(self, estado):
+    def juegoComenzado(self, mensaje):
 
+        self.comenzado = True
+        self.modificarMensajes("SERVIDOR", "\n\n" + "-------------------------\n" + "\n" + mensaje + "\n")
+        self.limpiarTablero()
         self.scrolledMonto.focus()
         self.modificarEstado("")
         
@@ -532,8 +636,27 @@ class PantallaPrincipal:
         self.estado.set(self.usuario + " " + "$" + str(self.model.MiSaldo) + " (" + self.estadoStr + ")")
         self.modificarScoreJugador(self.model.MiPuntaje)
         cartas = self.model.MisCartas
-        self.cargarCartas(cartas, borrar=True, comparar=True, x0=20, y0=5)
+        
+        if len(self.cartas) != len(cartas):
+            for widget in self.frameCartasTitulo.winfo_children():
+                widget.destroy()
+            self.cargarCartas([], borrar=True, comparar=False, x0=20, y0=120)
+            self.labelTerminadoBanca = tk.Label(self.frameCartasTitulo, text="BANCA    ", 
+                               font=("Arial Bold", 20, "bold"), bg="green", fg="yellow")
+            self.labelTerminadoBanca.pack(side=tk.RIGHT)
+            self.cargarCartas(cartas, borrar=False, comparar=False, x0=20, y0=120)
+        else:
+            self.cargarCartas(cartas, borrar=True, comparar=True, x0=20, y0=120)
+
+        
+        if len(self.cartasBanca) > 0 and self.comenzado:
+            if self.cartasBanca[0] != "":
+                print(self.cartasBanca)
+                listaCartas = [self.cartasBanca[0], 'reverso']
+                self.cargarCartas(listaCartas, reducir=True, borrar=False, x0=450, y0=0)
+
         self.cartas = cartas
+        
         return
         
     
@@ -579,28 +702,41 @@ class PantallaPrincipal:
             self.enviarMensaje()
 
     
-    def modificarMensajes(self, mensajes):
+    def modificarMensajes(self, mensajes, tipo):
         
         #self.mensajes.set(mensajes)
-        self.textChat.insert(tk.END, mensajes + "\n")
-        self.textChat.see(tk.END)
+        if tipo == "SERVIDOR":
+            self.textChatServidor.insert(tk.END, mensajes + "\n")
+            self.textChatServidor.see(tk.END)
+        elif tipo == "MENSAJE":
+            self.textChatMensajes.insert(tk.END, mensajes + "\n")
+            self.textChatMensajes.see(tk.END)
         
         return
         
     
     def cargarMensajes(self, mensajes):
 
-        self.scrollbarChat = tk.Scrollbar(self.frameChat) 
-        self.textChat = tk.Text(self.frameChat, width=388, height=449,
-                                font=("Arial Bold", 13), fg="blue", bg="white")
-        self.scrollbarChat.pack(side=tk.RIGHT, fill=tk.Y)
-        self.textChat.pack(side=tk.LEFT, fill=tk.Y)
-        self.scrollbarChat.config(command=self.textChat.yview)
-        self.textChat.config(yscrollcommand=self.scrollbarChat.set)
+        self.scrollbarChatServidor = tk.Scrollbar(self.frameChatPanelServidor) 
+        self.textChatServidor = tk.Text(self.frameChatPanelServidor, width=388, height=200,
+                                font=("Arial Bold", 12), fg="blue", bg="white")
+        self.scrollbarChatServidor.pack(side=tk.RIGHT, fill=tk.Y)
+        self.textChatServidor.pack(side=tk.LEFT, fill=tk.Y)
+        self.scrollbarChatServidor.config(command=self.textChatServidor.yview)
+        self.textChatServidor.config(yscrollcommand=self.scrollbarChatServidor.set)
+        self.textChatServidor.pack(side=tk.LEFT)
 
-        self.modificarMensajes(mensajes)
-        self.textChat.pack(side=tk.LEFT)
+        self.scrollbarChatMensajes = tk.Scrollbar(self.frameChatPanelMensajes) 
+        self.textChatMensajes = tk.Text(self.frameChatPanelMensajes, width=388, height=200,
+                                font=("Arial Bold", 12), fg="blue", bg="white")
+        self.scrollbarChatMensajes.pack(side=tk.RIGHT, fill=tk.Y)
+        self.textChatMensajes.pack(side=tk.LEFT, fill=tk.Y)
+        self.scrollbarChatMensajes.config(command=self.textChatMensajes.yview)
+        self.textChatMensajes.config(yscrollcommand=self.scrollbarChatMensajes.set)
+        self.textChatMensajes.pack(side=tk.LEFT)
 
+        #self.modificarMensajes(mensajes)
+        
         return
 
     
@@ -641,27 +777,32 @@ class PantallaPrincipal:
         xOffset = 60
         yOffset = 5
         yLineOffset = 60
-        x = x0
-        y = y0
         factorInversion = 1
         if invertir:
             factorInversion = -1
         cartasPorLinea = 7
+        x = x0
+        y = y0
+        if len(cartas) <= cartasPorLinea and y0 >= 100:
+            y = y + yOffset*cartasPorLinea
         for i in range(0, len(cartas)):
             
             self.imgList.append(os.path.join(os.path.join(self.cwd, mazo), cartas[i] + '.jpg'))
             #self.imgList.append(os.path.join(os.path.join(self.cwd, mazo), self.cartas[i] + '.jpg'))
+            print(x,y)
             if reducir:
                 self.app.agregar(self.imgList[i], x=x, y=y, width = 90, height = 126)
                 #self.app.agregar(self.imgList[i], x=x, y=y, width = 135, height = 189)
             else:
-                self.app.agregar(self.imgList[i], x=x, y=y)
+                self.app.agregar(self.imgList[i], x=x, y=y, width = 158, height = 221)
 
             x = x + xOffset * factorInversion 
             y = y + yOffset 
             if (i+1) % cartasPorLinea == 0:
                 x = x0
-                y = y0 + int((i/cartasPorLinea)*yLineOffset)
+                if not reducir:
+                    y = y0 + int((i/cartasPorLinea)*yLineOffset)
+                    print(y)
  
         return
 
@@ -672,7 +813,7 @@ def testPantallaPedirCarta():
 
 def testPantallaInicializador():
     cartas1 = ['1-3', '2-4', '3-5']
-    cartas2 = ['1-3', '2-4', '3-5']
+    cartas2 = ['1-3', '2-4', '3-5', '1-3', '2-4', '3-5']
     cartas = ['1-3', '2-4', '3-5', '4-2', '1-4', '2-2', '1-3', '2-4', '3-5', '4-2', '1-4', '2-2', '1-3', '2-4']
     listaCartas = []
     model = GuiViewModel()
@@ -683,13 +824,14 @@ def testPantallaInicializador():
     model.ee.on("pedirCartaEvent", testPantallaPedirCarta)
     bjbase = PantallaBase()
     bjScreen = PantallaPrincipal(model, bjbase.getRoot())
+    bjScreen.cartasBanca = ['4-2', '1-4', '2-2']
     bjScreen.usuario = "test"
     bjScreen.scoreBancaStr = "12"
     bjScreen.scoreJugadorStr = "12"
     bjScreen.modificarScoreJugador("12")
     bjScreen.modificarScoreBanca("12", cartas)
     bjScreen.modificarEstado("Jugar")
-    bjScreen.juegoTerminado()
+    #bjScreen.juegoTerminado()
     #668-90-20, 20
     #20, 320
     bjScreen.mostrar()

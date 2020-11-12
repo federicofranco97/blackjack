@@ -4,7 +4,7 @@ import socket
 from _thread import *
 import threading
 import traceback
-import codigoMesaje
+import codigoMensaje
 import sqlite3
 from pathlib import Path
 
@@ -29,7 +29,7 @@ class Usuario:
         except:
             pass
 
-    def enviarMensaje(self, mensajeArg, comandos = [], jugadores = [], banca = [], mano = [], finalizado = False, pCodigoMensaje =codigoMesaje.NORMAL):
+    def enviarMensaje(self, mensajeArg, comandos = [], jugadores = [], banca = [], mano = [], pCodigoMensaje =codigoMensaje.NORMAL):
         mensaje = ""
         _comm = comandos.copy()
         _comm.append("mensaje")
@@ -44,9 +44,8 @@ class Usuario:
             mensaje += ("|banca:"+",".join(banca))
         if len(mano) > 0:
             mensaje += ("|mano:"+",".join(mano))
-        mensaje += "|partida:" + str(finalizado)
-        mensaje += "|codigo:" + pCodigoMensaje
-        mensaje += ("|mensaje:" + mensajeArg + "\n")
+        mensaje += "|mensaje:" + mensajeArg
+        mensaje += "|codigo:" + pCodigoMensaje + "\n"
         self.enviarData(mensaje)
 
 """
@@ -82,7 +81,7 @@ class Ejecutor:
 
 def comMensaje(nombreComando, argumentos, socket, juego, cliente):
     for _cliente in clientes:
-        _cliente.enviarMensaje("["+cliente.nombre+"] " + " ".join(argumentos))
+        _cliente.enviarMensaje("["+cliente.nombre+"] " + " ".join(argumentos), pCodigoMensaje=codigoMensaje.MENSAJE)
 
 """
     El comando ingresar se utiliza para fondear la cuenta del usuario, aunque en realidad
@@ -110,16 +109,27 @@ def comJuegoComando(nombreComando, argumentos, socket, juego, cliente):
 """
 def comIdentificarUsuario(nombreComando, argumentos, socket, juego, cliente):
     if (cliente.nombre == None):
+        nombre = argumentos[0]
+        idioma = argumentos[1] if len(argumentos) > 1 else "es"
+
+        #Verificamos que no haya ingresado el nombre de la banca
         for d in diccionario:
-            if diccionario[d]["banca"] == argumentos[0]:
-                cliente.enviarMensaje(mensajeArg=diccionario[cliente.idioma]["errorNombreIgualBanca"], pCodigoMensaje=codigoMesaje.ALIAS_RECHAZADO)
+            if diccionario[d]["banca"] == nombre:
+                cliente.enviarMensaje(mensajeArg=diccionario[idioma]["errorNombreIgualBanca"], pCodigoMensaje=codigoMensaje.ALIAS_RECHAZADO)
                 return
 
-        cliente.nombre = argumentos[0]
-        cliente.idioma = argumentos[1] if len(argumentos) > 1 else "es"
-        cliente.enviarMensaje(mensajeArg=diccionario[cliente.idioma]["ingresarSaldo"], pCodigoMensaje=codigoMesaje.ALIAS_ACEPTADO)
+        #Verificamos que no exista un jugador con ese mismo nombre
+        for c in clientes:
+            if c.nombre == nombre:
+                cliente.enviarMensaje(mensajeArg=diccionario[idioma]["jugadorYaExiste"], pCodigoMensaje=codigoMensaje.ALIAS_RECHAZADO)
+                return
+
+        cliente.nombre = nombre
+        cliente.idioma = idioma
+
+        cliente.enviarMensaje(mensajeArg=diccionario[cliente.idioma]["ingresarSaldo"], pCodigoMensaje=codigoMensaje.ALIAS_ACEPTADO)
     else:
-        socket.send(diccionario[cliente.idioma]["errorYaTeConozco"].replace("{0}", cliente.nombre).replace("{1}", argumentos[0]) + "\n")
+        cliente.enviarMensaje(mensajeArg=diccionario[cliente.idioma]["errorYaTeConozco"].replace("{0}", cliente.nombre).replace("{1}", argumentos[0]) + "\n")
 
 """
     El comando <ingresar> es para ingresar dinero a la cuenta
