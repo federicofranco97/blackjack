@@ -518,8 +518,8 @@ class PantallaPrincipal:
                                  "apostar": False,
                                  "doblar": False,
                                  "pedir": False,
-                                 "separar": False,
                                  "plantarse": False,
+                                 "stats": False,
                                  "mensaje": False}
         
         
@@ -559,8 +559,8 @@ class PantallaPrincipal:
             self.buttonPedir.config(state=estado)
         elif boton == "plantarse":
             self.buttonPlantarse.config(state=estado)
-        elif boton == "separar":
-            self.buttonSeparar.config(state=estado)
+        elif boton == "stats":
+            self.buttonStats.config(state=estado)
         elif boton == "doblar":
             self.buttonDoblar.config(state=estado)
         elif boton == "mensaje":
@@ -678,14 +678,14 @@ class PantallaPrincipal:
                            command=self.cbPlantarse)
         self.buttonPlantarse.pack(side=tk.LEFT)
 
-        ''' buttonSeparar: Nivel 1.1.7 - Frame Padre: frameBotones - Posicion: LEFT'''
-        self.buttonSeparar = tk.Button(self.frameBotones, width = ancho, height = 20,
-                           text=self.diccionario["separar"],
+        ''' buttonStats: Nivel 1.1.7 - Frame Padre: frameBotones - Posicion: LEFT'''
+        self.buttonStats = tk.Button(self.frameBotones, width = ancho, height = 20,
+                           text=self.diccionario["stats"],
                            fg=colorFront,
                            bg=colorBack,
                            font=("Arial Bold", tamLetra, "bold"),
-                           command=self.cbSeparar)
-        self.buttonSeparar.pack(side=tk.LEFT)
+                           command=self.cbStats)
+        self.buttonStats.pack(side=tk.LEFT)
 
         ''' buttonDoblar: Nivel 1.1.8 - Frame Padre: frameBotones - Posicion: LEFT'''
         self.buttonDoblar = tk.Button(self.frameBotones, width = ancho, height = 20,
@@ -805,19 +805,19 @@ class PantallaPrincipal:
         return
     
     
-    def cbSeparar(self):
+    def cbStats(self):
         '''
-        Metodo: cbSeparar
+        Metodo: cbStats
         
         Parametros: No tiene parametros.
         
         Descripcion: Metodo callback llamado cuando se aprieta el boton de 
-                     Separar.
+                     Stats.
         
         Retorno: No retorna ningun valor. 
         '''
 
-        self.model.onSeparar()
+        #self.model.onStats()
         
         return
 

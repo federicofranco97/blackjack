@@ -1,13 +1,12 @@
-#import tkinter as tk
-from mttkinter import mtTkinter as tk
 import os
 import playsound
+from mttkinter import mtTkinter as tk
 from PIL import Image, ImageTk
-from guiViewModel import GuiViewModel
 from tkinter.scrolledtext import ScrolledText
 from _thread import *
 import time
 
+from guiViewModel import GuiViewModel
 from pantallautil import PantallaImagenes
 from pantallautil import PantallaBase
 

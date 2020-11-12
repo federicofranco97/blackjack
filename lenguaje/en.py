@@ -13,6 +13,7 @@
     "separar": "SPLIT",
     "plantarse": "STAND",
     "mensaje": "MESSAGE",
+    "stats": "STATS",
     "enviar": "SEND",
     "salir": "EXIT",
     "jugar": "Play",
