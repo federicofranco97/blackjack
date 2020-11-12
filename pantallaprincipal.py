@@ -173,12 +173,24 @@ class PantallaPrincipal:
         self.frameJuego.pack(side=tk.TOP)
         self.frameJuego['bg']='medium blue'
         
-        self.frameCartas = tk.Frame(self.frameJuego, width = 624, height = 468)
-        self.frameCartas.pack(side=tk.TOP)
+
+        self.framePanelCartas = tk.Frame(self.frameJuego, width = 624, height = 468)
+        self.framePanelCartas.pack(side=tk.TOP)
+        self.framePanelCartas['bg']='green'
+        self.framePanelCartas.pack_propagate(0)      
+
+
+        self.frameCartasTitulo = tk.Frame(self.framePanelCartas, width = 624, height = 30)
+        self.frameCartasTitulo.pack(side=tk.TOP)
+        self.frameCartasTitulo['bg']='green'
+        self.frameCartasTitulo.pack_propagate(0)      
+
+        self.frameCartas = tk.Frame(self.framePanelCartas, width = 624, height = 438)
+        self.frameCartas.pack(side=tk.BOTTOM)
         self.frameCartas['bg']='green'
-        self.frameCartas.pack_propagate(0)      
- 
-         
+        self.frameCartas.pack_propagate(0)
+
+
         self.frameEstadoUsuario = tk.Frame(self.frameJuego, width = 624, height = 50)
         self.frameEstadoUsuario.pack(side=tk.RIGHT)
         self.frameEstadoUsuario['bg']='medium blue' 
@@ -569,12 +581,15 @@ class PantallaPrincipal:
         estadoBanca = "BANCA: " + str(self.scoreBancaStr)
         estadoJugador = self.usuario + ": " + str(self.scoreJugadorStr) + estado
         
-        self.cargarCartas(self.cartasBanca, reducir=True, borrar=True, x0=100, y0=40)
+        self.cargarCartas(self.cartasBanca, reducir=True, borrar=True, x0=100, y0=0)
         y0 = 230
         if len(self.cartas) > 7:
             y0 = y0 + 60
-        self.cargarCartas(self.cartas     , reducir=True,              x0=100, y0=230)
-        self.labelTerminadoBanca = tk.Label(self.frameCartas, text=estadoBanca, 
+        self.cargarCartas(self.cartas     , reducir=True,              x0=100, y0=200)
+        
+        for widget in self.frameCartasTitulo.winfo_children():
+            widget.destroy()
+        self.labelTerminadoBanca = tk.Label(self.frameCartasTitulo, text=estadoBanca, 
                                    font=("Arial Bold", 20, "bold"), bg="green", fg="yellow")
         self.labelTerminadoBanca.pack(side=tk.TOP)
         self.labelTerminadoJugador = tk.Label(self.frameCartas, text=estadoJugador, 
@@ -610,18 +625,18 @@ class PantallaPrincipal:
         cartas = self.model.MisCartas
         
         if len(self.cartas) != len(cartas):
-            self.cargarCartas([], borrar=True, comparar=False, x0=20, y0=110)
-            self.labelTerminadoBanca = tk.Label(self.frameCartas, text="BANCA", 
+            self.cargarCartas([], borrar=True, comparar=False, x0=20, y0=120)
+            self.labelTerminadoBanca = tk.Label(self.frameCartasTitulo, text="BANCA    ", 
                                font=("Arial Bold", 20, "bold"), bg="green", fg="yellow")
-            self.labelTerminadoBanca.pack(side=tk.TOP)
-            self.cargarCartas(cartas, borrar=False, comparar=False, x0=20, y0=110)
+            self.labelTerminadoBanca.pack(side=tk.RIGHT)
+            self.cargarCartas(cartas, borrar=False, comparar=False, x0=20, y0=120)
         else:
-            self.cargarCartas(cartas, borrar=True, comparar=True, x0=20, y0=110)
+            self.cargarCartas(cartas, borrar=True, comparar=True, x0=20, y0=120)
 
         
         if len(cartas) > 0:
             listaCartas = [cartas[0], 'reverso']
-            self.cargarCartas(listaCartas, reducir=True, borrar=False, x0=450, y0=5)
+            self.cargarCartas(listaCartas, reducir=True, borrar=False, x0=450, y0=0)
 
         self.cartas = cartas
         
@@ -751,7 +766,7 @@ class PantallaPrincipal:
         cartasPorLinea = 7
         x = x0
         y = y0
-        if len(cartas) <= cartasPorLinea and y0 > 100:
+        if len(cartas) <= cartasPorLinea and y0 >= 100:
             y = y + yLineOffset
         for i in range(0, len(cartas)):
             
@@ -761,7 +776,7 @@ class PantallaPrincipal:
                 self.app.agregar(self.imgList[i], x=x, y=y, width = 90, height = 126)
                 #self.app.agregar(self.imgList[i], x=x, y=y, width = 135, height = 189)
             else:
-                self.app.agregar(self.imgList[i], x=x, y=y, width = 180, height = 252)
+                self.app.agregar(self.imgList[i], x=x, y=y, width = 158, height = 221)
 
             x = x + xOffset * factorInversion 
             y = y + yOffset 
@@ -783,7 +798,7 @@ def testPantallaInicializador():
     listaCartas = []
     model = GuiViewModel()
     model.MiSaldo = 3000
-    model.MisCartas = cartas2
+    model.MisCartas = cartas
     model.MiNombre = "test"
 
     model.ee.on("pedirCartaEvent", testPantallaPedirCarta)
@@ -796,7 +811,7 @@ def testPantallaInicializador():
     bjScreen.modificarScoreJugador("12")
     bjScreen.modificarScoreBanca("12", cartas)
     bjScreen.modificarEstado("Jugar")
-    #bjScreen.juegoTerminado()
+    bjScreen.juegoTerminado()
     #668-90-20, 20
     #20, 320
     bjScreen.mostrar()
