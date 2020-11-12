@@ -22,6 +22,7 @@
     "ingresarSaldo": "Debes ingresar un saldo para iniciar",
     "comandoDesconocido": "No conozco ese comando",
     "errorFaltaIdentificarse": "Primero tenes que identificarte con el comando soy <nombre>",
+    "errorNombreRepetido": "Ese nombre ya esta tomado",
     "errorYaTeConozco": "Ya te conozco. Te llamas {0}, no {1}",
     "juegaLaBanca": "Ahora jugara la banca",
     "bancaMuestraCartaOculta": "La banca mostrara su carta oculta",
