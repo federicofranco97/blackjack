@@ -213,7 +213,6 @@ class Blackjack():
                 self.notificarJugadores(jugadoresLenguaje, self.diccionario[d]["jugadorSeUnio"].replace("{0}", usuario.nombre))
             self.decidirUsuario(nuevoJugador)
         else:
-            #self.notificarJugadores(self.diccionario[usuario.idioma]["jugadorFondeo"].replace("{0}", usuario.nombre))
             for d in self.diccionario:
                 jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresTotales, d)
                 self.notificarJugadores(jugadoresLenguaje, self.diccionario[d]["jugadorFondeo"].replace("{0}", usuario.nombre))
