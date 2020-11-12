@@ -161,7 +161,6 @@ class Blackjack():
             for d in self.diccionario:
                 jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresTotales, d)
                 self.notificarJugadores(jugadoresLenguaje, self.diccionario[d]["timerEmpiezaElJuego"].replace("{0}", str(segundosRestantes)))
-            #self.notificarJugadores("empieza el juego en " + str(segundosRestantes) + " segundos")
         self.segundosTotales += 1
         if segundosRestantes > 0:
             Timer(1.0, self.empezarTimer).start()

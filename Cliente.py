@@ -35,13 +35,12 @@ def iniciarPantalla():
 
     return
 
+def escucharServidorThread():
+    start_new_thread(escucharServidor, ())
 
 # Este metodo corre permanentemente escuchando el socket para recibir los mensajes del servidor
 def escucharServidor():
     while 1:
-        if sock is None:
-            time.sleep(2)
-            continue
         try:
             data = sock.recv(4096)
             if not data:
@@ -57,6 +56,7 @@ def escucharServidor():
             mensajeError = diccionario[vm.lenguaje]["conexionPerdida"]
             print(mensajeError)
             vm.onMensajeEntrante(mensajeError, "SERVIDOR")
+
 
 
 # Recibe todos los mensajes del socket, que entren en el buffer, y los parte para analizarlos posteriormente
@@ -140,12 +140,13 @@ def parsearMensajeServidor(mensajeRecibido, info):
         return str(argumentos)
 
 
+# Muestra la mano actual por consola
 def imprimirMano(pMano):
     mensaje = str(pMano)
     return diccionario[vm.lenguaje]["tuMano"].replace("{0}", mensaje)
 
 
-# Envia el comando soy
+# Wrapper para enviar el comando soy
 def soy(usr):
     if usr is None or usr == "":
         vm.onSoyRechazado(diccionario[vm.lenguaje]["nombreVacio"])
@@ -155,49 +156,49 @@ def soy(usr):
     vm.MiNombre = usr.replace('\n', '')
 
 
-# Envia el pedido de carta
+# Wrapper para enviar el pedido de carta
 def pedirCarta():
     print("pedir carta")
     comando = "pedir"
     sock.send(comando.encode())
 
 
-# Envia el pedido de plantarse
+# Wrapper para solicitar plantarse
 def plantarse():
     print("me planto")
     comando = "plantarse"
     sock.send(comando.encode())
 
 
-# Envia la solicitud de doblar
+# Wrapper para enviar la solicitud de doblar
 def doblar():
     print("doblar apuesta")
     comando = "doblar"
     sock.send(comando.encode())
 
 
-# Envia la solicitud de split
+# Wrapper para enviar la solicitud de split
 def separar():
     print("separar")
     comando = "separar"
     sock.send(comando.encode())
 
 
-# Envia el fondeo
+# Wrapper para enviar el fondeo
 def fondear(monto):
     print("fondear " + monto)
     comando = "ingresar " + monto
     sock.send(comando.encode())
 
 
-# Envia la apuesta
+# Wrapper para enviar la apuesta
 def apostar(monto):
     print("apostando " + monto)
     comando = "apostar " + monto
     sock.send(comando.encode())
 
 
-# Envia un mensaje por el socket
+# Wrapper para enviar un mensaje por el socket
 def enviarMensaje(mensaje):
     print("enviando mensaje: " + mensaje)
     comando = "mensaje " + mensaje
@@ -259,7 +260,7 @@ def inicioCliente():
         print(diccionario[vm.lenguaje]["mensajeBienvenida"])
 
     if usarGUI:
-        start_new_thread(escucharServidor, ())
+        #start_new_thread(escucharServidor, ())
         iniciarPantalla()
 
     if not usarGUI:
@@ -280,6 +281,7 @@ if __name__ == "__main__":
             name = Path(f).resolve().stem
             diccionario[name] = json.load(json_file)
 
+    #Suscripcion a eventos
     vm.ee.on("pedirCartaEvent", pedirCarta)
     vm.ee.on("plantarseEvent", plantarse)
     vm.ee.on("separarEvent", separar)
@@ -289,6 +291,5 @@ if __name__ == "__main__":
     vm.ee.on("enviarMensajeEvent", enviarMensaje)
     vm.ee.on("requestConnectionEvent", conectar)
     vm.ee.on("soyEvent", soy)
-    #vm.ee.on("enteredEvent", jugadorEnSala)
-    # vm.ee.on("connectedEvent", threadEscucharServidor)
+    vm.ee.on("connectedEvent", escucharServidorThread)
     inicioCliente()
