@@ -342,7 +342,7 @@ class Blackjack():
     def pedir(self, usuario):
         _jugador = self._obtenerJugador(usuario)
         if self._esJugadorActual(usuario) == False:
-            self.notificarJugador(_jugador, self.diccionario[usuario.idioma]["noEsTurno"])
+            self.notificarJugador(_jugador, self.diccionario[_jugador.usuario.idioma]["noEsTurno"])
         else:
             proxima = self.mazo.proximaCarta()
             puntajeTotal = _jugador.pedir(proxima)
