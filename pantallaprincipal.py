@@ -459,8 +459,9 @@ class PantallaPrincipal:
         self.modificarEstado(self.estadoStr)
         
         monto = self.scrolledMonto.get("1.0", tk.END).replace("\n","")
-        if self.isValidStr(monto, list("0123456789".strip())) and len(monto) <= 10:
-            self.model.onFondear(monto)
+        if self.isValidStr(monto, list("0123456789".strip())) and len(monto) > 0 and len(monto) <= 10:
+            if int(monto) > 0:
+                self.model.onFondear(monto)
             
         self.scrolledMonto.delete("0.0", tk.END)
        
@@ -648,9 +649,11 @@ class PantallaPrincipal:
             self.cargarCartas(cartas, borrar=True, comparar=True, x0=20, y0=120)
 
         
-        if len(cartas) > 0 and self.comenzado:
-            listaCartas = [cartas[0], 'reverso']
-            self.cargarCartas(listaCartas, reducir=True, borrar=False, x0=450, y0=0)
+        if len(self.cartasBanca) > 0 and self.comenzado:
+            if self.cartasBanca[0] != "":
+                print(self.cartasBanca)
+                listaCartas = [self.cartasBanca[0], 'reverso']
+                self.cargarCartas(listaCartas, reducir=True, borrar=False, x0=450, y0=0)
 
         self.cartas = cartas
         
@@ -781,11 +784,12 @@ class PantallaPrincipal:
         x = x0
         y = y0
         if len(cartas) <= cartasPorLinea and y0 >= 100:
-            y = y + yLineOffset
+            y = y + yOffset*cartasPorLinea
         for i in range(0, len(cartas)):
             
             self.imgList.append(os.path.join(os.path.join(self.cwd, mazo), cartas[i] + '.jpg'))
             #self.imgList.append(os.path.join(os.path.join(self.cwd, mazo), self.cartas[i] + '.jpg'))
+            print(x,y)
             if reducir:
                 self.app.agregar(self.imgList[i], x=x, y=y, width = 90, height = 126)
                 #self.app.agregar(self.imgList[i], x=x, y=y, width = 135, height = 189)
@@ -796,7 +800,9 @@ class PantallaPrincipal:
             y = y + yOffset 
             if (i+1) % cartasPorLinea == 0:
                 x = x0
-                y = y0 + int((i/cartasPorLinea)*yLineOffset)
+                if not reducir:
+                    y = y0 + int((i/cartasPorLinea)*yLineOffset)
+                    print(y)
  
         return
 
