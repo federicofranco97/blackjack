@@ -65,6 +65,7 @@ class Ejecutor:
             "apostar": comJuegoComando,
             "mensaje": comJuegoComando,
             "retirarse": comJuegoComando,
+            "kick": comJuegoComando,
             "pedir": comJuegoComando,
             "plantarse": comJuegoComando
         }
@@ -103,16 +104,17 @@ def comJuegoComando(nombreComando, argumentos, sockete, juego, cliente):
         return juego.plantarse(cliente.nombre)
     if nombreComando == "estadisticas":
         return juego.obtenerEstadisticas()
-    if nombreComando == "retirarse":
-        juego.removerJugador(cliente.nombre)
+    if nombreComando == "retirarse" or nombreComando == "kick":
+        nombre = argumentos[0] if nombreComando == "kick" else cliente.nombre
         indiceCliente = None
         for i in range(len(clientes)):
-            if clientes[i].nombre == cliente.nombre:
+            if clientes[i].nombre == nombre:
                 indiceCliente = i
         if not indiceCliente == None:
+            clientes[indiceCliente].socket.shutdown(socket.SHUT_RDWR)
+            clientes[indiceCliente].socket.close()
+            juego.removerJugador(nombre)
             del clientes[indiceCliente]
-        cliente.socket.shutdown(socket.SHUT_RDWR)
-        cliente.socket.close()
     if nombreComando == "mensaje":
         return juego.enviarMensaje(cliente.nombre, " ".join(argumentos))
 
@@ -196,7 +198,7 @@ def iniciarServidor():
 
 
 
-    puerto = 3039
+    puerto = 3038
     blackGame = Blackjack(diccionario)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(('', puerto))
