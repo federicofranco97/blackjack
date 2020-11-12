@@ -112,11 +112,13 @@ def comIdentificarUsuario(nombreComando, argumentos, socket, juego, cliente):
         nombre = argumentos[0]
         idioma = argumentos[1] if len(argumentos) > 1 else "es"
 
+        #Verificamos que no haya ingresado el nombre de la banca
         for d in diccionario:
             if diccionario[d]["banca"] == nombre:
                 cliente.enviarMensaje(mensajeArg=diccionario[idioma]["errorNombreIgualBanca"], pCodigoMensaje=codigoMensaje.ALIAS_RECHAZADO)
                 return
 
+        #Verificamos que no exista un jugador con ese mismo nombre
         for c in clientes:
             if c.nombre == nombre:
                 cliente.enviarMensaje(mensajeArg=diccionario[idioma]["jugadorYaExiste"], pCodigoMensaje=codigoMensaje.ALIAS_RECHAZADO)
@@ -126,7 +128,6 @@ def comIdentificarUsuario(nombreComando, argumentos, socket, juego, cliente):
         cliente.idioma = idioma
 
         cliente.enviarMensaje(mensajeArg=diccionario[cliente.idioma]["ingresarSaldo"], pCodigoMensaje=codigoMensaje.ALIAS_ACEPTADO)
-        #juego.agregarJugador(cliente)
     else:
         cliente.enviarMensaje(mensajeArg=diccionario[cliente.idioma]["errorYaTeConozco"].replace("{0}", cliente.nombre).replace("{1}", argumentos[0]) + "\n")
 
