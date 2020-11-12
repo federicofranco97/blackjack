@@ -1,16 +1,7 @@
-import ast
-import os
-import random
-import select
 import socket
 import sys
 import json
 import codigoMensaje
-from _thread import *
-import logging
-import re
-from datetime import date, datetime
-import time
 from pathlib import Path
 
 from pip._vendor.distlib.compat import raw_input
@@ -20,17 +11,12 @@ from pantallautil import PantallaBase
 from pantallaingreso import PantallaIngreso
 from pantallaprincipal import PantallaPrincipal
 from datosMensaje import DatosMensaje
-import cbQueue
-import threading
 
 usarGUI = True
 diccionario = {}
 vm = GuiViewModel()
 estado = 0
 sock = None
-
-pantallaInicial = None
-
 
 # Iniciamos la GUI
 def iniciarPantalla():
@@ -69,7 +55,7 @@ def escucharServidor():
         except socket.timeout:
             mensajeError = diccionario[vm.lenguaje]["conexionPerdida"]
             print(mensajeError)
-            vm.onMensajeEntrante(mensajeError)
+            vm.onMensajeEntrante(mensajeError, "SERVIDOR")
 
 
 # Recibe todos los mensajes del socket, que entren en el buffer, y los parte para analizarlos posteriormente
@@ -97,16 +83,23 @@ def parsearMensajeServidor(mensajeRecibido, info):
         formateo = str(argumentos[0])
         info.Mensaje = formateo
         print(formateo)
-        vm.onMensajeEntrante(formateo)
+        #vm.onMensajeEntrante(formateo)
     elif comando == "codigo":
         if argumentos[0] == codigoMensaje.ALIAS_ACEPTADO:
             vm.onSoyAceptado()
         elif argumentos[0] == codigoMensaje.ALIAS_RECHAZADO:
             vm.onSoyRechazado(info.Mensaje)
         elif argumentos[0] == codigoMensaje.PARTIDA_FINALIZADA:
+            vm.Turno = ""
             vm.onJuegoTerminado()
         elif argumentos[0] == codigoMensaje.PARTIDA_INICIADA:
             vm.onJuegoComenzado(info.Mensaje)
+        elif argumentos[0] == codigoMensaje.MENSAJE:
+            if info.Mensaje != "":
+                vm.onMensajeEntrante(info.Mensaje, "MENSAJE")
+        else:
+            if info.Mensaje != "":
+                vm.onMensajeEntrante(info.Mensaje, "SERVIDOR")
     elif comando == "status":
         formateo = str(argumentos).split("#")[1]
         return formateo.replace("\\n", "")
@@ -115,11 +108,6 @@ def parsearMensajeServidor(mensajeRecibido, info):
         cartasBanca = str(formateo[0])
         cartasBanca = cartasBanca.replace("{", "").replace("}", "").split(",")
         vm.onPuntajeBancaChanged(formateo[1], cartasBanca)
-    elif comando == "partida":
-        formateo = str(argumentos[0]).split(",")
-        if formateo[0] == "True":
-            vm.Turno = ""
-            vm.onJuegoTerminado()
     elif comando == "jugadores":
         jugadores = argumentos[0].split("#")
         vm.Jugadores = []

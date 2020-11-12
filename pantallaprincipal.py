@@ -583,7 +583,7 @@ class PantallaPrincipal:
 
     def juegoComenzado(self, mensaje):
 
-        self.modificarMensajes("\n\n" + "-------------------------\n" + "\n" + mensaje + "\n")
+        self.modificarMensajes("\n\n" + "-------------------------\n" + "\n" + mensaje + "\n", "")
         self.scrolledMonto.focus()
         self.modificarEstado("")
         
@@ -643,7 +643,7 @@ class PantallaPrincipal:
             self.enviarMensaje()
 
     
-    def modificarMensajes(self, mensajes):
+    def modificarMensajes(self, mensajes, tipo):
         
         #self.mensajes.set(mensajes)
         self.textChat.insert(tk.END, mensajes + "\n")
@@ -662,7 +662,7 @@ class PantallaPrincipal:
         self.scrollbarChat.config(command=self.textChat.yview)
         self.textChat.config(yscrollcommand=self.scrollbarChat.set)
 
-        self.modificarMensajes(mensajes)
+        self.modificarMensajes(mensajes, "")
         self.textChat.pack(side=tk.LEFT)
 
         return

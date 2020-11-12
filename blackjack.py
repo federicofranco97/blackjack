@@ -26,7 +26,6 @@ class Blackjack():
         self.segundosTotales = 0
         self.mazo = None
         self.diccionario = pDiccionario
-        self.finalizado = False
 
     """
         Esta funcion se llama desde el thread que esta escuchando el socket de los usuarios cuando no puede enviar un mensaje porque el socket
@@ -76,7 +75,7 @@ class Blackjack():
 
         for d in self.diccionario:
             jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresTotales, d)
-            self.notificarJugadores(jugadoresLenguaje, self.diccionario[d]["usuarioAbandono"].replace("{0}",usuario))
+            self.notificarJugadores(jugadoresLenguaje, self.diccionario[d]["usuarioAbandono"].replace("{0}", usuario))
 
 
     def obtenerEstadoJugadores(self):
@@ -118,7 +117,7 @@ class Blackjack():
         for jug in range(len(jugadores)):
             jugSel = jugadores[jug]
             comandos = self.calcularComandos(jugSel.usuario.nombre)
-            jugadores[jug].enviarMensaje(mensaje, comandos, jugadoresEstados, banca, [], self.finalizado, codigo)
+            jugadores[jug].enviarMensaje(mensaje, comandos, jugadoresEstados, banca, [], codigo)
 
     def notificarJugador(self, jugador, mensaje, codigo=codigoMensaje.NORMAL):
         self._notificarJugadores([jugador], mensaje, codigo)
@@ -157,7 +156,6 @@ class Blackjack():
     """
     def empezarTimer(self):
         self.timerIniciado = True
-        self.finalizado = False
         segundosRestantes = 5-self.segundosTotales
         if segundosRestantes % 10 == 0:
             for d in self.diccionario:
@@ -322,10 +320,9 @@ class Blackjack():
                     _jug.marcarComoPerdedor()
                     _jug.enviarMensaje(self.diccionario[_jug.usuario.idioma]["perdedor"])
 
-            self.finalizado = True
             for d in self.diccionario:
                 jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresJugando, d)
-                self.notificarJugadoresActivos(jugadoresLenguaje, self.diccionario[d]["partidaFinalizada"])
+                self.notificarJugadoresActivos(jugadoresLenguaje, self.diccionario[d]["partidaFinalizada"], codigo=codigoMensaje.PARTIDA_FINALIZADA)
 
             self.manejadorDB.registrarPartida(self.jugadoresJugando)
             self.segundosTotales = 0

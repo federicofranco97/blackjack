@@ -29,7 +29,7 @@ class Usuario:
         except:
             pass
 
-    def enviarMensaje(self, mensajeArg, comandos = [], jugadores = [], banca = [], mano = [], finalizado = False, pCodigoMensaje =codigoMensaje.NORMAL):
+    def enviarMensaje(self, mensajeArg, comandos = [], jugadores = [], banca = [], mano = [], pCodigoMensaje =codigoMensaje.NORMAL):
         mensaje = ""
         _comm = comandos.copy()
         _comm.append("mensaje")
@@ -44,7 +44,6 @@ class Usuario:
             mensaje += ("|banca:"+",".join(banca))
         if len(mano) > 0:
             mensaje += ("|mano:"+",".join(mano))
-        mensaje += "|partida:" + str(finalizado)
         mensaje += "|codigo:" + pCodigoMensaje
         mensaje += ("|mensaje:" + mensajeArg + "\n")
         self.enviarData(mensaje)
@@ -82,7 +81,7 @@ class Ejecutor:
 
 def comMensaje(nombreComando, argumentos, socket, juego, cliente):
     for _cliente in clientes:
-        _cliente.enviarMensaje("["+cliente.nombre+"] " + " ".join(argumentos))
+        _cliente.enviarMensaje("["+cliente.nombre+"] " + " ".join(argumentos), pCodigoMensaje=codigoMensaje.MENSAJE)
 
 """
     El comando ingresar se utiliza para fondear la cuenta del usuario, aunque en realidad

@@ -65,10 +65,10 @@ class GuiViewModel():
     def onTurnoChanged(self, turno):
         self.Turno = turno
         self.esMiTurno = self.MiNombre == turno
-        self.ee.emit("turnoChangedEvent", (turno))
+        self.ee.emit("turnoChangedEvent", turno)
 
-    def onMensajeEntrante(self, mensaje):
-        self.ee.emit("mensajeEntranteEvent", (mensaje))
+    def onMensajeEntrante(self, mensaje, tipo):
+        self.ee.emit("mensajeEntranteEvent", mensaje, tipo)
 
     def onJuegoComenzado(self, mensaje):
         self.ee.emit("juegoComenzadoEvent", mensaje)
