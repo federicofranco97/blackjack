@@ -38,7 +38,8 @@ class PantallaPrincipal:
         self.labelScoreBanca = None
         self.model = model
         self.textChat = None
-        
+        self.comenzado = False
+                
         self.cambiarIdioma('es')
         self.inicializarFrames()
         self.inicializarBotones()
@@ -612,12 +613,14 @@ class PantallaPrincipal:
             self.pEmpata()
         elif self.estadoStr == "finalizado_ganador":
             self.pGana()
+        self.comenzado = False
         
         return
 
 
     def juegoComenzado(self, mensaje):
 
+        self.comenzado = True
         self.modificarMensajes("SERVIDOR", "\n\n" + "-------------------------\n" + "\n" + mensaje + "\n")
         self.limpiarTablero()
         self.scrolledMonto.focus()
@@ -645,7 +648,7 @@ class PantallaPrincipal:
             self.cargarCartas(cartas, borrar=True, comparar=True, x0=20, y0=120)
 
         
-        if len(cartas) > 0:
+        if len(cartas) > 0 and self.comenzado:
             listaCartas = [cartas[0], 'reverso']
             self.cargarCartas(listaCartas, reducir=True, borrar=False, x0=450, y0=0)
 
