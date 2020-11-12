@@ -53,7 +53,7 @@ class GuiViewModel():
     def onSeparar(self):
         self.ee.emit("separarEvent", )
 
-    #Evento que dispara la GUI para solicitar un doble
+    #Evento que dispara la GUI para duplicar la apuesta
     def onDoblar(self):
         self.ee.emit("doblarEvent", )
 
