@@ -678,16 +678,7 @@ class PantallaPrincipal:
                            command=self.cbPlantarse)
         self.buttonPlantarse.pack(side=tk.LEFT)
 
-        ''' buttonStats: Nivel 1.1.7 - Frame Padre: frameBotones - Posicion: LEFT'''
-        self.buttonStats = tk.Button(self.frameBotones, width = ancho, height = 20,
-                           text=self.diccionario["stats"],
-                           fg=colorFront,
-                           bg=colorBack,
-                           font=("Arial Bold", tamLetra, "bold"),
-                           command=self.cbStats)
-        self.buttonStats.pack(side=tk.LEFT)
-
-        ''' buttonDoblar: Nivel 1.1.8 - Frame Padre: frameBotones - Posicion: LEFT'''
+        ''' buttonDoblar: Nivel 1.1.7 - Frame Padre: frameBotones - Posicion: LEFT'''
         self.buttonDoblar = tk.Button(self.frameBotones, width = ancho, height = 20,
                            text=self.diccionario["doblar"],
                            fg=colorFront,
@@ -695,6 +686,15 @@ class PantallaPrincipal:
                            font=("Arial Bold", tamLetra, "bold"),
                            command=self.cbDoblar)
         self.buttonDoblar.pack(side=tk.LEFT)
+
+        ''' buttonStats: Nivel 1.1.8 - Frame Padre: frameBotones - Posicion: LEFT'''
+        self.buttonStats = tk.Button(self.frameBotones, width = ancho, height = 20,
+                           text=self.diccionario["stats"],
+                           fg=colorFront,
+                           bg=colorBack,
+                           font=("Arial Bold", tamLetra, "bold"),
+                           command=self.cbStats)
+        self.buttonStats.pack(side=tk.LEFT)
 
         ''' buttonSalir: Nivel 1.1.9 - Frame Padre: frameBotones - Posicion: LEFT'''
         self.buttonSalir = tk.Button(self.frameBotones, width = ancho, height = 20,
