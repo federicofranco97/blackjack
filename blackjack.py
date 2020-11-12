@@ -27,10 +27,12 @@ class Blackjack():
         self.mazo = None
         self.diccionario = pDiccionario
 
+
     """
         Esta funcion se llama desde el thread que esta escuchando el socket de los usuarios cuando no puede enviar un mensaje porque el socket
         esta cerrado. Esto dispara remover al jugador del juego.
     """
+
     def obtenerJugadorActivo(self, nombreUsuario):
         for i in range(len(self.jugadoresJugando)):
             if self.jugadoresJugando[i].usuario.nombre == nombreUsuario:
@@ -62,16 +64,28 @@ class Blackjack():
         return comandos
 
     def removerJugador(self, usuario):
+        jugTotIndex = None
+        jugJugIndex = None
         for i in range(len(self.jugadoresTotales)):
             if self.jugadoresTotales[i].usuario.nombre == usuario:
-                del self.jugadoresTotales[i]
+                jugTotIndex = i
+        del self.jugadoresTotales[jugTotIndex]
         for j in range(len(self.jugadoresJugando)):
             if self.jugadoresJugando[j].usuario.nombre == usuario:
-                del self.jugadoresJugando[j]
+                jugJugIndex = j
+        del self.jugadoresJugando[jugJugIndex]
         if not self.jugadorActual == None:
             if self.jugadorActual.usuario.nombre == usuario:
                 self.jugadorActualIndice = self.jugadorActualIndice-1
                 self.rotarJugador()
+                return
+        if len(self.jugadoresJugando) == 0:
+            self.jugadorActualIndice = None
+            self.rondaActiva = False
+            self.interrumpirTimer = False
+            self.jugadorActual = None
+            self.timerIniciado = False
+            self.segundosTotales = 0
 
         for d in self.diccionario:
             jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresTotales, d)
@@ -278,6 +292,9 @@ class Blackjack():
         Funcion que rota los jugadores y, en caso que ya no queden mas para rotar, hace jugar a la banca.
     """
     def rotarJugador(self):
+        print("Rotando jugadores")
+        print("jugadores jugando: " + str(len(self.jugadoresJugando)))
+        print("jugador actual indice: " + str(self.jugadorActualIndice))
         if len(self.jugadoresJugando) == (self.jugadorActualIndice+1):
             self.jugadorActual = None
             for d in self.diccionario:
