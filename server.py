@@ -33,6 +33,7 @@ class Usuario:
         mensaje = ""
         _comm = comandos.copy()
         _comm.append("mensaje")
+        _comm.append("retirarse")
         if self.nombre == None:
             _comm.append("soy")
         elif self.dinero == 0:
@@ -63,6 +64,7 @@ class Ejecutor:
             "iniciar": comJuegoComando,
             "apostar": comJuegoComando,
             "mensaje": comJuegoComando,
+            "retirarse": comJuegoComando,
             "pedir": comJuegoComando,
             "plantarse": comJuegoComando
         }
@@ -86,7 +88,7 @@ def comMensaje(nombreComando, argumentos, socket, juego, cliente):
 """
     El comando ingresar se utiliza para fondear la cuenta del usuario, aunque en realidad
 """
-def comJuegoComando(nombreComando, argumentos, socket, juego, cliente):
+def comJuegoComando(nombreComando, argumentos, sockete, juego, cliente):
     if nombreComando == "ingresar":
         return juego.ingresarDinero(cliente.nombre, argumentos[0])
     if nombreComando == "iniciar":
@@ -101,6 +103,16 @@ def comJuegoComando(nombreComando, argumentos, socket, juego, cliente):
         return juego.plantarse(cliente.nombre)
     if nombreComando == "estadisticas":
         return juego.obtenerEstadisticas()
+    if nombreComando == "retirarse":
+        juego.removerJugador(cliente.nombre)
+        indiceCliente = None
+        for i in range(len(clientes)):
+            if clientes[i].nombre == cliente.nombre:
+                indiceCliente = i
+        if not indiceCliente == None:
+            del clientes[indiceCliente]
+        cliente.socket.shutdown(socket.SHUT_RDWR)
+        cliente.socket.close()
     if nombreComando == "mensaje":
         return juego.enviarMensaje(cliente.nombre, " ".join(argumentos))
 
@@ -184,7 +196,7 @@ def iniciarServidor():
 
 
 
-    puerto = 3039
+    puerto = 3038
     blackGame = Blackjack(diccionario)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(('', puerto))
