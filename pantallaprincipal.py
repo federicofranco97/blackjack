@@ -123,8 +123,7 @@ class PantallaPrincipal:
         self.model.ee.on("juegoComenzadoEvent", self.juegoComenzado)
         self.model.ee.on("juegoTerminadoEvent", self.juegoTerminado)
         self.model.ee.on("jugadoresRefreshedEvent", self.modificarJugadores)
-        self.model.ee.on("puntajeBancaChangedEvent", self.modificarScoreBanca)
-        
+        self.model.ee.on("puntajeBancaChangedEvent", self.modificarScoreBanca)        
 
         return
     
@@ -414,12 +413,23 @@ class PantallaPrincipal:
         return
 
 
+    def isValidStr(self, cadena, filtro):
+        
+        for caracter in cadena:
+            if caracter not in filtro:
+                return False
+            
+        return True
+
+
     def btIngresar(self):
         
         self.modificarEstado(self.estadoStr)
         
-        monto = self.scrolledMonto.get("1.0", tk.END)
-        self.model.onFondear(monto)
+        monto = self.scrolledMonto.get("1.0", tk.END).replace("\n","")
+        if self.isValidStr(monto, list("0123456789".strip())) and len(monto) <= 10:
+            self.model.onFondear(monto)
+            
         self.scrolledMonto.delete("0.0", tk.END)
        
         return
@@ -466,6 +476,7 @@ class PantallaPrincipal:
         mensaje = self.entryEnvioMensajes.get("1.0", tk.END)
         self.entryEnvioMensajes.delete("0.0", tk.END)
         self.model.onEnviarMensaje(mensaje)
+        
         return
 
 
@@ -570,8 +581,9 @@ class PantallaPrincipal:
         return
 
 
-    def juegoComenzado(self, estado):
+    def juegoComenzado(self, mensaje):
 
+        self.modificarMensajes("\n\n" + "-------------------------\n" + "\n" + mensaje + "\n")
         self.scrolledMonto.focus()
         self.modificarEstado("")
         
