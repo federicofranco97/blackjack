@@ -69,11 +69,13 @@ class Blackjack():
         for i in range(len(self.jugadoresTotales)):
             if self.jugadoresTotales[i].usuario.nombre == usuario:
                 jugTotIndex = i
-        del self.jugadoresTotales[jugTotIndex]
+        if not jugTotIndex == None:
+            del self.jugadoresTotales[jugTotIndex]
         for j in range(len(self.jugadoresJugando)):
             if self.jugadoresJugando[j].usuario.nombre == usuario:
                 jugJugIndex = j
-        del self.jugadoresJugando[jugJugIndex]
+        if not jugJugIndex == None:
+            del self.jugadoresJugando[jugJugIndex]
         if not self.jugadorActual == None:
             if self.jugadorActual.usuario.nombre == usuario:
                 self.jugadorActualIndice = self.jugadorActualIndice-1

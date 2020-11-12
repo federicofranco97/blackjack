@@ -198,7 +198,7 @@ def iniciarServidor():
 
 
 
-    puerto = 3038
+    puerto = 3039
     blackGame = Blackjack(diccionario)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(('', puerto))
