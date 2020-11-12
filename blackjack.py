@@ -176,6 +176,12 @@ class Blackjack():
             self.banca.iniciarTurno()
             for i in range(len(self.jugadoresJugando)):
                 self.jugadoresJugando[i].esperandoApuesta()
+
+            # Notifico que empezo la ronda
+            for d in self.diccionario:
+                jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresJugando, d)
+                for j in jugadoresLenguaje:
+                    self.notificarJugador(j, self.diccionario[j.usuario.idioma]["partidaIniciada"], codigo=codigoMensaje.PARTIDA_INICIADA)
             for j in range(len(self.jugadoresJugando)):
                 self.notificarJugador(self.jugadoresJugando[j], self.diccionario[self.jugadoresJugando[j].usuario.idioma]["solicitarApuesta"])
                 
@@ -246,7 +252,6 @@ class Blackjack():
                     cartaBanca.visible = False
                 self.banca.mano.agregarCarta(cartaBanca)
 
-            #self.notificarJugadores("La banca tiene " + self.banca.mano.obtenerDescripcionCompleta())
             for d in self.diccionario:
                 jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresTotales, d)
                 descripcionManoIdioma = self.banca.mano.obtenerDescripcionCompleta(d)
@@ -255,7 +260,6 @@ class Blackjack():
             self.jugadorActualIndice = 0
             self.jugadorActual = self.jugadoresJugando[0]
             self.jugadorActual.estadoActual = "activo"
-            #self.notificarJugadores("es el turno de " + self.jugadorActual.usuario.nombre)
             for d in self.diccionario:
                 jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresTotales, d)
                 self.notificarJugadores(jugadoresLenguaje, self.diccionario[d]["esTurnoDe"].replace("{0}", self.jugadorActual.usuario.nombre))
@@ -280,13 +284,11 @@ class Blackjack():
     def rotarJugador(self):
         if len(self.jugadoresJugando) == (self.jugadorActualIndice+1):
             self.jugadorActual = None
-            #self.notificarJugadoresActivos("Ahora jugara la banca")
             for d in self.diccionario:
                 jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresJugando, d)
                 self.notificarJugadoresActivos(jugadoresLenguaje, self.diccionario[d]["juegaLaBanca"])
 
             self.banca.mano.mostrarTodas()
-            #self.notificarJugadoresActivos("La banca mostrara su carta oculta")
             for d in self.diccionario:
                 jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresJugando, d)
                 self.notificarJugadoresActivos(jugadoresLenguaje, self.diccionario[d]["bancaMuestraCartaOculta"])
@@ -334,7 +336,6 @@ class Blackjack():
             self.jugadorActualIndice += 1
             self.jugadorActual = self.jugadoresJugando[self.jugadorActualIndice]
             self.jugadorActual.estadoActual = "activo"
-            #self.notificarJugadoresActivos("es el turno de " + self.jugadorActual.usuario.nombre)
             for d in self.diccionario:
                 jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresJugando, d)
                 self.notificarJugadoresActivos(jugadoresLenguaje, self.diccionario[d]["esTurnoDe"].replace("{0}", self.jugadorActual.usuario.nombre))

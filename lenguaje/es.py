@@ -68,5 +68,7 @@
     "partidaFinalizada": "Partida Finalizada",
     "banca": "Banca",
     "errorNombreIgualBanca": "No te podes llamar igual que la Banca",
-    "nombreVacio": "Debe ingresar un nombre para iniciar"
+    "nombreVacio": "Debe ingresar un nombre para iniciar",
+    "jugadorYaExiste": "Ya existe un jugador con ese nombre, ingrese uno diferente",
+    "partidaIniciada": "Partida Iniciada"
 }

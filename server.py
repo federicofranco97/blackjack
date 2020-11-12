@@ -110,16 +110,26 @@ def comJuegoComando(nombreComando, argumentos, socket, juego, cliente):
 """
 def comIdentificarUsuario(nombreComando, argumentos, socket, juego, cliente):
     if (cliente.nombre == None):
+        nombre = argumentos[0]
+        idioma = argumentos[1] if len(argumentos) > 1 else "es"
+
         for d in diccionario:
-            if diccionario[d]["banca"] == argumentos[0]:
-                cliente.enviarMensaje(mensajeArg=diccionario[cliente.idioma]["errorNombreIgualBanca"], pCodigoMensaje=codigoMensaje.ALIAS_RECHAZADO)
+            if diccionario[d]["banca"] == nombre:
+                cliente.enviarMensaje(mensajeArg=diccionario[idioma]["errorNombreIgualBanca"], pCodigoMensaje=codigoMensaje.ALIAS_RECHAZADO)
                 return
 
-        cliente.nombre = argumentos[0]
-        cliente.idioma = argumentos[1] if len(argumentos) > 1 else "es"
+        jugador = juego.obtenerJugadorTotal(nombre)
+        if jugador is not None:
+            cliente.enviarMensaje(mensajeArg=diccionario[idioma]["jugadorYaExiste"], pCodigoMensaje=codigoMensaje.ALIAS_RECHAZADO)
+            return
+
+        cliente.nombre = nombre
+        cliente.idioma = idioma
+
         cliente.enviarMensaje(mensajeArg=diccionario[cliente.idioma]["ingresarSaldo"], pCodigoMensaje=codigoMensaje.ALIAS_ACEPTADO)
+        juego.agregarJugador(cliente)
     else:
-        socket.send(diccionario[cliente.idioma]["errorYaTeConozco"].replace("{0}", cliente.nombre).replace("{1}", argumentos[0]) + "\n")
+        cliente.enviarMensaje(mensajeArg=diccionario[cliente.idioma]["errorYaTeConozco"].replace("{0}", cliente.nombre).replace("{1}", argumentos[0]) + "\n")
 
 """
     El comando <ingresar> es para ingresar dinero a la cuenta

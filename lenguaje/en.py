@@ -68,5 +68,7 @@
     "partidaFinalizada": "Game Finished",
     "banca": "Bank",
     "errorNombreIgualBanca": "You can not be named as Bank",
-    "nombreVacio": "You must to give a name to enter"
+    "nombreVacio": "You must to give a name to enter",
+    "jugadorYaExiste": "There is already a player with that name, please try another one",
+    "partidaIniciada": "Game Started"
 }

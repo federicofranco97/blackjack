@@ -105,8 +105,8 @@ def parsearMensajeServidor(mensajeRecibido, info):
             vm.onSoyRechazado(info.Mensaje)
         elif argumentos[0] == codigoMensaje.PARTIDA_FINALIZADA:
             vm.onJuegoTerminado()
-        #elif argumentos[0] == codigoMensaje.MENSAJE:
-            #vm.onMensajeEntrante(info.Mensaje)
+        elif argumentos[0] == codigoMensaje.PARTIDA_INICIADA:
+            vm.onJuegoComenzado(info.Mensaje)
     elif comando == "status":
         formateo = str(argumentos).split("#")[1]
         return formateo.replace("\\n", "")

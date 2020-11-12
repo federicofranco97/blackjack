@@ -70,8 +70,8 @@ class GuiViewModel():
     def onMensajeEntrante(self, mensaje):
         self.ee.emit("mensajeEntranteEvent", (mensaje))
 
-    def onJuegoComenzado(self):
-        self.ee.emit("juegoComenzadoEvent", )
+    def onJuegoComenzado(self, mensaje):
+        self.ee.emit("juegoComenzadoEvent", mensaje)
 
     def onJuegoTerminado(self):
         self.ee.emit("juegoTerminadoEvent", )
