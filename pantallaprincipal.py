@@ -677,8 +677,8 @@ class PantallaPrincipal:
             self.textChatServidor.insert(tk.END, mensajes + "\n")
             self.textChatServidor.see(tk.END)
         elif tipo == "MENSAJE":
-            self.textChatJugadores.insert(tk.END, mensajes + "\n")
-            self.textChatJugadores.see(tk.END)
+            self.textChatMensajes.insert(tk.END, mensajes + "\n")
+            self.textChatMensajes.see(tk.END)
         
         return
         

@@ -48,6 +48,7 @@ def escucharServidor():
                 continue
             else:
                 #Imprimo los mensajes del servidor
+                print(data)
                 info = DatosMensaje()
                 mensajes = getMensajesServidor(data)
                 for m in mensajes:
@@ -83,7 +84,6 @@ def parsearMensajeServidor(mensajeRecibido, info):
         formateo = str(argumentos[0])
         info.Mensaje = formateo
         print(formateo)
-        #vm.onMensajeEntrante(formateo)
     elif comando == "codigo":
         if argumentos[0] == codigoMensaje.ALIAS_ACEPTADO:
             vm.onSoyAceptado()

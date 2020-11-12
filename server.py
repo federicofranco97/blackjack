@@ -44,8 +44,8 @@ class Usuario:
             mensaje += ("|banca:"+",".join(banca))
         if len(mano) > 0:
             mensaje += ("|mano:"+",".join(mano))
-        mensaje += "|codigo:" + pCodigoMensaje
-        mensaje += ("|mensaje:" + mensajeArg + "\n")
+        mensaje += "|mensaje:" + mensajeArg
+        mensaje += "|codigo:" + pCodigoMensaje + "\n"
         self.enviarData(mensaje)
 
 """
