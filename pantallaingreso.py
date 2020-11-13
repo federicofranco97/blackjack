@@ -258,24 +258,25 @@ class PantallaIngreso:
         self.model.ee.on("connectErrorEvent", self.onConnectErrorEvent)
         self.model.ee.on("soyAceptadoEvent", self.onSoyAceptadoEvent)
         self.model.ee.on("soyRechazadoEvent", self.onSoyRechazadoEvent)
-        #self.model.ee.on("cierreEvent", self.btSalirOnDemand)
 
+        return
+    
+    
+    def cbError(self, error):
+        
+        self.modificarError(error)
+        self.recrearTextUsuario()
+        
         return
     
     def modificarError(self, error):
         
-        #self.jugadores.set(jugadores)
         self.textError.delete("0.0", tk.END)
         self.textError.insert(tk.END, error)
         self.textError.see(tk.END)
+        
                 
         return
-
-    #def modificarError(self, error):
-        
-    #    self.error.set(error)
-
-    #    return
     
 
     def onConnectEvent(self):
@@ -283,7 +284,7 @@ class PantallaIngreso:
         print("Conectado")
         self.botones= ['usuario', 'jugar']
         self.habilitarBotones()
-        self.modificarError('Conectado')
+        self.cbError('Conectado')
         self.textUsuario.focus()
         
         return
@@ -295,7 +296,7 @@ class PantallaIngreso:
         self.botones= ['direccion', 'puerto', 'conectar']
         self.habilitarBotones()
         print(mensaje)
-        self.modificarError(mensaje)
+        self.cbError(mensaje)
         
         return
 
@@ -307,7 +308,8 @@ class PantallaIngreso:
         self.botones= ['usuario', 'jugar']
         self.habilitarBotones()
         print('Rechazado ' + mensaje)
-        self.modificarError(mensaje)
+        self.cbError(mensaje)
+        self.textUsuario.focus()
         
         return
 
@@ -316,7 +318,7 @@ class PantallaIngreso:
         
         self.model.Validado = True
         self.btSalirOnDemand()
-        self.modificarError('Ingresando...')
+        self.cbError('Ingresando...')
         
         return
 
@@ -361,6 +363,24 @@ class PantallaIngreso:
         self.btJugar()
         
         return
+
+
+    def recrearTextUsuario(self): 
+    
+        self.usuario = ""
+        self.textUsuario.see(tk.END)
+        self.textUsuario.destroy()
+        tamLetraLabel = 18
+        tamLetraText = 25
+        self.textUsuario = tk.Text(self.frameUsuarioNombre, width = 100, height = 50,
+                           fg="black",
+                           bg="white",
+                           font=("Arial Bold", tamLetraText, "bold"))
+        self.textUsuario.bind("<Tab>", self.focus_next_window)
+        self.textUsuario.bind("<Return>", self.cbJugar)
+        self.textUsuario.pack(side=tk.TOP)
+        
+        return
         
         
     def btJugar(self):
@@ -368,8 +388,17 @@ class PantallaIngreso:
         print("Jugar")
         self.usuario = self.limpiarTexto(self.textUsuario.get("1.0", tk.END))
         
-        #self.textUsuario.delete("0.0", tk.END)
-        if len(self.usuario) > 0:
+        if len(self.usuario) > 10:
+            
+            error = "ERROR. El Usuario tiene mas de 10 caracteres de largo."
+            self.textError.delete("0.0", tk.END)
+            self.textError.insert(tk.END, error)
+            self.textError.see(tk.END)
+            self.recrearTextUsuario()
+            self.textUsuario.focus()
+
+        elif len(self.usuario) > 0:
+            
             self.textUsuario.delete("0.0",tk.END)
             self.textUsuario.insert(tk.END,self.usuario)
             self.usuario = self.usuario.replace("\n", "")

@@ -52,6 +52,7 @@ class PantallaPrincipal:
         self.model = model
         self.textChat = None
         self.comenzado = False
+        self.cartasBancaEnPantalla = False
                 
         self.cambiarIdioma('es')
         self.inicializarFrames()
@@ -181,7 +182,10 @@ class PantallaPrincipal:
         '''
 
         soundurl = os.path.join("sounds", "myTurn.mp3")
-        playsound.playsound(soundurl)
+        try:
+            playsound.playsound(soundurl)
+        except playsound.PlaysoundException:
+            error = 1
 
         return
 
@@ -198,7 +202,11 @@ class PantallaPrincipal:
         '''
 
         soundurl = os.path.join("sounds", "apostar.mp3")
-        playsound.playsound(soundurl)
+        try:
+            playsound.playsound(soundurl)
+        except playsound.PlaysoundException:
+            error = 1
+
         return
 
     def playPierde(self):
@@ -213,7 +221,11 @@ class PantallaPrincipal:
         '''
 
         soundurl = os.path.join("sounds", "pierde.mp3")
-        playsound.playsound(soundurl)
+        try:
+            playsound.playsound(soundurl)
+        except playsound.PlaysoundException:
+            error = 1
+
         return
 
 
@@ -229,7 +241,11 @@ class PantallaPrincipal:
         '''
 
         soundurl = os.path.join("sounds", "empata.mp3")
-        playsound.playsound(soundurl)
+        try:
+            playsound.playsound(soundurl)
+        except playsound.PlaysoundException:
+            error = 1
+
         return
 
 
@@ -245,7 +261,11 @@ class PantallaPrincipal:
         '''
 
         soundurl = os.path.join("sounds", "gana.mp3")
-        playsound.playsound(soundurl)
+        try:
+            playsound.playsound(soundurl)
+        except playsound.PlaysoundException:
+            error = 1
+
         return
 
 
@@ -623,7 +643,7 @@ class PantallaPrincipal:
         ancho = 12
         colorFront = "white"
         colorBack = "medium blue"
-        tamLetra = 13
+        tamLetra = 12
         tamMonto = 15
  
  
@@ -1079,6 +1099,7 @@ class PantallaPrincipal:
 
         # Inicializacion
         self.comenzado = True
+        self.cartasBancaEnPantalla = False
         self.cbModificarMensajes("SERVIDOR", "\n\n" + "-------------------------\n" + "\n" + mensaje + "\n")
         self.limpiarTablero()
         self.scrolledMonto.focus()
@@ -1124,9 +1145,11 @@ class PantallaPrincipal:
         # Si la mano esta en curso y se recibieron las cartas de la banca, se muestran
         if len(self.cartasBanca) > 0 and self.comenzado:
             if self.cartasBanca[0] != "":
-                #print(self.cartasBanca)
-                listaCartas = [self.cartasBanca[0], 'reverso']
-                self.crearCartas(listaCartas, reducir=True, borrar=False, x0=450, y0=0)
+                if not self.cartasBancaEnPantalla:
+                    self.cartasBancaEnPantalla = True
+                    #print(self.cartasBanca)
+                    listaCartas = [self.cartasBanca[0], 'reverso']
+                    self.crearCartas(listaCartas, reducir=True, borrar=False, x0=450, y0=0)
 
         self.cartas = cartas
         
@@ -1333,11 +1356,16 @@ class PantallaPrincipal:
             factorInversion = -1
 
         cartasPorLinea = 7
+        # Se acomodan las cartas
+        if len(cartas) <= cartasPorLinea and 'reverso' not in cartas:
+            x0 = x0 + int(xOffset/2) * (7-len(cartas))
+        
         x = x0
         y = y0
         if len(cartas) <= cartasPorLinea and y0 >= 100:
             # se mejor la visivilidad de las cartas segun esten en el margen inferior 
             y = y + yOffset*cartasPorLinea
+            
         for i in range(0, len(cartas)):
             
             self.imgList.append(os.path.join(os.path.join(self.cwd, mazo), cartas[i] + '.jpg'))
@@ -1393,7 +1421,7 @@ def testPantallaInicializador():
     listaCartas = []
     model = GuiViewModel()
     model.MiSaldo = 3000
-    model.MisCartas = cartas
+    model.MisCartas = cartas1
     model.MiNombre = "test"
 
     model.ee.on("pedirCartaEvent", testPantallaPedirCarta)
@@ -1406,7 +1434,7 @@ def testPantallaInicializador():
     bjScreen.modificarScoreJugador("12")
     bjScreen.modificarScoreBanca("12", cartas)
     bjScreen.cbModificarEstado("Jugar")
-    #bjScreen.cbJuegoTerminado()
+    bjScreen.cbJuegoTerminado()
     #668-90-20, 20
     #20, 320
     bjScreen.mostrar()
