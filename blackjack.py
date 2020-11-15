@@ -14,16 +14,23 @@ import copy
 class Blackjack():
 
     def __init__(self, pDiccionario):
+        # Se encarga de la interaccion con la DB
         self.manejadorDB = ManejadorDB(False)
+        # Referencia de todos los jugadores (activos y no-activos)
         self.jugadoresTotales = []
+        # Referencia de todos los jugadores activos
         self.jugadoresJugando = []
+        # Indice del jugador actual dentro de la lista jugadoresJugando
         self.jugadorActualIndice = None
         self.rondaActiva = False
         self.interrumpirTimer = False
+        # Referencia al jugador actual
         self.jugadorActual = None
         self.timerIniciado = False
+        # Instancia de la banca
         self.banca = Banca(pDiccionario)
         self.segundosTotales = 0
+        # Instancia del mazo
         self.mazo = None
         self.diccionario = pDiccionario
 
@@ -39,6 +46,7 @@ class Blackjack():
                 return self.jugadoresJugando[i]
         return None
 
+    # Obtiene una referencia (o None) si el jugador existe dentro de la lista jugadoresTotales
     def obtenerJugadorTotal(self, nombreUsuario):
         print("Usuario buscador: " + nombreUsuario)
         for i in range(len(self.jugadoresTotales)):
@@ -47,6 +55,7 @@ class Blackjack():
                 return self.jugadoresTotales[i]
         return None
 
+    # Obtiene los comandos disponibles de un usuario
     def calcularComandos(self, nombreUsuario):
         comandos = []
         jugadorSeleccionado = self.obtenerJugadorTotal(nombreUsuario)
@@ -61,6 +70,7 @@ class Blackjack():
                 comandos.append("apostar")
         return comandos
 
+    # Remueve un jugador y decide que hacer en base a las consecuencias
     def removerJugador(self, usuario):
         jugTotIndex = None
         jugJugIndex = None
@@ -92,6 +102,7 @@ class Blackjack():
             self.notificarJugadores(jugadoresLenguaje, self.diccionario[d]["usuarioAbandono"].replace("{0}", usuario))
 
 
+    # Devuelve el estado actual de cada jugador de la ronda (nombre, composicion de la mano, estado, y puntaje)
     def obtenerEstadoJugadores(self):
         estados = []
         manoDesc = None
@@ -110,6 +121,7 @@ class Blackjack():
             estados.append(estadoJugador + "}")
         return estados
 
+    # Devuelve una lista de jugadores segun el idioma
     def obtenerJugadoresIdioma(self, jugadores, idioma):
         jugadoresIdioma = []
         for j in jugadores:
