@@ -51,14 +51,12 @@ class Blackjack():
         comandos = []
         jugadorSeleccionado = self.obtenerJugadorTotal(nombreUsuario)
         esJugadorActivo = self._esJugadorActual(nombreUsuario)
+        comandos.append("estadisticas")
         if jugadorSeleccionado is not None:
             if esJugadorActivo is True:
                 comandos.append("pedir")
                 comandos.append("plantarse")
                 comandos.append("doblar")
-                if len(jugadorSeleccionado.manoActual.cartas) == 2:
-                    if jugadorSeleccionado.manoActual.cartas[0].valor == jugadorSeleccionado.manoActual.cartas[1].valor:
-                        comandos.append("separar")
             if jugadorSeleccionado.estadoActual == "apuesta_pendiente":
                 comandos.append("apostar")
         return comandos
@@ -242,7 +240,7 @@ class Blackjack():
             mensaje += ("Jugador: " + fila[0] + ". Ganadas: " + str(fila[1]) + ". Empatadas: " + str(fila[2]) + ". Perdidas: " + str(fila[3]) + "\n")
         for f in estadCartas:
             mensaje += ("Carta: " + f[0] + ". Cantidad de aparaciones: " + str(f[1]) + "\n")
-        self.notificarJugadores(self.jugadoresTotales, mensaje)
+        self.notificarJugadores(self.jugadoresTotales, mensaje, codigo=codigoMensaje.ESTADISTICAS)
 
     """
         Funciona que chequea si el juego debe comenzar, es decir, si el resto de los participanes ya hizo una apuesta.

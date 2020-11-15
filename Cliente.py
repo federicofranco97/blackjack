@@ -15,7 +15,6 @@ from datosMensaje import DatosMensaje
 usarGUI = True
 diccionario = {}
 vm = GuiViewModel()
-estado = 0
 sock = None
 
 # Iniciamos la GUI
@@ -32,7 +31,6 @@ def iniciarPantalla():
     else:
         print("Saliendo del juego\n")
         os._exit(0)
-
     return
 
 def escucharServidorThread():
@@ -97,6 +95,8 @@ def parsearMensajeServidor(mensajeRecibido, info):
         elif argumentos[0] == codigoMensaje.MENSAJE:
             if info.Mensaje != "":
                 vm.onMensajeEntrante(info.Mensaje, "MENSAJE")
+        elif argumentos[0] == codigoMensaje.ESTADISTICAS:
+            vm.onEstadisticasRecibidas(info.Mensaje)
         else:
             if info.Mensaje != "":
                 vm.onMensajeEntrante(info.Mensaje, "SERVIDOR")
@@ -177,13 +177,6 @@ def doblar():
     sock.send(comando.encode())
 
 
-# Wrapper para enviar la solicitud de split
-def separar():
-    print("separar")
-    comando = "separar"
-    sock.send(comando.encode())
-
-
 # Wrapper para enviar el fondeo
 def fondear(monto):
     print("fondear " + monto)
@@ -204,6 +197,11 @@ def enviarMensaje(mensaje):
     comando = "mensaje " + mensaje
     sock.send(comando.encode())
 
+def estadisticas():
+    print("pidiendo estadisticas")
+    comando = "estadisticas"
+    sock.send(comando.encode())
+
 
 # Se conecta al servidor con los parametros solicitados
 def conectar(ip, puerto):
@@ -211,8 +209,6 @@ def conectar(ip, puerto):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         sock.connect((ip, int(puerto)))
-        global estado
-        estado = 1
         vm.onConnected()
     except Exception as e:
         print(diccionario[vm.lenguaje]["errorConexion"] + str(e))
@@ -241,10 +237,10 @@ def analizarComandoEnviado(linea):
             pedirCarta()
         elif comando == "plantarse":
             plantarse()
-        elif comando == "separar":
-            separar()
         elif comando == "doblar":
             doblar()
+        elif comando == "estadisticas":
+            estadisticas()
     except:
         print(diccionario[vm.lenguaje]["errorComando"])
 
@@ -284,7 +280,6 @@ if __name__ == "__main__":
     #Suscripcion a eventos
     vm.ee.on("pedirCartaEvent", pedirCarta)
     vm.ee.on("plantarseEvent", plantarse)
-    vm.ee.on("separarEvent", separar)
     vm.ee.on("fondearEvent", fondear)
     vm.ee.on("apostarEvent", apostar)
     vm.ee.on("doblarEvent", doblar)
@@ -292,4 +287,5 @@ if __name__ == "__main__":
     vm.ee.on("requestConnectionEvent", conectar)
     vm.ee.on("soyEvent", soy)
     vm.ee.on("connectedEvent", escucharServidorThread)
+    vm.ee.on("solicitarEstadisticasEvent", estadisticas)
     inicioCliente()

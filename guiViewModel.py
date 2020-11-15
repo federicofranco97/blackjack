@@ -49,10 +49,6 @@ class GuiViewModel():
     def onPlantarse(self):
         self.ee.emit("plantarseEvent", )
 
-    #Evento que dispara la GUI para solicitar un split
-    def onSeparar(self):
-        self.ee.emit("separarEvent", )
-
     #Evento que dispara la GUI para duplicar la apuesta
     def onDoblar(self):
         self.ee.emit("doblarEvent", )
@@ -103,6 +99,12 @@ class GuiViewModel():
     #Evento que reporta el cambio de estado de la mano de la banca
     def onPuntajeBancaChanged(self, puntaje, cartas):
         self.ee.emit("puntajeBancaChangedEvent", puntaje, cartas)
+
+    def onSolicitarEstadisticas(self):
+        self.ee.emit("solicitarEstadisticasEvent", )
+
+    def onEstadisticasRecibidas(self, estadisticas):
+        self.ee.emit("estadisticasRecibidasEvent", estadisticas)
 
 
 

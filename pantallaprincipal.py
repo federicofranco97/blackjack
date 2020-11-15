@@ -288,7 +288,8 @@ class PantallaPrincipal:
         self.model.ee.on("juegoComenzadoEvent", self.cbJuegoComenzado)
         self.model.ee.on("juegoTerminadoEvent", self.cbJuegoTerminado)
         self.model.ee.on("jugadoresRefreshedEvent", self.cbModificarJugadores)
-        self.model.ee.on("puntajeBancaChangedEvent", self.modificarScoreBanca)        
+        self.model.ee.on("puntajeBancaChangedEvent", self.modificarScoreBanca)
+        self.model.ee.on("estadisticasRecibidasEvent", self.cbEstadisticasRecibidas)
 
         return
     
@@ -502,6 +503,8 @@ class PantallaPrincipal:
                         
         return
             
+    def cbEstadisticasRecibidas(self, estadisticas):
+        print(estadisticas)
 
     def cargarBotones(self, botones):
         '''
@@ -540,7 +543,8 @@ class PantallaPrincipal:
                                  "pedir": False,
                                  "plantarse": False,
                                  "stats": False,
-                                 "mensaje": False}
+                                 "mensaje": False,
+                                 "estadisticas": False}
         
         
         for boton in self.botones:
@@ -579,12 +583,12 @@ class PantallaPrincipal:
             self.buttonPedir.config(state=estado)
         elif boton == "plantarse":
             self.buttonPlantarse.config(state=estado)
-        elif boton == "stats":
-            self.buttonStats.config(state=estado)
         elif boton == "doblar":
             self.buttonDoblar.config(state=estado)
         elif boton == "mensaje":
             self.buttonEnviarMensaje.config(state=estado)
+        elif boton == "estadisticas":
+            self.buttonStats.config(state=estado)
         
         return
 
@@ -837,7 +841,7 @@ class PantallaPrincipal:
         Retorno: No retorna ningun valor. 
         '''
 
-        #self.model.onStats()
+        self.model.onSolicitarEstadisticas()
         
         return
 
