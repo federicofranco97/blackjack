@@ -14,6 +14,7 @@
     "plantarse": "PLANTARSE",
     "mensaje": "MENSAJE",
     "enviar": "ENVIAR",
+    "stats": "ESTADISTICAS",    
     "salir": "SALIR",
     "jugar": "Jugar",
     "bienvenido": "Bienvenido ",

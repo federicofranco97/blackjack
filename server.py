@@ -10,7 +10,10 @@ from pathlib import Path
 
 from blackjack import Blackjack
 
+# Guarda una referencia a todos los clientes
 clientes = []
+
+# Diccionario de palabras y mensajes según el idioma
 diccionario = {}
 
 """
@@ -192,6 +195,8 @@ def inicializarCliente(cliente, bg):
     Acepta las conexiones entrantes, y llama a inicializarCliente en un nuevo threado.
 """
 def iniciarServidor():
+    
+    # Se carga el diccionario a partir de un archivo
     files = os.listdir("lenguaje")
     for f in files:
         with open(os.path.join("lenguaje", f)) as json_file:
@@ -201,6 +206,7 @@ def iniciarServidor():
 
 
     puerto = 3039
+    # Se inicia la instancia del juego de Blackjack que es compartida por todos los threads
     blackGame = Blackjack(diccionario)
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.bind(('', puerto))
@@ -211,6 +217,7 @@ def iniciarServidor():
         cliente, direccionCliente = sock.accept()
         print(cliente)
         print(crearMensajeLog("Nuevo jugador desde: " + direccionCliente[0]))
+        # Se inicia un thread por cada cliente conectado. Este thread tiene acceso a la instancia de blackjack.
         start_new_thread(inicializarCliente, (cliente, blackGame))
     sock.close()
 
