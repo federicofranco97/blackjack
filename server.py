@@ -108,7 +108,7 @@ def comJuegoComando(nombreComando, argumentos, sockete, juego, cliente):
     if nombreComando == "plantarse":
         return juego.plantarse(cliente.nombre)
     if nombreComando == "estadisticas":
-        return juego.obtenerEstadisticas()
+        return juego.obtenerEstadisticas(cliente.nombre)
     if nombreComando == "retirarse" or nombreComando == "kick":
         nombre = argumentos[0] if nombreComando == "kick" else cliente.nombre
         indiceCliente = None

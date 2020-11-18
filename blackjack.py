@@ -133,10 +133,9 @@ class Blackjack():
         Esta funcion se utiliza para enviar un mensaje a una lista de jugadores. Es una funcion pseudo-privada, no deberia ser llamada directamente, sino
         a traves de notificarJugadores o notificarJugadoresActivos o notificarJugador.
     """
-    def _notificarJugadores(self, jugadores, mensaje, codigo=codigoMensaje.NORMAL):
+    def _notificarJugadores(self, jugadores, mensaje, estadisticas = None, codigo=codigoMensaje.NORMAL):
         banca = []
         jugadoresEstados = self.obtenerEstadoJugadores()
-        estadisticas = self.obtenerEstadisticas()
         if not self.banca.mano == None:
             bancaValores = self.banca.mano.obtenerValores()
             bancaPuntaje = self.banca.mano.obtenerPuntaje()
@@ -146,20 +145,20 @@ class Blackjack():
             comandos = self.calcularComandos(jugSel.usuario.nombre)
             jugadores[jug].enviarMensaje(mensaje, comandos, jugadoresEstados, banca, [], estadisticas, codigo)
 
-    def notificarJugador(self, jugador, mensaje, codigo=codigoMensaje.NORMAL):
-        self._notificarJugadores([jugador], mensaje, codigo)
+    def notificarJugador(self, jugador, mensaje, estadisticas = None, codigo=codigoMensaje.NORMAL):
+        self._notificarJugadores([jugador], mensaje, estadisticas, codigo)
 
     """
         Esta funcion envia un mensaje a todos los jugadores, activos o no.
     """
     def notificarJugadores(self, jugadores, mensaje, codigo=codigoMensaje.NORMAL):
-        self._notificarJugadores(jugadores, mensaje, codigo)
+        self._notificarJugadores(jugadores, mensaje, None, codigo)
 
     """
         Esta funcion envia un mensaje a los jugadores que estan participando de la ronda.
     """
     def notificarJugadoresActivos(self, jugadores, mensaje, codigo=codigoMensaje.NORMAL):
-        self._notificarJugadores(jugadores, mensaje, codigo)
+        self._notificarJugadores(jugadores, mensaje, None, codigo)
 
     """
         Obtiene la referencia de un jugador para utilizarlo.
@@ -205,7 +204,7 @@ class Blackjack():
             for d in self.diccionario:
                 jugadoresLenguaje = self.obtenerJugadoresIdioma(self.jugadoresJugando, d)
                 for j in jugadoresLenguaje:
-                    self.notificarJugador(j, self.diccionario[j.usuario.idioma]["partidaIniciada"], codigo=codigoMensaje.PARTIDA_INICIADA)
+                    self.notificarJugador(j, self.diccionario[j.usuario.idioma]["partidaIniciada"], None, codigo=codigoMensaje.PARTIDA_INICIADA)
             for j in range(len(self.jugadoresJugando)):
                 self.notificarJugador(self.jugadoresJugando[j], self.diccionario[self.jugadoresJugando[j].usuario.idioma]["solicitarApuesta"])
                 
@@ -246,19 +245,15 @@ class Blackjack():
     """
         Devuelve la cantidad de jugadores
     """
-    def obtenerEstadisticas(self):
+    def obtenerEstadisticas(self, usuario):
+        jug = self._obtenerJugador(usuario)
         mensaje = ""
         (estadJugadores, estadCartas) = self.manejadorDB.obtenerEstadisticas()
         for fila in estadJugadores:
-            mensaje += ("Jugador: " + fila[0] + ". Ganadas: " + str(fila[1]) + ". Empatadas: " + str(fila[2]) + ". Perdidas: " + str(fila[3]) + "___")
+            mensaje += ("Jugadores: ___" + fila[0] + ". Ganadas: " + str(fila[1]) + ". Empatadas: " + str(fila[2]) + ". Perdidas: " + str(fila[3]) + "___")
         for f in estadCartas:
-<<<<<<< HEAD
-            mensaje += ("Carta: " + f[0] + ". Cantidad de aparaciones: " + str(f[1]) + "___")
-        return mensaje
-=======
-            mensaje += ("Carta: " + f[0] + ". Cantidad de aparaciones: " + str(f[1]) + "\n")
-        self.notificarJugadores(self.jugadoresTotales, mensaje, codigo=codigoMensaje.ESTADISTICAS)
->>>>>>> 71b3be06e7cf31fbc291571d77944648437f2303
+            mensaje += ("Cartas: ___ " + f[0] + ". Cantidad de aparaciones: " + str(f[1]) + "___")
+        self.notificarJugador(jug, "Estadisticas enviadas", mensaje)
 
     """
         Funciona que chequea si el juego debe comenzar, es decir, si el resto de los participanes ya hizo una apuesta.
