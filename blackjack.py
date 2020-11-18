@@ -126,6 +126,7 @@ class Blackjack():
     def _notificarJugadores(self, jugadores, mensaje, codigo=codigoMensaje.NORMAL):
         banca = []
         jugadoresEstados = self.obtenerEstadoJugadores()
+        estadisticas = self.obtenerEstadisticas()
         if not self.banca.mano == None:
             bancaValores = self.banca.mano.obtenerValores()
             bancaPuntaje = self.banca.mano.obtenerPuntaje()
@@ -133,7 +134,7 @@ class Blackjack():
         for jug in range(len(jugadores)):
             jugSel = jugadores[jug]
             comandos = self.calcularComandos(jugSel.usuario.nombre)
-            jugadores[jug].enviarMensaje(mensaje, comandos, jugadoresEstados, banca, [], codigo)
+            jugadores[jug].enviarMensaje(mensaje, comandos, jugadoresEstados, banca, [], estadisticas, codigo)
 
     def notificarJugador(self, jugador, mensaje, codigo=codigoMensaje.NORMAL):
         self._notificarJugadores([jugador], mensaje, codigo)
@@ -239,10 +240,10 @@ class Blackjack():
         mensaje = ""
         (estadJugadores, estadCartas) = self.manejadorDB.obtenerEstadisticas()
         for fila in estadJugadores:
-            mensaje += ("Jugador: " + fila[0] + ". Ganadas: " + str(fila[1]) + ". Empatadas: " + str(fila[2]) + ". Perdidas: " + str(fila[3]) + "\n")
+            mensaje += ("Jugador: " + fila[0] + ". Ganadas: " + str(fila[1]) + ". Empatadas: " + str(fila[2]) + ". Perdidas: " + str(fila[3]) + "___")
         for f in estadCartas:
-            mensaje += ("Carta: " + f[0] + ". Cantidad de aparaciones: " + str(f[1]) + "\n")
-        self.notificarJugadores(self.jugadoresTotales, mensaje)
+            mensaje += ("Carta: " + f[0] + ". Cantidad de aparaciones: " + str(f[1]) + "___")
+        return mensaje
 
     """
         Funciona que chequea si el juego debe comenzar, es decir, si el resto de los participanes ya hizo una apuesta.

@@ -29,7 +29,7 @@ class Usuario:
         except:
             pass
 
-    def enviarMensaje(self, mensajeArg, comandos = [], jugadores = [], banca = [], mano = [], pCodigoMensaje =codigoMensaje.NORMAL):
+    def enviarMensaje(self, mensajeArg, comandos = [], jugadores = [], banca = [], mano = [], estadisticas = None, pCodigoMensaje =codigoMensaje.NORMAL):
         mensaje = ""
         _comm = comandos.copy()
         _comm.append("mensaje")
@@ -45,6 +45,8 @@ class Usuario:
             mensaje += ("|banca:"+",".join(banca))
         if len(mano) > 0:
             mensaje += ("|mano:"+",".join(mano))
+        if not estadisticas == None:
+            mensaje += ("|estadisticas:"+estadisticas)
         mensaje += "|mensaje:" + mensajeArg
         mensaje += "|codigo:" + pCodigoMensaje + "\n"
         self.enviarData(mensaje)
