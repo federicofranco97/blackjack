@@ -45,7 +45,7 @@ def escucharServidor():
                 continue
             else:
                 #Imprimo los mensajes del servidor
-                print(data)
+                #print(data)
                 info = DatosMensaje()
                 mensajes = getMensajesServidor(data)
                 for m in mensajes:
@@ -81,7 +81,6 @@ def parsearMensajeServidor(mensajeRecibido, info):
     elif comando == "mensaje":
         formateo = str(argumentos[0])
         info.Mensaje = formateo
-        print(formateo)
     elif comando == "codigo":
         if argumentos[0] == codigoMensaje.ALIAS_ACEPTADO:
             vm.onSoyAceptado()
@@ -96,6 +95,8 @@ def parsearMensajeServidor(mensajeRecibido, info):
             if info.Mensaje != "":
                 vm.onMensajeEntrante(info.Mensaje, "MENSAJE")
         elif argumentos[0] == codigoMensaje.ESTADISTICAS:
+            info.Mensaje = info.Mensaje.replace("=", ":").replace("___", "\n")
+            print(info.Mensaje)
             vm.onEstadisticasRecibidas(info.Mensaje)
         else:
             if info.Mensaje != "":

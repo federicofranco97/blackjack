@@ -250,10 +250,10 @@ class Blackjack():
         mensaje = ""
         (estadJugadores, estadCartas) = self.manejadorDB.obtenerEstadisticas()
         for fila in estadJugadores:
-            mensaje += ("Jugadores: ___" + fila[0] + ". Ganadas: " + str(fila[1]) + ". Empatadas: " + str(fila[2]) + ". Perdidas: " + str(fila[3]) + "___")
+            mensaje += ("Jugadores= " + fila[0] + ". Ganadas= " + str(fila[1]) + ". Empatadas= " + str(fila[2]) + ". Perdidas= " + str(fila[3]) + "___")
         for f in estadCartas:
-            mensaje += ("Cartas: ___ " + f[0] + ". Cantidad de aparaciones: " + str(f[1]) + "___")
-        self.notificarJugador(jug, mensaje, None)
+            mensaje += ("Cartas= " + f[0] + ". Cantidad de aparaciones= " + str(f[1]) + "___")
+        self.notificarJugador(jug, mensaje, None, codigo=codigoMensaje.ESTADISTICAS)
 
     """
         Funciona que chequea si el juego debe comenzar, es decir, si el resto de los participanes ya hizo una apuesta.
