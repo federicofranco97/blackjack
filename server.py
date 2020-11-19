@@ -185,6 +185,9 @@ def inicializarCliente(cliente, bg):
         except Exception as e:
             traceback.print_exc()
             if usuario.nombre != None:
+                for i in range(len(clientes)):
+                    if clientes[i].nombre == usuario.nombre:
+                        del clientes[i]
                 bg.removerJugador(usuario.nombre)
             break
 
