@@ -314,7 +314,7 @@ class PantallaPrincipal:
         '''
 
         # Configura Titulo de ventana
-        self.root.wm_title("Blackjac UB v1.0")
+        self.root.wm_title("Blackjack UB v1.0")
         self.root.geometry("1024x768")
         self.root['bg']='medium blue'
  
