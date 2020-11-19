@@ -36,7 +36,7 @@ class PantallaIngreso:
     def inicializarFrames(self):
                 
         color = 'medium blue'        
-        self.root.wm_title("Blackjac UB version Betal Alfa Centauri v1.0.1")
+        self.root.wm_title("Blackjack UB v1.0")
         self.root.geometry("1024x768")
         self.root['bg']=color
  
