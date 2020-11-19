@@ -44,6 +44,7 @@ class PantallaPrincipal:
         self.nombreJugador.set(self.usuario)
         self.estado = tk.StringVar()
         self.estadoStr = ""
+        self.jugadoresStr = ""
         self.jugadores = tk.StringVar()
         self.mensajes = tk.StringVar()
         self.app = None
@@ -53,8 +54,12 @@ class PantallaPrincipal:
         self.textChat = None
         self.comenzado = False
         self.cartasBancaEnPantalla = False
-                
+        
         self.cambiarIdioma('es')
+
+        self.statJugadores = tk.StringVar()
+        self.stat = tk.StringVar()
+        
         self.inicializarFrames()
         self.crearMenu()
         self.crearMenuEnvioMensajes()  
@@ -65,6 +70,8 @@ class PantallaPrincipal:
         self.cargarBotones("")
         self.habilitarBotones()
         self.crearMenuMensajes("")
+
+        self.textoBotonStatJugadores = self.diccionario["stats"]
         
         self.configurarEventos()
         self.scrolledMonto.focus()
@@ -359,6 +366,18 @@ class PantallaPrincipal:
         self.frameJugadores.pack_propagate(0)
         
         
+        ''' frameJugadores: Frame 1.2.1.2.1 - Frame Padre: frameJugadores - Posicion: TOP'''
+        self.frameJugadoresInformacion = tk.Frame(self.frameJugadores, width = 624, height = 75)
+        self.frameJugadoresInformacion.pack(side=tk.TOP)
+        self.frameJugadoresInformacion['bg']='white'
+        self.frameJugadoresInformacion.pack_propagate(0)
+
+        ''' frameJugadores: Frame 1.2.1.2.2 - Frame Padre: frameJugadores - Posicion: BOTTOM'''
+        self.frameJugadoresEstadisticas = tk.Frame(self.frameJugadores, width = 624, height = 75)
+        self.frameJugadoresEstadisticas.pack(side=tk.BOTTOM)
+        self.frameJugadoresEstadisticas['bg']='white'
+        self.frameJugadoresEstadisticas.pack_propagate(0)
+
         ''' framePanelCartas: Frame 1.2.1.1.1 - Frame Padre: frameJuego - Posicion: TOP'''
         self.framePanelCartas = tk.Frame(self.frameJuego, width = 624, height = 468)
         self.framePanelCartas.pack(side=tk.TOP)
@@ -504,7 +523,21 @@ class PantallaPrincipal:
         return
             
     def cbEstadisticasRecibidas(self, estadisticas):
-        print(estadisticas)
+        '''
+        Metodo: cbEstadisticasRecibidas
+        
+        Parametros: estadisticas: Datos de estadisticas recibidos del servidor. 
+        
+        Descripcion: Metodo callback que muestra datos de estadisticas si es que estan
+                     habilitados.
+        
+        Retorno: No retorna ningun valor. 
+        '''
+        
+        self.cbModificarEstadisticas(estadisticas)
+        
+        return
+    
 
     def cargarBotones(self, botones):
         '''
@@ -710,6 +743,7 @@ class PantallaPrincipal:
                            font=("Arial Bold", tamLetra, "bold"),
                            command=self.cbDoblar)
         self.buttonDoblar.pack(side=tk.LEFT)
+
 
         ''' buttonStats: Nivel 1.1.8 - Frame Padre: frameBotones - Posicion: LEFT'''
         self.buttonStats = tk.Button(self.frameBotones, width = ancho, height = 20,
@@ -1178,8 +1212,27 @@ class PantallaPrincipal:
         self.labelEstados.pack(side=tk.LEFT)
 
         return
+    
 
-
+    def cbModificarEstadisticas(self, estadisticas):
+        '''
+        Metodo: cbModificarEstadisticas
+        
+        Parametros: estadisticas: Listado de estadisticas.
+                
+        Descripcion: Metodo que actualiza la pantalla con las estadisticas del juego.
+        
+        Retorno: No retorna ningun valor. 
+        '''
+        
+        self.textJugadoresEstadisticas.delete("0.0", tk.END)
+        self.textJugadoresEstadisticas.insert(tk.END, estadisticas)
+        #self.textJugadoresEstadisticas.see(tk.END)
+        self.estadisticasStr = estadisticas
+                
+        return
+    
+    
     def cbModificarJugadores(self, jugadores):
         '''
         Metodo: cbModificarJugadores
@@ -1191,12 +1244,13 @@ class PantallaPrincipal:
         Retorno: No retorna ningun valor. 
         '''
         
-        self.textJugadores.delete("0.0", tk.END)
-        self.textJugadores.insert(tk.END, jugadores)
-        self.textJugadores.see(tk.END)
+        self.textJugadoresInformacion.delete("0.0", tk.END)
+        self.textJugadoresInformacion.insert(tk.END, jugadores)
+        self.textJugadoresInformacion.see(tk.END)
+        self.jugadoresStr = jugadores
                 
         return
-        
+    
     
     def crearJugadores(self, jugadores):
         '''
@@ -1209,17 +1263,29 @@ class PantallaPrincipal:
         Retorno: No retorna ningun valor. 
         '''
 
-        self.scrollbarJugadores = tk.Scrollbar(self.frameJugadores) 
-        self.textJugadores = tk.Text(self.frameJugadores, width = 622, height = 148,
+        self.scrollbarJugadoresInformacion = tk.Scrollbar(self.frameJugadoresInformacion) 
+        self.textJugadoresInformacion = tk.Text(self.frameJugadoresInformacion, width = 622, height = 74,
                                 font=("Arial Bold", 15), fg="black", bg="white")
-        self.scrollbarJugadores.pack(side=tk.RIGHT, fill=tk.Y)
-        self.textJugadores.pack(side=tk.LEFT, fill=tk.Y)
-        self.scrollbarJugadores.config(command=self.textJugadores.yview)
-        self.textJugadores.config(yscrollcommand=self.scrollbarJugadores.set)
+        self.scrollbarJugadoresInformacion.pack(side=tk.RIGHT, fill=tk.Y)
+        self.textJugadoresInformacion.pack(side=tk.LEFT, fill=tk.Y)
+        self.scrollbarJugadoresInformacion.config(command=self.textJugadoresInformacion.yview)
+        self.textJugadoresInformacion.config(yscrollcommand=self.scrollbarJugadoresInformacion.set)
 
         self.cbModificarJugadores(jugadores)
-        self.textJugadores.pack(side=tk.LEFT)
+        self.textJugadoresInformacion.pack(side=tk.LEFT)
 
+        self.scrollbarJugadoresEstadisticas = tk.Scrollbar(self.frameJugadoresEstadisticas) 
+        self.textJugadoresEstadisticas = tk.Text(self.frameJugadoresEstadisticas, width = 622, height = 74,
+                                font=("Arial Bold", 15), fg="black", bg="white")
+        self.scrollbarJugadoresEstadisticas.pack(side=tk.RIGHT, fill=tk.Y)
+        self.textJugadoresEstadisticas.pack(side=tk.LEFT, fill=tk.Y)
+        self.scrollbarJugadoresEstadisticas.config(command=self.textJugadoresEstadisticas.yview)
+        self.textJugadoresEstadisticas.config(yscrollcommand=self.scrollbarJugadoresEstadisticas.set)
+
+        #self.cbModificarJugadores(jugadores)
+        self.textJugadoresEstadisticas.pack(side=tk.LEFT)
+
+        
         return
 
 
@@ -1438,6 +1504,7 @@ def testPantallaInicializador():
     bjScreen.modificarScoreJugador("12")
     bjScreen.modificarScoreBanca("12", cartas)
     bjScreen.cbModificarEstado("Jugar")
+    bjScreen.botones = ['apostar', 'stats']
     bjScreen.cbJuegoTerminado()
     #668-90-20, 20
     #20, 320

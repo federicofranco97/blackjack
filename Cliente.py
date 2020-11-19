@@ -96,6 +96,10 @@ def parsearMensajeServidor(mensajeRecibido, info):
                 vm.onMensajeEntrante(info.Mensaje, "MENSAJE")
         elif argumentos[0] == codigoMensaje.ESTADISTICAS:
             info.Mensaje = info.Mensaje.replace("=", ":").replace("___", "\n")
+            rServidor = "[Servidor] "
+            rJugadores = "Jugadores: "
+            rJugador = "Jugador: " 
+            info.Mensaje = info.Mensaje.replace(rServidor, "").replace(rJugadores, rJugador)
             print(info.Mensaje)
             vm.onEstadisticasRecibidas(info.Mensaje)
         else:
