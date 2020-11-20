@@ -327,7 +327,7 @@ class PantallaIngreso:
         
         i = 0
         for char in texto:
-            if char not in "abcdefghijklmnopqrstuvwqyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_.-":
+            if char not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_.-":
                 break
             i = i + 1
             
