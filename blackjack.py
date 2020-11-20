@@ -419,7 +419,7 @@ class Blackjack():
                     self.jugadorActual.plantarse()
                 self.rotarJugador()    
             except DineroInsuficiente:
-                self.notificarJugador(_jugador, self.diccionario[_jugador.idioma]["dineroInsuficiente"])
+                self.notificarJugador(_jugador, self.diccionario[_jugador.usuario.idioma]["dineroInsuficiente"])
 
     def enviarMensaje(self, nombreUsuario, mensaje):
         self.notificarJugadores(self.jugadoresJugando, "[" + nombreUsuario + "] " + mensaje, codigoMensaje.MENSAJE)
